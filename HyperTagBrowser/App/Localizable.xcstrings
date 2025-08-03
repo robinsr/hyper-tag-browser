@@ -1,0 +1,516 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    "(%lld)" : {
+
+    },
+    "#%@" : {
+
+    },
+    "%.1f" : {
+
+    },
+    "%@" : {
+
+    },
+    "%@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      }
+    },
+    "%@ Help" : {
+
+    },
+    "%lld hidden" : {
+
+    },
+    "%lld missing" : {
+
+    },
+    "0%" : {
+
+    },
+    "100%" : {
+
+    },
+    "Add ${fileURL} to the index" : {
+
+    },
+    "Add file to index" : {
+
+    },
+    "Add Profile" : {
+
+    },
+    "Add to Queue" : {
+
+    },
+    "Adds a file to the file-tracking index using the default profile" : {
+
+    },
+    "Adjust Date Filter" : {
+
+    },
+    "Advanced" : {
+
+    },
+    "Appearance" : {
+      "shouldTranslate" : false
+    },
+    "Applied BG Color (@Environment)" : {
+
+    },
+    "Are you sure you want to delete %@?" : {
+
+    },
+    "Backup dataabse" : {
+
+    },
+    "Behavior" : {
+
+    },
+    "Bookmarks" : {
+
+    },
+    "Browse refinements" : {
+
+    },
+    "Browse Screen" : {
+
+    },
+    "Cancel" : {
+
+    },
+    "Change File" : {
+
+    },
+    "Choose File" : {
+
+    },
+    "Choose Folder" : {
+
+    },
+    "Clear Selection" : {
+
+    },
+    "Clear Thumbnail Cache" : {
+
+    },
+    "ColorScheme derived from the applied BG color" : {
+
+    },
+    "Copy" : {
+
+    },
+    "Copy details" : {
+
+    },
+    "Copy ID" : {
+
+    },
+    "Create a new Queue" : {
+
+    },
+    "Created" : {
+
+    },
+    "Current folder: %@" : {
+
+    },
+    "Database Queryable Logging" : {
+
+    },
+    "Date" : {
+
+    },
+    "Date Range" : {
+
+    },
+    "Delete" : {
+
+    },
+    "Delete database file for %@?" : {
+
+    },
+    "Delete profile %@?" : {
+
+    },
+    "Descendants" : {
+
+    },
+    "Detail Screen" : {
+
+    },
+    "Dev Flags" : {
+
+    },
+    "Development Settings" : {
+
+    },
+    "Discard Data" : {
+
+    },
+    "Drag an image here" : {
+
+    },
+    "Dynamic Scheme" : {
+
+    },
+    "Edit Tags" : {
+
+    },
+    "Enable request and/or response logging for %@ queries" : {
+
+    },
+    "Enabled" : {
+
+    },
+    "File" : {
+
+    },
+    "Filename" : {
+
+    },
+    "Filter on..." : {
+
+    },
+    "Filter the current view by tags, dates, and other criteria" : {
+
+    },
+    "Folder" : {
+
+    },
+    "Folder Suggestions" : {
+
+    },
+    "Folders" : {
+
+    },
+    "Folding section closed" : {
+
+    },
+    "Folding section open" : {
+
+    },
+    "General" : {
+
+    },
+    "Grid Item Spacing" : {
+
+    },
+    "Grid Row Spacing" : {
+
+    },
+    "Grid Spacing Controls" : {
+
+    },
+    "Grid Tile Inset" : {
+
+    },
+    "Grid Tile Min Size" : {
+
+    },
+    "Home" : {
+
+    },
+    "Immediate" : {
+
+    },
+    "Index files" : {
+
+    },
+    "Inspect Properties" : {
+
+    },
+    "Inspect Record Data" : {
+
+    },
+    "Inspect Spotlight Item" : {
+
+    },
+    "Item Visibility: **%@**" : {
+
+    },
+    "Keybinds" : {
+
+    },
+    "Main Screen" : {
+
+    },
+    "Manage Saved Queries" : {
+
+    },
+    "Matching **%@** filters" : {
+
+    },
+    "Matching tags:" : {
+
+    },
+    "Move to folder" : {
+
+    },
+    "Navigate" : {
+
+    },
+    "New Profile Name" : {
+
+    },
+    "No" : {
+
+    },
+    "No colors detected" : {
+
+    },
+    "No thumbnail available" : {
+
+    },
+    "No volume info" : {
+
+    },
+    "None" : {
+
+    },
+    "Number of matching files in excess of the number that can be displayed at one time" : {
+
+    },
+    "Number of matching files that %@ has a record of, but are no longer accessible at the last known location" : {
+
+    },
+    "Preserve Data" : {
+
+    },
+    "Profile Name" : {
+
+    },
+    "Profile Options" : {
+
+    },
+    "ProfileInfo.Create" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create New Profile"
+          }
+        }
+      }
+    },
+    "ProfileInfo.ShowData" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show Profile Data"
+          }
+        }
+      }
+    },
+    "ProfileInfo.Switch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Switch to %@ profile?"
+          }
+        }
+      }
+    },
+    "ProfileInfo.Title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profiles"
+          }
+        }
+      }
+    },
+    "Query" : {
+
+    },
+    "Query Details" : {
+
+    },
+    "Query Hash: %@" : {
+
+    },
+    "Query Info" : {
+
+    },
+    "Query JSON" : {
+
+    },
+    "Query Name" : {
+
+    },
+    "Queue Name" : {
+
+    },
+    "Recursive" : {
+
+    },
+    "Reindex in Spotlight" : {
+
+    },
+    "Rename" : {
+
+    },
+    "Rename Tag" : {
+
+    },
+    "Renaming tag" : {
+
+    },
+    "ReplaceImageContents.Confirm" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to replace the image contents?"
+          }
+        }
+      }
+    },
+    "ReplaceImageContents.Help" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This will overwrite the current image contents with the new image contents. This action cannot be undone. All tags and metadata will be preserved; only the image contents will be replaced."
+          }
+        }
+      }
+    },
+    "ReplaceImageContents.Title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Image Contents"
+          }
+        }
+      }
+    },
+    "Reveal DB in finder" : {
+
+    },
+    "Save Query" : {
+
+    },
+    "Saved Queries" : {
+
+    },
+    "Search Files and Tags" : {
+
+    },
+    "See details" : {
+
+    },
+    "Select All" : {
+
+    },
+    "Settings for profile'%@'" : {
+
+    },
+    "Show bookmarks" : {
+
+    },
+    "Show in Finder" : {
+
+    },
+    "Show More" : {
+
+    },
+    "Show Profile Data" : {
+
+    },
+    "Show Test Borders" : {
+
+    },
+    "Sort by" : {
+
+    },
+    "Stage %@ preference file" : {
+
+    },
+    "Stashed Tags" : {
+
+    },
+    "Success! %@ has been added to the index." : {
+
+    },
+    "Switch profiles" : {
+
+    },
+    "Switch to %@ profile?" : {
+
+    },
+    "System Color Scheme" : {
+
+    },
+    "System Scheme" : {
+
+    },
+    "Tag Value" : {
+
+    },
+    "Tags" : {
+
+    },
+    "Test Dispatch Queue" : {
+
+    },
+    "The profile %@ is currently active. Deletion requires a restart of the app." : {
+
+    },
+    "This is the last profile. If you delete it, the app will switch to the default profile." : {
+
+    },
+    "Tile Size" : {
+
+    },
+    "to:" : {
+
+    },
+    "Toggle Sidebar Position" : {
+
+    },
+    "Toggle tags or enter new tag" : {
+
+    },
+    "Total files: %lld" : {
+
+    },
+    "Total number of files that match the current parameters (tags, list mode, etc)" : {
+
+    },
+    "Use curernt location" : {
+
+    },
+    "Window Transparency" : {
+
+    },
+    "Work Queues" : {
+
+    },
+    "Yes" : {
+
+    }
+  },
+  "version" : "1.0"
+}

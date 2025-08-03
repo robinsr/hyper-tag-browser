@@ -1,0 +1,11 @@
+// created on 12/17/24 by robinsr
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+
+// CURRENT_PROJECT_VERSION
+VERSION = 1.2.6
+
+// MARKETING_VERSION / BUILD_NUMBER
+BUILD_NUMBER = 20250803125426

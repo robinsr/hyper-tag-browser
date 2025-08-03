@@ -1,0 +1,39 @@
+{
+  "configurations" : [
+    {
+      "id" : "24E7B2FA-1EDE-4351-B337-EEF010DC6319",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "environmentVariableEntries" : [
+      {
+        "key" : "IDEPreferLogStreaming",
+        "value" : "YES"
+      },
+      {
+        "key" : "grdb_all_files_exist",
+        "value" : "1"
+      }
+    ],
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:TaggedFileBrowser.xcodeproj",
+      "identifier" : "947341C12C7EADB70047C718",
+      "name" : "TaggedFileBrowser"
+    },
+    "uiTestingScreenshotsLifetime" : "keepNever"
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:TaggedFileBrowser.xcodeproj",
+        "identifier" : "947341DC2C7EADB80047C718",
+        "name" : "TaggedFileBrowserUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

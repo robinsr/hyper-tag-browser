@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme
+   LastUpgradeVersion = "1630"
+   version = "1.7">
+   <BuildAction
+      parallelizeBuildables = "YES"
+      buildImplicitDependencies = "YES"
+      buildArchitectures = "Automatic">
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "source $SRCROOT/versioning.sh&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "947341C12C7EADB70047C718"
+                     BuildableName = "TaggedFileBrowser.app"
+                     BlueprintName = "TaggedFileBrowser"
+                     ReferencedContainer = "container:TaggedFileBrowser.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
+      <BuildActionEntries>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "947341C12C7EADB70047C718"
+               BuildableName = "TaggedFileBrowser.app"
+               BlueprintName = "TaggedFileBrowser"
+               ReferencedContainer = "container:TaggedFileBrowser.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+      </BuildActionEntries>
+   </BuildAction>
+   <TestAction
+      buildConfiguration = "Beta"
+      selectedDebuggerIdentifier = ""
+      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
+      shouldUseLaunchSchemeArgsEnv = "YES">
+      <TestPlans>
+         <TestPlanReference
+            reference = "container:UnitTests.xctestplan"
+            default = "YES">
+         </TestPlanReference>
+      </TestPlans>
+      <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "947341D22C7EADB80047C718"
+               BuildableName = "TaggedFileBrowserTests.xctest"
+               BlueprintName = "TaggedFileBrowserTests"
+               ReferencedContainer = "container:TaggedFileBrowser.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "947341DC2C7EADB80047C718"
+               BuildableName = "TaggedFileBrowserUITests.xctest"
+               BlueprintName = "TaggedFileBrowserUITests"
+               ReferencedContainer = "container:TaggedFileBrowser.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+      </Testables>
+   </TestAction>
+   <LaunchAction
+      buildConfiguration = "Release"
+      selectedDebuggerIdentifier = ""
+      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
+      disableMainThreadChecker = "YES"
+      disablePerformanceAntipatternChecker = "YES"
+      launchStyle = "0"
+      useCustomWorkingDirectory = "NO"
+      ignoresPersistentStateOnLaunch = "NO"
+      debugDocumentVersioning = "YES"
+      debugServiceExtension = "internal"
+      showGraphicsOverview = "Yes"
+      allowLocationSimulation = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "947341C12C7EADB70047C718"
+            BuildableName = "TaggedFileBrowser.app"
+            BlueprintName = "TaggedFileBrowser"
+            ReferencedContainer = "container:TaggedFileBrowser.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "--profile=default"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--profile=ONYJDTOI3R"
+            isEnabled = "NO">
+         </CommandLineArgument>
+      </CommandLineArguments>
+   </LaunchAction>
+   <ProfileAction
+      buildConfiguration = "Release"
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      savedToolIdentifier = ""
+      useCustomWorkingDirectory = "NO"
+      debugDocumentVersioning = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "947341C12C7EADB70047C718"
+            BuildableName = "TaggedFileBrowser.app"
+            BlueprintName = "TaggedFileBrowser"
+            ReferencedContainer = "container:TaggedFileBrowser.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+   </ProfileAction>
+   <AnalyzeAction
+      buildConfiguration = "Release">
+   </AnalyzeAction>
+   <ArchiveAction
+      buildConfiguration = "Release"
+      revealArchiveInOrganizer = "YES">
+      <PostActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "local product=&quot;SortFort&quot;&#10;local dmg_name=&quot;$product.dmg&quot;&#10;local app_archive_name=&quot;$product.app&quot;&#10;&#10;echo &quot;BUILD_DIR               : $BUILD_DIR&quot;&#10;echo &quot;CURRENT_PROJECT_VERSION : $CURRENT_PROJECT_VERSION&quot;&#10;echo &quot;BUILT_PRODUCTS_DIR      : $BUILT_PRODUCTS_DIR&quot;&#10;&#10;if [[ -n /opt/homebrew/bin/create-dmg ]]; then&#10;  export PATH=/opt/homebrew/bin:$PATH&#10;fi&#10;&#10;mkdir $TARGET_BUILD_DIR/dmg&#10;cp $TARGET_BUILD_DIR/TaggedFileBrowser.app $TARGET_BUILD_DIR/dmg&#10;&#10;test -f dmg_name &amp;&amp; rm dmg_name&#10;create-dmg \&#10;  --volname &quot;$product Installer&quot; \&#10;  # --volicon &quot;application_icon.icns&quot;&#10;  # --background &quot;installer_background.png&quot;&#10;  --window-pos 200 120 \&#10;  --window-size 800 400 \&#10;  --icon-size 100 \&#10;  --icon $app_archive_name 200 190 \&#10;  --hide-extension $app_archive_name \&#10;  --app-drop-link 600 185 \&#10;  $dmg_name \&#10;  $TARGET_BUILD_DIR/dmg&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "947341C12C7EADB70047C718"
+                     BuildableName = "TaggedFileBrowser.app"
+                     BlueprintName = "TaggedFileBrowser"
+                     ReferencedContainer = "container:TaggedFileBrowser.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PostActions>
+   </ArchiveAction>
+</Scheme>

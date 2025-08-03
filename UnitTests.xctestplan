@@ -1,0 +1,29 @@
+{
+  "configurations" : [
+    {
+      "id" : "F3AEC951-B0B6-4A13-93B8-5426B547993F",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "commandLineArgumentEntries" : [
+      {
+        "argument" : "--profile-name=unit_test_profile"
+      }
+    ]
+  },
+  "testTargets" : [
+    {
+      "enabled" : false,
+      "target" : {
+        "containerPath" : "container:TaggedFileBrowser.xcodeproj",
+        "identifier" : "947341D22C7EADB80047C718",
+        "name" : "TaggedFileBrowserTests"
+      }
+    }
+  ],
+  "version" : 1
+}
