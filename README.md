@@ -67,13 +67,13 @@ file indexing.
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/HyperTagBrowser.git
+   git clone https://github.com/robinsr/HyperTagBrowser.git
    cd HyperTagBrowser
    ```
 
 2. **Open in Xcode**
    ```bash
-   open TaggedFileBrowser.xcodeproj
+   open HyperTagBrowser.xcodeproj
    ```
 
 3. **Build and run**
@@ -172,7 +172,7 @@ The project uses several dependencies managed through Swift Package Manager:
 ### Project Structure
 
 ```
-TaggedFileBrowser/
+HyperTagBrowser/
 ├── App/
 │   ├── Components/          # Reusable UI components
 │   ├── Data/               # Domain models and view models
@@ -210,10 +210,10 @@ TaggedFileBrowser/
 
 ```bash
 # Run all tests
-xcodebuild test -scheme TaggedFileBrowser -destination 'platform=macOS'
+xcodebuild test -scheme HyperTagBrowser -destination 'platform=macOS'
 
 # Run specific test target
-xcodebuild test -scheme TaggedFileBrowser -destination 'platform=macOS' -only-testing:TaggedFileBrowserTests
+xcodebuild test -scheme HyperTagBrowser -destination 'platform=macOS' -only-testing:HyperTagBrowserTests
 ```
 
 
