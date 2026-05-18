@@ -2,34 +2,42 @@
 
 import Testing
 
-@testable import TaggedFileBrowser
+@testable import HyperTagBrowser
 
+
+
+@Suite("Array+subscript(wrapping:)")
 struct ExtensionArrayIndicesTests {
+  
+  let letters: [String] = ["a", "b", "c", "d"]
 
-  @Test("Array.Indices [circular:] - sanity check")
-  func test_array_indices_circular() async throws {
-    let testArray: [String] = ["a", "b", "c", "d"]
-    
-    
-    let indices: [Int] = testArray.indices.map(\.utf16Offset(in: testArray))
-    
-    // Sanity check - Indices are normal
-    #expect(indices == [0, 1, 2, 3])
-    
+  @Test("Index in range")
+  func test_array_subscript_wrapping_inrange() async throws {
     // Sanity check - first and last
-    #expect(testArray[indices.first!] == "a")
-    #expect(testArray[indices.last!] == "d")
+    #expect(letters[letters.indices.first!] == "a")
+    #expect(letters[letters.indices.last!] == "d")
     
     // Sanity check - valid indices access expected items
-    #expect(testArray[indices[0]] == "a")
-    #expect(testArray[indices[1]] == "b")
-    #expect(testArray[indices[2]] == "c")
-    #expect(testArray[indices[3]] == "d")
-    
-    #expect(testArray[circular: 4] == "a")
-    #expect(testArray[circular: 5] == "b")
-    #expect(testArray[circular: 6] == "c")
-    #expect(testArray[circular: 7] == "d")
-    
+    #expect(letters[wrapping: 0] == "a")
+    #expect(letters[wrapping: 1] == "b")
+    #expect(letters[wrapping: 2] == "c")
+    #expect(letters[wrapping: 3] == "d")
+  }
+  
+  @Test("Positive index out of range")
+  func test_array_subscript_wrapping_overtop() async throws {
+    #expect(letters[wrapping: 4] == "a")
+    #expect(letters[wrapping: 5] == "b")
+    #expect(letters[wrapping: 6] == "c")
+    #expect(letters[wrapping: 7] == "d")
+  }
+  
+  @Test("Negative index out of range")
+  func test_array_subscript_wrapping_under() async throws {
+    #expect(letters[wrapping: -1] == "d")
+    #expect(letters[wrapping: -2] == "c")
+    #expect(letters[wrapping: -3] == "b")
+    #expect(letters[wrapping: -4] == "a")
+    #expect(letters[wrapping: -5] == "d")
   }
 }

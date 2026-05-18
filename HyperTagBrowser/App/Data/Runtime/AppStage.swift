@@ -3,16 +3,12 @@
 import Foundation
 
 
-enum AppStage: String {
+enum AppStage: String, Identifiable {
   case release = "release"
   case debug = "debug"
   case _preview = "preview"
   
-  static var isUnitTest: Bool {
-    NSClassFromString("XCTestCase") != nil
-  }
-  
-  var displayName: String {
+  var id: String {
     self.rawValue
   }
   
@@ -24,12 +20,16 @@ enum AppStage: String {
   var bundleName: String {
     switch self {
     case ._preview: 
-      return "\(Constants.appname)Previews"
+      return "\(Constants.appDisplayName)Previews"
     case .debug: 
-      return "\(Constants.appname)Debug"
+      return "\(Constants.appDisplayName)Debug"
     default:
-      return Constants.appname
+      return Constants.appDisplayName
     }
+  }
+  
+  static var isUnitTest: Bool {
+    NSClassFromString("XCTestCase") != nil
   }
 }
 

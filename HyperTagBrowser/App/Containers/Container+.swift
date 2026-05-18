@@ -112,7 +112,7 @@ extension Container {
   
   var spotlightDomainIdentifier: Factory<String> {
     self {
-      let stage = self.root.stageId()
+      let stage = self.root.stage().id
       let profileId = self.prefs.userProfileId()
       
       return [stage, profileId].dotPath // eg "release.default" or "beta.testProfile1"

@@ -18,7 +18,7 @@ class AppDispatcher {
   private var previousAction: ModelActions = .appDidLoad
 
   private let taskDispatchQueue = DispatchQueue(
-    label: "\(Constants.appdomain).dispatcher",
+    label: "\(Constants.appDomain).dispatcher",
     qos: .userInitiated,
     attributes: .concurrent)
   

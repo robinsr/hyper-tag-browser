@@ -6,7 +6,7 @@ import Testing
 import Nimble
 import CustomDump
 
-@testable import TaggedFileBrowser
+@testable import HyperTagBrowser
 
 
 

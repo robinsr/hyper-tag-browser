@@ -40,10 +40,9 @@ extension EnvContainer: AutoRegistering {
     let factoryRuntimeArgs = FactoryContext.current.runtimeArguments.map { "\($0)" }
     
     log.emit(.info, """
-    Starting \(Constants.appname)...
-      - EnvContainer.bundleIdentider: \(Self.shared.bundleIdentider())
-      - EnvContainer.stageId: \(Self.shared.stageId())  
-      - EnvContainer.stageName: \(Self.shared.stageName())
+    Starting \(Constants.appDisplayName)...
+      - EnvContainer.bundleIdentider: \(Bundle.main.bundleIdentifier ?? "none")
+      - EnvContainer.stageId: \(Self.shared.stage().id)  
       - EnvContainer.runFlags: \(json: Self.shared.runFlags(), .compact)
       - FactoryContext.isDebug: \(FactoryContext.current.isDebug)
       - FactoryContext.isTest: \(FactoryContext.current.isTest)
@@ -75,25 +74,13 @@ extension EnvContainer: AutoRegistering {
     .scope(.cached)
   }
   
-    /// The string identifier for the current stage
-  var stageId: Factory<String> {
-    self {
-      self.stage().rawValue
-    }
-    .scope(.cached)
+  var domain: Factory<String> {
+    self { Constants.appDomain }.scope(.cached)
   }
   
-    /// The display name for the current stage; empty string for `prod`
-  var stageName: Factory<String> {
+  var stagedPath: Factory<DotPath> {
     self {
-      self.stage().displayName
-    }
-    .scope(.cached)
-  }
-  
-  var bundleIdentider: Factory<String> {
-    self {
-      Bundle.main.cfBundleIdentifier
+      DotPath(self.domain(), self.stage().id)
     }
     .scope(.cached)
   }
@@ -101,16 +88,6 @@ extension EnvContainer: AutoRegistering {
   var userName: Factory<String> {
     self {
       ProcessInfo.processInfo.userName
-    }
-    .scope(.cached)
-  }
-  
-  var stagedPath: Factory<DotPath> {
-    self {
-      let bundleId = self.bundleIdentider()
-      let stageName = self.stageName()
-      
-      return [ bundleId, stageName ].asDotPath
     }
     .scope(.cached)
   }

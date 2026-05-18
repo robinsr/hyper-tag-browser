@@ -5,7 +5,7 @@ import Foundation
 import GRDB
 import UniformTypeIdentifiers
 
-@testable import TaggedFileBrowser
+@testable import HyperTagBrowser
 
 
 struct IndexRecordFixture: DatabaseTestFixtureType {

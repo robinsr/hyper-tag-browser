@@ -52,13 +52,13 @@ struct StdoutMetricsRecorder: MetricsRecorder, Sendable {
   
   func getTracerProvider() -> TracerWrapper {
     OpenTelemetry.instance.tracerProvider
-      .get(instrumentationName: Constants.appname, instrumentationVersion: "semver:0.1.0")
+      .get(instrumentationName: Constants.appDisplayName, instrumentationVersion: "semver:0.1.0")
   }
   
   func getMeter() -> any Meter {
-    guard let sMeterProvider = OpenTelemetry.instance.meterProvider?.get(name: Constants.appname) else {
+    guard let sMeterProvider = OpenTelemetry.instance.meterProvider?.get(name: Constants.appDisplayName) else {
       print("Could not get meter provider")
-      return MeterProviderSdk.builder().build().get(name: Constants.appname)
+      return MeterProviderSdk.builder().build().get(name: Constants.appDisplayName)
     }
     
     return sMeterProvider
@@ -97,7 +97,7 @@ struct StdoutMetricsRecorder: MetricsRecorder, Sendable {
 
 class StdoutSpanExporter: SpanExporter {
   //private let logger = EnvContainer.shared.logger("Metrics")
-  private let logger = os.Logger(subsystem: Constants.appname, category: "StdoutSpanExporter")
+  private let logger = os.Logger(subsystem: Constants.appDisplayName, category: "StdoutSpanExporter")
   
   enum Format: String {
     case json, text

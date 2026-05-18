@@ -149,6 +149,6 @@ struct ChooseDirectoryForm: View, SheetPresentable {
     .withTestBorder(.red, "ChooseDirectoryForm")
     .padding()
   }
-  .environment(\.directoryTree, DirTreeModel(cwd: TestData.appDir))
-  .environment(\.location, TestData.appDir)
+  .environment(\.directoryTree, DirTreeModel(cwd: TestData.resourcesdir.fileURL))
+  .environment(\.location, TestData.resourcesdir.fileURL)
 }

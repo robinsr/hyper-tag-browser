@@ -11,9 +11,6 @@
     public static let shared = PreferencesContainer()
     public let manager = ContainerManager()
 
-    private var root: EnvContainer {
-      EnvContainer.shared
-    }
 
     private let logger = CustomLogger("PreferencesContainer", level: .debug)
     
@@ -24,12 +21,9 @@
     }
     
     private var stage: String {
-      self.root.stageName()
+      EnvContainer.shared.stage().id
     }
     
-    private var bundleId: String {
-      self.root.bundleIdentider()
-    }
     
     private var lastOpened: String {
       DateFormatter.iso8601.string(from: .now)
@@ -42,11 +36,9 @@
      *
      * Ex: `com.foo.debug.prefs`, `com.foo.test.prefs`, `com.foo.release.prefs`
      */
-    private var appPrefsKey: Factory<DotPath> {
+    private var appPrefsKey: Factory<String> {
       self {
-        self.debugResult("appPrefsKey") {
-          DotPath(self.bundleId, self.stage, "prefs")
-        }
+        EnvContainer.shared.stagedPath().appending("prefs").string
       }
     }
     
@@ -55,11 +47,9 @@
      *
      * Ex: `com.foo.debug.default`, `com.foo.test.TI5TFEHQSW`, `com.foo.release.X3AEAW7NY5`
      */
-    private var userPrefsKey: Factory<DotPath> {
+    private var userPrefsKey: Factory<String> {
       self {
-        self.debugResult("userPrefsKey") {
-          DotPath(self.bundleId, self.stage, self.userProfileId())
-        }
+        EnvContainer.shared.stagedPath().appending(self.userProfileId()).string
       }
     }
     
@@ -69,11 +59,9 @@
      */
     public var appPrefsFile: Factory<FilePath> {
       self {
-        self.debugResult("appPrefsFile") {
-          AppLocation.preferences.appending(
-            self.appPrefsKey().appending("plist").string
-          )
-        }
+        AppLocation.preferences
+          .appending(self.appPrefsKey())
+          .appendingExtension("plist")
       }
       .scope(.cached)
     }
@@ -83,7 +71,7 @@
      */
     public var appPreferences: Factory<UserDefaults> {
       self {
-        self.getSuite(key: self.appPrefsKey().string)
+        self.getSuite(id: self.appPrefsKey())
       }
       .scope(.cached)
     }
@@ -93,7 +81,7 @@
      */
     public var userPreferences: Factory<UserDefaults> {
       self {
-        let suite = self.getSuite(key: self.userPrefsKey().string)
+        let suite = self.getSuite(id: self.userPrefsKey())
         
         suite.set(self.stage, forKey: "tfb-stage-name")
         suite.set(self.lastOpened, forKey: "tfb-last-opened")
@@ -112,9 +100,9 @@
     /**
      * Returns all profile **keys** listed in the stage prefs suite
      */
-    var profileKeys: Factory<[ExternalUserProfile.ID]> {
+    var knownProfiles: Factory<[ExternalUserProfile.ID]> {
       self {
-        Defaults[.profileKeys].asArray
+        Defaults[.knownProfiles].asArray
       }
     }
 
@@ -123,7 +111,7 @@
      */
     var externalProfiles: Factory<[ExternalUserProfile]> {
       self {
-        Defaults[.profileKeys]
+        Defaults[.knownProfiles]
           .map { ExternalUserProfile(id: $0) }
           .collect()
       }
@@ -134,12 +122,12 @@
      */
     var userProfileId: Factory<ActiveUserProfile.ID> {
       self {
-        let args = self.root.runFlags()
+        let args = EnvContainer.shared.runFlags()
         
         
         /// Find and use profile based on the `--profile-name=$NAME` argument
         if let profileName = args.profileName {
-          if let profileId = self.getProfileIdFor(name: profileName) {
+          if let profileId = self.profileId(for: profileName) {
             self.logger.emit(.debug, "Using override profile id: \(profileId)")
             return profileId
           } else {
@@ -149,7 +137,7 @@
 
         /// Use profile based on `--profile=$NAME` argument if provided
         if let profileId = args.profileId {
-          if self.hasProfileFor(id: profileId) {
+          if self.profileExists(id: profileId) {
             self.logger.emit(.debug, "Using override profile id: \(profileId)")
             return profileId
           } else {
@@ -223,27 +211,23 @@
     
     //
     // MARK: - Private Helpers
-    ///
+    //
     
-    
-      /// Check if the profile ID exists in the profile keys
-    private func hasProfileFor(id: String) -> Bool {
-      self.profileKeys().contains(id)
+    /// Check if the profile ID exists in the profile keys
+    func profileExists(id: String) -> Bool {
+      self.knownProfiles().contains(id)
     }
       
-      /// Returns the profile ID for the given profile name, or nil if not found
-    private func getProfileIdFor(name: String) -> String? {
-      let profilekeys = self.profileKeys()
+    /// Returns the profile ID for the given profile name, or nil if not found
+    func profileId(for name: String) -> String? {
+      let profileIds = self.knownProfiles()
       let profileNameKey = ActiveUserProfile.CodingKeys.name.rawValue
       
-      for key in profilekeys {
-        let prefsKey = DotPath(self.bundleId, self.stage, key).string
-        let suite = self.getSuite(key: prefsKey)
-        
-        guard let name = suite.string(forKey: profileNameKey) else { continue }
-        
-        if name == name {
-          return key
+      for profileId in profileIds {
+        if
+          let profileName = self.getSuite(id: profileId).string(forKey: profileNameKey),
+          profileName == name {
+          return profileName
         }
       }
       
@@ -254,8 +238,8 @@
      * Helper function creates a `UserDefaults` for the given suite name (key), or returns the standard
      * suite to prevent crashes if the suite cannot be opened, was deleted, or otherwise does not exist.
      */
-    private func getSuite(key: String) -> UserDefaults {
-      let stage = self.root.stage()
+    func getSuite(key: String) -> UserDefaults {
+      let stage = EnvContainer.shared.stage()
 
       self.logger.emit(.debug, "Opening UserDefaults suite for name \(key.quoted)")
 
@@ -274,6 +258,10 @@
       }
 
       return suite
+    }
+    
+    func getSuite(id: String) -> UserDefaults {
+      getSuite(key: EnvContainer.shared.stagedPath().appending(id).string)
     }
 
     /**

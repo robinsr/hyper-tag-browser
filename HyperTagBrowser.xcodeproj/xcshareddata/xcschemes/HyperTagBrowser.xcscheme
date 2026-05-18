@@ -39,6 +39,20 @@
                ReferencedContainer = "container:HyperTagBrowser.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "NO"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "947341DC2C7EADB80047C718"
+               BuildableName = "HyperTagBrowserUITests.xctest"
+               BlueprintName = "HyperTagBrowserUITests"
+               ReferencedContainer = "container:HyperTagBrowser.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -48,7 +62,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:UnitTests.xctestplan"
+            reference = "container:UnitTestsOnly.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
@@ -61,17 +75,6 @@
                BlueprintIdentifier = "947341D22C7EADB80047C718"
                BuildableName = "HyperTagBrowserTests.xctest"
                BlueprintName = "HyperTagBrowserTests"
-               ReferencedContainer = "container:HyperTagBrowser.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "947341DC2C7EADB80047C718"
-               BuildableName = "HyperTagBrowserUITests.xctest"
-               BlueprintName = "HyperTagBrowserUITests"
                ReferencedContainer = "container:HyperTagBrowser.xcodeproj">
             </BuildableReference>
          </TestableReference>

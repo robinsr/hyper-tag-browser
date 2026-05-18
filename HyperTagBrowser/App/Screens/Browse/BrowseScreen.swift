@@ -173,7 +173,7 @@ struct BrowseScreen: View {
         .visible(hiddenItemCount > 0)
       
       Text("\(missingItemCount) missing")
-        .help("Number of matching files that \(Constants.appname) has a record of, but are no longer accessible at the last known location")
+        .help("Number of matching files that \(Constants.appDisplayName) has a record of, but are no longer accessible at the last known location")
         .visible(missingItemCount > 0)
     }
     .fillFrame(.horizontal)

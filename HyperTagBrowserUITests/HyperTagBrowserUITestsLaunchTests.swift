@@ -2,7 +2,7 @@
 
 import XCTest
 
-final class TaggedFileBrowserUITestsLaunchTests: XCTestCase {
+final class HyperTagBrowserUITestsLaunchTests: XCTestCase {
 
   override class var runsForEachTargetApplicationUIConfiguration: Bool {
     true

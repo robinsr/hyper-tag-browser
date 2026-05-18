@@ -6,7 +6,7 @@ import XCTest
 
 import CustomDump
 
-@testable import TaggedFileBrowser
+@testable import HyperTagBrowser
 
 
 /*

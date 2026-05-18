@@ -3,7 +3,7 @@
 import SwiftUI
 
 struct DebugScreen: Scene {
-  static let screenId = "\(Constants.appname).Debug"
+  static let screenId = "\(Constants.appDisplayName).Debug"
   
   @State var progressValue: Double = 0.877
   

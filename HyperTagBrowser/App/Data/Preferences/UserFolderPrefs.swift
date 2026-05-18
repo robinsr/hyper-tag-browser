@@ -34,7 +34,7 @@ enum UserFolderPrefs: String, Defaults.Serializable, CaseIterable, UserPrefSet {
   var helpText: String {
     switch self {
     case .startLocation:
-      return "The folder \(Constants.appname) will open to by default."
+      return "The folder \(Constants.appDisplayName) will open to by default."
     }
   }
   

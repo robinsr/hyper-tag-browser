@@ -43,7 +43,7 @@ enum UserToggles: String, Defaults.Serializable, CaseIterable, UserPrefSet {
   var helpText: String {
     let description = switch self {
     case .persistLocation:
-      "When enabled, \(Constants.appname) will start at the last opened folder."
+      "When enabled, \(Constants.appDisplayName) will start at the last opened folder."
     case .persistInspectorState:
       "When disabled, the image inspector panel will always start out closed."
     case .showTagCountOnTiles:

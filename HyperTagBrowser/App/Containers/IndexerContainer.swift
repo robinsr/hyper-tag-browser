@@ -34,7 +34,7 @@ public final class IndexerContainer: SharedContainer {
   
   var newDbURL: ParameterFactory<String, URL> {
     self { name in
-      let stageId = self.root.stageId()
+      let stageId = self.root.stage().id
       let dbFilename = ["userdb", stageId, name, "sqlite"].dotPath
       
       return AppLocation.appSupport.appending(dbFilename).fileURL
@@ -113,7 +113,7 @@ public final class IndexerContainer: SharedContainer {
   
   var indexTaskQueue: Factory<DispatchQueue> {
     self {
-      DispatchQueue(label: "\(Constants.appdomain).indexTaskQueue")
+      DispatchQueue(label: "\(Constants.appDomain).indexTaskQueue")
     }
     .scope(.singleton)
   }

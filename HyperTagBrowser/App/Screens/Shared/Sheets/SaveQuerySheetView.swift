@@ -219,7 +219,7 @@ struct SaveQuerySheetView: View, SheetPresentable {
   VStack {
     SaveQuerySheetView(
       browseFilters: BrowseFilters(
-        root: TestData.projectDir.filepath,
+        root: TestData.resourcesdir,
         mode: .immediate(),
         tagsMatching: FilteringTagMultiParam(filteringTags),
         nameMatching: StringValueMultiParam([

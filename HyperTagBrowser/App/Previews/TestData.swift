@@ -12,43 +12,44 @@ struct TestData {
   // MARK: - Test User Profile
 
   static let profile = ActiveUserProfile(
-    suite: UserDefaults(suiteName: "com.robinsr.taggedfilebrowser.previews")!)
+    suite: UserDefaults(suiteName: "com.robinsr.htb.previews")!)
 
   
   // MARK: - Test filepaths
 
-  static let homeDir = UserLocation.home
   
-  static let workspaceDir: URL = homeDir.appending(path: "workspace/xcode/TaggedFileBrowser/")
-  static let workspacePath: FilePath = UserLocation.homePath.appending("workspace/xcode/TaggedFileBrowser/")
-  static let dbFile: URL = workspaceDir.appending(path: "previewdb.sqlite")
-  static let appDir: URL = workspaceDir.appending(path: "TaggedFileBrowser/App/")
-  static let projectDir: URL = homeDir.appending(path: "workspace/projects/taggedfilebrowser/")
-  static let testImageDir: URL = projectDir.appending(path: "testimages/")
-  static let cloudImageDir: URL = .libraryDirectory.appending(
-    path: "Mobile Documents/com~apple~CloudDocs/Images/wallpapers")
+  
+  private static let project = Constants.appDisplayName
+  private static let homedir = UserLocation.home.filepath
+  private static let libdir = URL.libraryDirectory.filepath
+
+  static let workdir = homedir.appending("workspace/xcode/HyperTagBrowser")
+  static let source = workdir.appending("HyperTagBrowser/App")
+  static let resourcesdir = homedir.appending("workspace/projects/taggedfilebrowser")
+  static let dbFile = resourcesdir.appending("previewdb.sqlite")
+  static let testImageDir = resourcesdir.appending("testimages")
+  static let cloudImageDir = libdir.appending("Mobile Documents/com~apple~CloudDocs/Images/wallpapers")
 
   
   // MARK: - Test URLs
 
-  static var testImageURLs: [URL] = fs.listURLs(at: testImageDir, types: .images)
-  static var testImagePaths: [FilePath] = testImageURLs.map { $0.filepath }
-  static var testDirFiles: [URL] = fs.listURLs(at: testImageDir, types: .all)
-  static var testDirFolders: [URL] = fs.listURLs(at: testImageDir, mode: .recursive(.uncached), types: .folders)
+  static var testImageURLs = fs.listURLs(at: testImageDir.fileURL, types: .images)
+  static var testImagePaths = testImageURLs.map { $0.filepath }
+  static var testDirFiles = fs.listURLs(at: testImageDir.fileURL, types: .all)
+  static var testDirFolders = fs.listURLs(at: testImageDir.fileURL, mode: .recursive(.uncached), types: .folders)
   
-  static var cloudImageURLs: [URL] = fs.listURLs(at: cloudImageDir, types: .images)
-  static var cloudDirFiles: [URL] = fs.listURLs(at: cloudImageDir, types: .all)
+  static var cloudImageURLs = fs.listURLs(at: cloudImageDir.fileURL, types: .images)
+  static var cloudDirFiles = fs.listURLs(at: cloudImageDir.fileURL, types: .all)
 
   // MARK: - Test ContentItems (IndexInfoRecord)
 
-  static let testIndexRecords: [IndexRecord] = TestData.testImagePaths.compactMap {
-    try? IndexRecord(fileURL: $0.fileURL, contentId: .newID(using: .random, filepath: $0))
+  static let testIndexRecords: [IndexRecord] = testImageURLs.compactMap {
+    try? IndexRecord(fileURL: $0, contentId: .newID(using: .random, filepath: $0.filepath))
   }
 
-  private static func buildContentItems(for dir: URL, types: ContentTypeGroup = .all) -> [ContentItem] {
-    fs.listIndexedContents(of: dir, mode: .recursive(.uncached), types: .folders).compactMap {
-      pointer, url in
-      IndexInfoRecord.fromURL(url, pointer)
+  private static func buildContentItems(for path: FilePath, types: ContentTypeGroup = .all) -> [ContentItem] {
+    fs.listIndexedContents(of: path.fileURL, mode: .recursive(.uncached), types: .folders).compactMap {
+      IndexInfoRecord.fromURL($1, $0)
     }
   }
 

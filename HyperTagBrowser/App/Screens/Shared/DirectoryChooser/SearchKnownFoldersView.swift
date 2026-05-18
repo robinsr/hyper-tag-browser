@@ -98,10 +98,10 @@ struct SearchKnownFoldersView: View {
 
 
 #Preview("SearchKnownFoldersView", traits: .sizeThatFitsLayout, .testBordersOn) {
-  @Previewable @State var dirTree = DirTreeModel(cwd: TestData.testImageDir)
+  @Previewable @State var dirTree = DirTreeModel(cwd: TestData.testImageDir.fileURL)
   
   @Previewable @State var dbLocations: [FilePath] = TestLorem.uniqueWords.map {
-    TestData.projectDir.filepath.appending($0)
+    TestData.resourcesdir.appending($0)
   }
   
   SearchKnownFoldersView()

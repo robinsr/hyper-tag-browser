@@ -66,7 +66,7 @@ struct SegmentedPathView: View {
 
 
 #Preview("DirectoryPath", traits: .defaultViewModel) {
-  @Previewable @State var testURL = TestData.dbFile
+  @Previewable @State var testURL = TestData.dbFile.fileURL
   
   VStack(alignment: .leading) {
     VStack {

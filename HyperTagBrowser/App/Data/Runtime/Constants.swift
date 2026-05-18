@@ -9,22 +9,19 @@ import System
 
 
 struct Constants {
-  static let appname = "TaggedFileBrowser"
-  static let appdomain = "com.taggedfilebrowser"
   
-  // DONT USER - get ALL environment info from EnvContainer
-  // static let bundleId = Bundle.main.bundleIdentifier ?? appdomain
+  static let appDisplayName = "HyperTagBrowser"
+  static let appDomain = "com.hypertag"
 
-  static let fileDialogId = "com.taggedfilebrowser.filedialog"
-  static let xContentIdKey = "\(appdomain).contentID"
-  
-  static let noContentId = "\(appdomain).nocontent"
+  static let fileDialogId = "\(appDomain).file-dialog"
+  static let xContentIdKey = "\(appDomain).contentID"
+  static let noContentId = "\(appDomain).nocontent"
   
   static let workspaceFilepath: FilePath = {
     var fullpath = FilePath(#file)
     var rootpath = fullpath
     
-    while rootpath.components.count > 0 && rootpath.lastComponent?.string != Constants.appname {
+    while rootpath.components.count > 0 && rootpath.lastComponent?.string != Constants.appDisplayName {
       rootpath.removeLastComponent()
     }
     
@@ -75,18 +72,4 @@ struct Constants {
   static let prettyJSON = JSONEncoder.prettyPrinter
   
   static let grdbJsonDumpFormat = GRDB.JSONDumpFormat(encoder: Constants.prettyJSON)
-}
-
-extension Bundle {
-  var cfBundleName: String {
-    object(forInfoDictionaryKey: "CFBundleName") as? String ?? "Unknown"
-  }
-  
-  var cfBundleVersion: String {
-    object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "Unknown"
-  }
-  
-  var cfBundleIdentifier: String {
-    object(forInfoDictionaryKey: "CFBundleIdentifier") as? String ?? "Unknown"
-  }
 }

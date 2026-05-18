@@ -32,11 +32,7 @@ struct ActiveUserProfile: UserProfile, Identifiable, Hashable, Encodable {
   }
   
   init(id: String) {
-    let bundle = EnvContainer.shared.bundleIdentider()
-    let stage = EnvContainer.shared.stageName()
-    let prefKey = DotPath(bundle, stage, id).string
-    
-    self.suite = UserDefaults(suiteName: prefKey)!
+    self.suite = PreferencesContainer.shared.getSuite(id: id)
   }
 
   var suiteName: String {

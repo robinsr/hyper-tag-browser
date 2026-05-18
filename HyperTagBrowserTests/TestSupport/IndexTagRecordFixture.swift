@@ -3,7 +3,7 @@
 import Foundation
 import GRDB
 
-@testable import TaggedFileBrowser
+@testable import HyperTagBrowser
 
 
 struct IndexTagRecordFixture: DatabaseTestFixtureType {

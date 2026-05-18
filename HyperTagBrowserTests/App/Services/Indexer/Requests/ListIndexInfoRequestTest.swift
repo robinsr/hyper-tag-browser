@@ -7,17 +7,12 @@ import Testing
 import Nimble
 import CustomDump
 
-@testable import TaggedFileBrowser
+@testable import HyperTagBrowser
 
 
 @MainActor
 @Suite("GRDBIndexerService : ListIndexInfoRequest", .serialized, .tags(.indexer))
 struct ListIndexInfoRequestTest {
-  
-  typealias Indx = IndexRecordFixture
-  typealias Tags = TagRecordFixture
-  typealias Tagged = IndexTagRecordFixture
-  typealias fns = TestSupportFns
   
   var service: GRDBIndexService
   var queue: DatabaseQueue

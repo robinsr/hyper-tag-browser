@@ -1,9 +1,4 @@
-//
-//  CaseIterable+.swift
-//  TaggedFileBrowser
-//
-//  Created by Ryan Robinson on 5/17/26.
-//
+// created on 5/17/26 by robinsr
 
 
 extension CaseIterable where Self: Equatable {

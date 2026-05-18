@@ -17,7 +17,6 @@
   },
   "testTargets" : [
     {
-      "enabled" : false,
       "target" : {
         "containerPath" : "container:HyperTagBrowser.xcodeproj",
         "identifier" : "947341D22C7EADB80047C718",

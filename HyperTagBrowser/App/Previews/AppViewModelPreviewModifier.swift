@@ -31,7 +31,7 @@ struct AppViewModelPreviewMod: PreviewModifier {
     let app = Container.shared.appViewModel()
     let dsp = Container.shared.dispatcher()
     
-    dsp.navigate(Route.folder(TestData.testImageDir.filepath))
+    dsp.navigate(Route.folder(TestData.testImageDir))
     
     Task {
       app.contentItems = try! await indexer.getContentItems(matching: app.dbIndexParameters)
@@ -89,12 +89,10 @@ extension PreviewTrait where T == Preview.ViewTraits {
 
 fileprivate struct AppViewModelPropertiesView: View {
   @Environment(AppViewModel.self) var appVM
-  @Injected(\EnvContainer.stage) var appStage
-  @Injected(\EnvContainer.stageId) var stageId
   
   var allProperties: [String:String] {
     [
-      "_stageId"          : EnvContainer.shared.stageId(),
+      "_stageId"          : EnvContainer.shared.stage().id,
       "databasePath"      : IndexerContainer.shared.dbPath(),
       "location"          : appVM.currentPath.string,
       "profile id"        : appVM.currentProfile.id,

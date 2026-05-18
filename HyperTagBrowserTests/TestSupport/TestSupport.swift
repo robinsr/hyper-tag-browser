@@ -7,7 +7,7 @@ import GRDB
 import OSLog
 import Defaults
 
-@testable import TaggedFileBrowser
+@testable import HyperTagBrowser
 
 
 extension Tag {

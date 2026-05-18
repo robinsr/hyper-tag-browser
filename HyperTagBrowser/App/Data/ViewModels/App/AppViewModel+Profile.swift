@@ -12,7 +12,7 @@ extension AppViewModel {
   func doCreateProfile(named name: String) {
     let profile = ExternalUserProfile.create(profileName: name)
 
-    Defaults[.profileKeys].insert(profile.id)
+    Defaults[.knownProfiles].insert(profile.id)
 
     messages.send(ok: "Created new profile '\(name)' (\(profile.id))")
   }
@@ -25,7 +25,7 @@ extension AppViewModel {
       // Remove all keys from UserDefaults suite
       profile.suite.removeAll()
       // Remove profileId from list of profiles
-      Defaults[.profileKeys].remove(profileId)
+      Defaults[.knownProfiles].remove(profileId)
     }
     
     let fileservice = Container.shared.fileService()

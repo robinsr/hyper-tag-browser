@@ -24,23 +24,14 @@ import Foundation
  */
 protocol UserProfile: Identifiable, Sendable {
   var suite: UserDefaults { get }
-  var suiteName: String { get }
   var id: String { get }
   var name: String { get }
   var openTo: URL { get }
   var hasCustomDbFile: Bool { get }
   var dbFile: URL { get }
-  var defaultDBFile: URL { get }
 }
 
 typealias AnyUserProfile = any UserProfile
-
-extension UserProfile {
-  static var login: String {
-    ProcessInfo.processInfo.userName
-  }
-}
-
 
 
 /**
@@ -49,19 +40,22 @@ extension UserProfile {
  */
 extension UserProfile {
   
-    /// The default database file for this profile.
+  var suiteName: String {
+    EnvContainer.shared.stagedPath().appending(id).string
+  }
+  
+  /// The location of the properties file for this profile.
+  var prefsPath: URL {
+    AppLocation.preferences.appending(suiteName).appendingExtension("plist").fileURL
+  }
+  
+  /// The default database file for this profile.
   var defaultDBFile: URL {
     IndexerContainer.shared.newDbURL(id)
   }
   
-    /// The location of the properties file for this profile.
-  var prefsPath: URL {
-    AppLocation.preferences.appending("\(self.suiteName).plist").fileURL
-  }
   
-  /**
-   * Opens a new instance of the app with this profile's settings.
-   */
+  /// Opens a new instance of the app with this profile's settings.
   func launchProfile() {
     // Launches the profiles in a new instance of the app
     

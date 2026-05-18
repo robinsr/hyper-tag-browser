@@ -2,7 +2,7 @@
 
 import XCTest
 
-final class TaggedFileBrowserUITests: XCTestCase {
+final class HyperTagBrowserUITests: XCTestCase {
 
   override func setUpWithError() throws {
     continueAfterFailure = false

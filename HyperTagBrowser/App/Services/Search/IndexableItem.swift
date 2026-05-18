@@ -49,7 +49,7 @@ extension IndexInfoRecord: IndexableItem {
     
     attributeSet.domainIdentifier = domainId
     attributeSet.contentCreationDate = indxRecord.created
-    attributeSet.contentDescription = "Indexed by \(Constants.appname)"
+    attributeSet.contentDescription = "Indexed by \(Constants.appDisplayName)"
     attributeSet.contentType = indxRecord.type.identifier
     attributeSet.contentTypeTree = [indxRecord.type.identifier, UTType.contentItem.identifier]
     attributeSet.displayName = indxRecord.name

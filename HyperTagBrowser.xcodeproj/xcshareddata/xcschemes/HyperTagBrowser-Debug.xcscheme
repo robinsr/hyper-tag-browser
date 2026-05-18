@@ -28,7 +28,7 @@
             buildForArchiving = "NO"
             buildForAnalyzing = "NO">
             <TestPlanReference
-               reference = "container:UnitTests.xctestplan">
+               reference = "container:UnitTestsOnly.xctestplan">
             </TestPlanReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -46,7 +46,7 @@
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
-            buildForTesting = "YES"
+            buildForTesting = "NO"
             buildForRunning = "NO"
             buildForProfiling = "NO"
             buildForArchiving = "NO"
@@ -63,15 +63,12 @@
    </BuildAction>
    <TestAction
       buildConfiguration = "Alpha"
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      selectedDebuggerIdentifier = ""
+      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:UnitTests.xctestplan">
-         </TestPlanReference>
-         <TestPlanReference
-            reference = "container:HyperTagBrowser-Debug.xctestplan"
+            reference = "container:UnitTestsOnly.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
@@ -84,17 +81,6 @@
                BlueprintIdentifier = "947341D22C7EADB80047C718"
                BuildableName = "HyperTagBrowserTests.xctest"
                BlueprintName = "HyperTagBrowserTests"
-               ReferencedContainer = "container:HyperTagBrowser.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "947341DC2C7EADB80047C718"
-               BuildableName = "HyperTagBrowserUITests.xctest"
-               BlueprintName = "HyperTagBrowserUITests"
                ReferencedContainer = "container:HyperTagBrowser.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -127,12 +113,12 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--profile=X3AEAW7NY5"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
-      buildConfiguration = "Alpha"
+      buildConfiguration = "Release"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
@@ -149,7 +135,7 @@
       </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
-      buildConfiguration = "Debug">
+      buildConfiguration = "Release">
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"

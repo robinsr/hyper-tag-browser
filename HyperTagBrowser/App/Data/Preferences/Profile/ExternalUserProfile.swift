@@ -8,19 +8,15 @@ import Foundation
  */
 struct ExternalUserProfile: UserProfile, Identifiable, Hashable, Encodable {
   let id: String
-  let suiteName: String
   let suite: UserDefaults
+  let keys: ProfileKeys
 
   /**
    * Retrieves an existing profile, or creates a new one if none exists.
    */
   init(id: String = .randomIdentifier(10)) {
-    let bundle = EnvContainer.shared.bundleIdentider()
-    let stage = EnvContainer.shared.stageName()
-    
     self.id = id
-    self.suiteName = DotPath(bundle, stage, id).string
-    self.suite = UserDefaults(suiteName: self.suiteName)!
+    self.suite = PreferencesContainer.shared.getSuite(id: id)
     self.keys = ProfileKeys(suite: self.suite, id: id)
   }
 
@@ -52,11 +48,6 @@ struct ExternalUserProfile: UserProfile, Identifiable, Hashable, Encodable {
     case id, name, suiteName, created, openTo, dbFile
   }
 
-  
-  /**
-   * The set of `Defaults.Key` keys used to access this profile's data.
-   */
-  let keys: ProfileKeys
   
   /**
    * A set of `Defaults.Key` keys scoped specifically for a single "external" user profile (eg not the currently active profile).

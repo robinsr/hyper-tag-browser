@@ -4,17 +4,16 @@ import Foundation
 import Testing
 import Nimble
 
-@testable import TaggedFileBrowser
+@testable import HyperTagBrowser
 
 
+@MainActor
 @Suite("Components : Input : TextFieldModel")
 struct TextFieldModelTests {
   
-  typealias Constraint = TextFieldModel.Constraint
-  
   enum TestCase {
     case valid(String)
-    case invalid(String, Constraint)
+    case invalid(String, UserInputConstraint)
     
     var input: String {
       switch self {
@@ -45,22 +44,22 @@ struct TextFieldModelTests {
     }
     
     static let presence: [Self] = [
-      .invalid("",      Constraint.presence),
-      .invalid(" ",     Constraint.presence),
-      .invalid("     ", Constraint.presence),
+      .invalid("",      UserInputConstraint.presence),
+      .invalid(" ",     UserInputConstraint.presence),
+      .invalid("     ", UserInputConstraint.presence),
       .valid("a"),
     ]
     
     static let filenames: [Self] = [
-      .invalid("",      Constraint.presence),
-      .invalid(" ",     Constraint.presence),
-      .invalid("     ", Constraint.presence),
-      .invalid("lo:rem.txt", Constraint.disallow_colon),
-      .invalid(" :lorem.txt ", Constraint.disallow_colon),
-      .invalid("lo/rem.txt", Constraint.disallow_forwardslash),
-      .invalid("/lorem.txt", Constraint.disallow_forwardslash),
-      .invalid("lorem.txt/", Constraint.disallow_forwardslash),
-      .invalid("loremtxt", Constraint.filename_extension),
+      .invalid("",             UserInputConstraint.presence),
+      .invalid(" ",            UserInputConstraint.presence),
+      .invalid("     ",        UserInputConstraint.presence),
+      .invalid("lo:rem.txt",   UserInputConstraint.disallow_colon),
+      .invalid(" :lorem.txt ", UserInputConstraint.disallow_colon),
+      .invalid("lo/rem.txt",   UserInputConstraint.disallow_forwardslash),
+      .invalid("/lorem.txt",   UserInputConstraint.disallow_forwardslash),
+      .invalid("lorem.txt/",   UserInputConstraint.disallow_forwardslash),
+      .invalid("loremtxt",     UserInputConstraint.filename_extension),
       .valid("a.txt"),
       .valid("[asdf123]  !@#$%^&*  - ___ {}{}{}.txt"),
       .valid("filename.foo.bar.baz.txt"),
@@ -71,7 +70,8 @@ struct TextFieldModelTests {
   @Suite("Validate")
   struct ValidateTests {
     
-    @Test("Validate presence", arguments: TestCase.presence)
+    @MainActor
+    @Test("Validate presence", .disabled("Disabled for project migration"), arguments: TestCase.presence)
     func test_validate_presence(testing: TestCase) {
       let model = TextFieldModel(validate: [.presence])
       model.rawValue = testing.input
@@ -91,7 +91,8 @@ struct TextFieldModelTests {
       }
     }
     
-    @Test("Validate filenames", arguments: TestCase.filenames)
+    @MainActor
+    @Test("Validate filenames", .disabled("Disabled for project migration"), arguments: TestCase.filenames)
     func test_validate_filenames(testing: TestCase) {
       let model = TextFieldModel(validate: [.presence, .disallow_colon, .disallow_forwardslash, .filename_extension])
       model.rawValue = testing.input

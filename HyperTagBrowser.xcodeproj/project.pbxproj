@@ -20,6 +20,13 @@
 		9442263E2FBABAFA00CE29B7 /* StdoutExporter in Frameworks */ = {isa = PBXBuildFile; productRef = 9442263D2FBABAFA00CE29B7 /* StdoutExporter */; };
 		944226412FBABB5600CE29B7 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 944226402FBABB5600CE29B7 /* SwiftDate */; };
 		944226442FBABE4D00CE29B7 /* FileMonitor in Frameworks */ = {isa = PBXBuildFile; productRef = 944226432FBABE4D00CE29B7 /* FileMonitor */; };
+		944226462FBAC7E800CE29B7 /* CustomDump in Frameworks */ = {isa = PBXBuildFile; productRef = 944226452FBAC7E800CE29B7 /* CustomDump */; };
+		944226482FBAC7F400CE29B7 /* Quick in Frameworks */ = {isa = PBXBuildFile; productRef = 944226472FBAC7F400CE29B7 /* Quick */; };
+		9442264A2FBAC7FB00CE29B7 /* RationalModule in Frameworks */ = {isa = PBXBuildFile; productRef = 944226492FBAC7FB00CE29B7 /* RationalModule */; };
+		9442264C2FBAC80200CE29B7 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9442264B2FBAC80200CE29B7 /* SDWebImageSwiftUI */; };
+		9442264E2FBAC80900CE29B7 /* ZipArchive in Frameworks */ = {isa = PBXBuildFile; productRef = 9442264D2FBAC80900CE29B7 /* ZipArchive */; };
+		944226512FBAC89900CE29B7 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 944226502FBAC89900CE29B7 /* GRDB */; };
+		944226532FBACEE200CE29B7 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 944226522FBACEE200CE29B7 /* GRDB */; };
 		94448C3F2DC146F0009D1051 /* With in Frameworks */ = {isa = PBXBuildFile; productRef = 94448C3E2DC146F0009D1051 /* With */; };
 		94448C422DC15060009D1051 /* ErrorKit in Frameworks */ = {isa = PBXBuildFile; productRef = 94448C412DC15060009D1051 /* ErrorKit */; };
 		9446773F2DF3690D00D10EE2 /* XCGLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 9446773E2DF3690D00D10EE2 /* XCGLogger */; };
@@ -29,44 +36,24 @@
 		944677452DF369C600D10EE2 /* Testing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 94CF1CC02DC067AA006B34BD /* Testing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		944677482DF3717B00D10EE2 /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 944677472DF3717B00D10EE2 /* Factory */; };
 		9446774A2DF3717B00D10EE2 /* FactoryTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 944677492DF3717B00D10EE2 /* FactoryTesting */; };
-		9446774C2DF371E400D10EE2 /* Flow in Frameworks */ = {isa = PBXBuildFile; productRef = 9446774B2DF371E400D10EE2 /* Flow */; };
-		9446774E2DF371E400D10EE2 /* IdentifiedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 9446774D2DF371E400D10EE2 /* IdentifiedCollections */; };
 		944677502DF371E400D10EE2 /* CustomDump in Frameworks */ = {isa = PBXBuildFile; productRef = 9446774F2DF371E400D10EE2 /* CustomDump */; };
-		944677522DF371E400D10EE2 /* DominantColors in Frameworks */ = {isa = PBXBuildFile; productRef = 944677512DF371E400D10EE2 /* DominantColors */; };
-		944677542DF371E400D10EE2 /* FullDiskAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 944677532DF371E400D10EE2 /* FullDiskAccess */; };
 		944677562DF371E400D10EE2 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 944677552DF371E400D10EE2 /* Defaults */; };
-		944677582DF371E400D10EE2 /* XAttr in Frameworks */ = {isa = PBXBuildFile; productRef = 944677572DF371E400D10EE2 /* XAttr */; };
 		9446775A2DF371E400D10EE2 /* GRDBQuery in Frameworks */ = {isa = PBXBuildFile; productRef = 944677592DF371E400D10EE2 /* GRDBQuery */; };
 		9446775C2DF371E400D10EE2 /* Regex in Frameworks */ = {isa = PBXBuildFile; productRef = 9446775B2DF371E400D10EE2 /* Regex */; };
 		9446775E2DF371E400D10EE2 /* JulianDayNumber in Frameworks */ = {isa = PBXBuildFile; productRef = 9446775D2DF371E400D10EE2 /* JulianDayNumber */; };
-		944677602DF371E400D10EE2 /* DebouncedOnChange in Frameworks */ = {isa = PBXBuildFile; productRef = 9446775F2DF371E400D10EE2 /* DebouncedOnChange */; };
-		944677622DF371E400D10EE2 /* LegibleError in Frameworks */ = {isa = PBXBuildFile; productRef = 944677612DF371E400D10EE2 /* LegibleError */; };
 		944677642DF371E400D10EE2 /* Quick in Frameworks */ = {isa = PBXBuildFile; productRef = 944677632DF371E400D10EE2 /* Quick */; };
 		944677662DF371E400D10EE2 /* Nimble in Frameworks */ = {isa = PBXBuildFile; productRef = 944677652DF371E400D10EE2 /* Nimble */; };
 		944677682DF371E400D10EE2 /* HighlightSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 944677672DF371E400D10EE2 /* HighlightSwift */; };
 		9446776A2DF371E400D10EE2 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 944677692DF371E400D10EE2 /* SwifterSwift */; };
 		9446776C2DF371E400D10EE2 /* Percentage in Frameworks */ = {isa = PBXBuildFile; productRef = 9446776B2DF371E400D10EE2 /* Percentage */; };
 		9446776E2DF371E400D10EE2 /* RationalModule in Frameworks */ = {isa = PBXBuildFile; productRef = 9446776D2DF371E400D10EE2 /* RationalModule */; };
-		944677702DF371E400D10EE2 /* OpenTelemetryApi in Frameworks */ = {isa = PBXBuildFile; productRef = 9446776F2DF371E400D10EE2 /* OpenTelemetryApi */; };
-		944677722DF371E400D10EE2 /* OpenTelemetrySdk in Frameworks */ = {isa = PBXBuildFile; productRef = 944677712DF371E400D10EE2 /* OpenTelemetrySdk */; };
-		944677742DF371E400D10EE2 /* SignPostIntegration in Frameworks */ = {isa = PBXBuildFile; productRef = 944677732DF371E400D10EE2 /* SignPostIntegration */; };
-		944677762DF371E400D10EE2 /* StdoutExporter in Frameworks */ = {isa = PBXBuildFile; productRef = 944677752DF371E400D10EE2 /* StdoutExporter */; };
-		944677782DF371E400D10EE2 /* SwiftMetricsShim in Frameworks */ = {isa = PBXBuildFile; productRef = 944677772DF371E400D10EE2 /* SwiftMetricsShim */; };
 		9446777A2DF371E400D10EE2 /* CoreMetrics in Frameworks */ = {isa = PBXBuildFile; productRef = 944677792DF371E400D10EE2 /* CoreMetrics */; };
 		9446777C2DF371E400D10EE2 /* Metrics in Frameworks */ = {isa = PBXBuildFile; productRef = 9446777B2DF371E400D10EE2 /* Metrics */; };
 		9446777E2DF371E400D10EE2 /* MetricsTestKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9446777D2DF371E400D10EE2 /* MetricsTestKit */; };
-		944677802DF371E400D10EE2 /* Outline in Frameworks */ = {isa = PBXBuildFile; productRef = 9446777F2DF371E400D10EE2 /* Outline */; };
 		944677822DF371E400D10EE2 /* Files in Frameworks */ = {isa = PBXBuildFile; productRef = 944677812DF371E400D10EE2 /* Files */; };
-		944677842DF371E400D10EE2 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = 944677832DF371E400D10EE2 /* Cache */; };
-		944677862DF371E400D10EE2 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 944677852DF371E400D10EE2 /* SDWebImageSwiftUI */; };
-		944677882DF371E400D10EE2 /* GrammaticalNumber in Frameworks */ = {isa = PBXBuildFile; productRef = 944677872DF371E400D10EE2 /* GrammaticalNumber */; };
 		9446778A2DF371E400D10EE2 /* Difference in Frameworks */ = {isa = PBXBuildFile; productRef = 944677892DF371E400D10EE2 /* Difference */; };
 		9446778C2DF371E400D10EE2 /* ObjcExceptionBridging in Frameworks */ = {isa = PBXBuildFile; productRef = 9446778B2DF371E400D10EE2 /* ObjcExceptionBridging */; };
 		9446778E2DF371E400D10EE2 /* XCGLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 9446778D2DF371E400D10EE2 /* XCGLogger */; };
-		944677902DF371E400D10EE2 /* ZipArchive in Frameworks */ = {isa = PBXBuildFile; productRef = 9446778F2DF371E400D10EE2 /* ZipArchive */; };
-		944677922DF371E400D10EE2 /* KBar in Frameworks */ = {isa = PBXBuildFile; productRef = 944677912DF371E400D10EE2 /* KBar */; };
-		944677942DF371E400D10EE2 /* EnumOptionSet in Frameworks */ = {isa = PBXBuildFile; productRef = 944677932DF371E400D10EE2 /* EnumOptionSet */; };
-		944677952DF371E400D10EE2 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9404EB6B2DC31813009B0D3A /* AVKit.framework */; };
 		944E41AB2D10DF1A00143FC1 /* HighlightSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 944E41AA2D10DF1A00143FC1 /* HighlightSwift */; };
 		944FE1312D04D79500CB4AA4 /* StyledMarkdown in Frameworks */ = {isa = PBXBuildFile; productRef = 944FE1302D04D79500CB4AA4 /* StyledMarkdown */; };
 		945B95672DD03D8A00DDC7F3 /* KBar in Frameworks */ = {isa = PBXBuildFile; productRef = 945B95662DD03D8A00DDC7F3 /* KBar */; };
@@ -170,8 +157,7 @@
 
 /* Begin PBXFileReference section */
 		9404EB6B2DC31813009B0D3A /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
-		940FF1CD2D0B7BA3001435F0 /* UnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = UnitTests.xctestplan; sourceTree = "<group>"; };
-		943EB6E42D0BB28200FC8A52 /* HyperTagBrowser-Debug.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "HyperTagBrowser-Debug.xctestplan"; sourceTree = "<group>"; };
+		940FF1CD2D0B7BA3001435F0 /* UnitTestsOnly.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = UnitTestsOnly.xctestplan; sourceTree = "<group>"; };
 		946FA33A2C800D7900B8044C /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		947341C22C7EADB70047C718 /* HyperTagBrowser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HyperTagBrowser.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		947341C92C7EADB80047C718 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -216,6 +202,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				944226532FBACEE200CE29B7 /* GRDB in Frameworks */,
 				94DDF14A2DF372D2009391C2 /* PrometheusExporter in Frameworks */,
 				9404EB6C2DC31813009B0D3A /* AVKit.framework in Frameworks */,
 				94E626972D66DBD500F4FD88 /* Files in Frameworks */,
@@ -273,52 +260,33 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				944677952DF371E400D10EE2 /* AVKit.framework in Frameworks */,
 				944677822DF371E400D10EE2 /* Files in Frameworks */,
 				9446778C2DF371E400D10EE2 /* ObjcExceptionBridging in Frameworks */,
-				944677602DF371E400D10EE2 /* DebouncedOnChange in Frameworks */,
 				94AB88052CEB2BAD00413C2C /* Nimble in Frameworks */,
 				944677682DF371E400D10EE2 /* HighlightSwift in Frameworks */,
 				944677502DF371E400D10EE2 /* CustomDump in Frameworks */,
-				944677882DF371E400D10EE2 /* GrammaticalNumber in Frameworks */,
 				944677642DF371E400D10EE2 /* Quick in Frameworks */,
 				944677442DF369C600D10EE2 /* Testing.framework in Frameworks */,
 				944677482DF3717B00D10EE2 /* Factory in Frameworks */,
 				9406C35E2D0FA899008E4AC3 /* Difference in Frameworks */,
-				944677702DF371E400D10EE2 /* OpenTelemetryApi in Frameworks */,
+				944226512FBAC89900CE29B7 /* GRDB in Frameworks */,
 				9446776E2DF371E400D10EE2 /* RationalModule in Frameworks */,
 				9446776C2DF371E400D10EE2 /* Percentage in Frameworks */,
 				9446777A2DF371E400D10EE2 /* CoreMetrics in Frameworks */,
 				9446775C2DF371E400D10EE2 /* Regex in Frameworks */,
-				944677742DF371E400D10EE2 /* SignPostIntegration in Frameworks */,
 				9446774A2DF3717B00D10EE2 /* FactoryTesting in Frameworks */,
 				9446777C2DF371E400D10EE2 /* Metrics in Frameworks */,
 				944677662DF371E400D10EE2 /* Nimble in Frameworks */,
-				944677922DF371E400D10EE2 /* KBar in Frameworks */,
-				944677842DF371E400D10EE2 /* Cache in Frameworks */,
-				944677902DF371E400D10EE2 /* ZipArchive in Frameworks */,
 				9446777E2DF371E400D10EE2 /* MetricsTestKit in Frameworks */,
 				9446778A2DF371E400D10EE2 /* Difference in Frameworks */,
 				9446778E2DF371E400D10EE2 /* XCGLogger in Frameworks */,
 				944677562DF371E400D10EE2 /* Defaults in Frameworks */,
-				944677782DF371E400D10EE2 /* SwiftMetricsShim in Frameworks */,
-				944677942DF371E400D10EE2 /* EnumOptionSet in Frameworks */,
-				944677762DF371E400D10EE2 /* StdoutExporter in Frameworks */,
-				944677542DF371E400D10EE2 /* FullDiskAccess in Frameworks */,
-				944677522DF371E400D10EE2 /* DominantColors in Frameworks */,
-				944677582DF371E400D10EE2 /* XAttr in Frameworks */,
-				944677802DF371E400D10EE2 /* Outline in Frameworks */,
-				9446774E2DF371E400D10EE2 /* IdentifiedCollections in Frameworks */,
-				944677862DF371E400D10EE2 /* SDWebImageSwiftUI in Frameworks */,
 				94CF1CBD2DC06691006B34BD /* Difference in Frameworks */,
-				944677622DF371E400D10EE2 /* LegibleError in Frameworks */,
 				9446775E2DF371E400D10EE2 /* JulianDayNumber in Frameworks */,
 				94A646EC2CEB299B00C7E459 /* Quick in Frameworks */,
 				9446773F2DF3690D00D10EE2 /* XCGLogger in Frameworks */,
 				9446776A2DF371E400D10EE2 /* SwifterSwift in Frameworks */,
 				9446775A2DF371E400D10EE2 /* GRDBQuery in Frameworks */,
-				9446774C2DF371E400D10EE2 /* Flow in Frameworks */,
-				944677722DF371E400D10EE2 /* OpenTelemetrySdk in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -327,9 +295,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				94AB88072CEB2BDE00413C2C /* Quick in Frameworks */,
+				944226462FBAC7E800CE29B7 /* CustomDump in Frameworks */,
 				94CF1CBF2DC066B1006B34BD /* Difference in Frameworks */,
+				9442264C2FBAC80200CE29B7 /* SDWebImageSwiftUI in Frameworks */,
+				944226482FBAC7F400CE29B7 /* Quick in Frameworks */,
+				9442264E2FBAC80900CE29B7 /* ZipArchive in Frameworks */,
 				94AB880A2CEB2BF000413C2C /* Nimble in Frameworks */,
 				944677432DF3696300D10EE2 /* GRDBQuery in Frameworks */,
+				9442264A2FBAC7FB00CE29B7 /* RationalModule in Frameworks */,
 				944677412DF3694200D10EE2 /* XCGLogger in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -343,8 +316,7 @@
 				94F2F3E92D55EBCC00E5B626 /* HyperTagBrowser.xcodeproj */,
 				94C1237C2D121A690069304C /* versioning.sh */,
 				94C1237B2D1218650069304C /* versioning.xcconfig */,
-				943EB6E42D0BB28200FC8A52 /* HyperTagBrowser-Debug.xctestplan */,
-				940FF1CD2D0B7BA3001435F0 /* UnitTests.xctestplan */,
+				940FF1CD2D0B7BA3001435F0 /* UnitTestsOnly.xctestplan */,
 				94DF6D492CB9229A008721B4 /* fileid_scripts.sh */,
 				94DC2A1A2D82307C0007A356 /* identifiers.plist */,
 				94EBA53E2C865BE700CA40A0 /* .gitignore */,
@@ -402,39 +374,11 @@
 		947341E02C7EADB80047C718 /* HyperTagBrowserUITests */ = {
 			isa = PBXGroup;
 			children = (
-				94AB87F42CEB2AE600413C2C /* Components */,
-				94AB87F52CEB2AE600413C2C /* Data */,
-				94AB87F62CEB2AE600413C2C /* Env */,
 				94AB87FB2CEB2AE600413C2C /* Screens */,
-				94AB87FE2CEB2AE600413C2C /* Services */,
-				94AB87FF2CEB2AE600413C2C /* Themes */,
-				94AB88002CEB2AE600413C2C /* Utilities */,
-				94AB88012CEB2AE600413C2C /* ViewModifiers */,
 				947341E12C7EADB80047C718 /* HyperTagBrowserUITests.swift */,
 				947341E32C7EADB80047C718 /* HyperTagBrowserUITestsLaunchTests.swift */,
 			);
 			path = HyperTagBrowserUITests;
-			sourceTree = "<group>";
-		};
-		94AB87F42CEB2AE600413C2C /* Components */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Components;
-			sourceTree = "<group>";
-		};
-		94AB87F52CEB2AE600413C2C /* Data */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Data;
-			sourceTree = "<group>";
-		};
-		94AB87F62CEB2AE600413C2C /* Env */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Env;
 			sourceTree = "<group>";
 		};
 		94AB87F82CEB2AE600413C2C /* Browse */ = {
@@ -445,72 +389,12 @@
 			path = Browse;
 			sourceTree = "<group>";
 		};
-		94AB87F92CEB2AE600413C2C /* Details */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Details;
-			sourceTree = "<group>";
-		};
-		94AB87FA2CEB2AE600413C2C /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Shared;
-			sourceTree = "<group>";
-		};
 		94AB87FB2CEB2AE600413C2C /* Screens */ = {
 			isa = PBXGroup;
 			children = (
 				94AB87F82CEB2AE600413C2C /* Browse */,
-				94AB87F92CEB2AE600413C2C /* Details */,
-				94AB87FA2CEB2AE600413C2C /* Shared */,
 			);
 			path = Screens;
-			sourceTree = "<group>";
-		};
-		94AB87FC2CEB2AE600413C2C /* Indexer */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Indexer;
-			sourceTree = "<group>";
-		};
-		94AB87FD2CEB2AE600413C2C /* LocalFiles */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = LocalFiles;
-			sourceTree = "<group>";
-		};
-		94AB87FE2CEB2AE600413C2C /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				94AB87FC2CEB2AE600413C2C /* Indexer */,
-				94AB87FD2CEB2AE600413C2C /* LocalFiles */,
-			);
-			path = Services;
-			sourceTree = "<group>";
-		};
-		94AB87FF2CEB2AE600413C2C /* Themes */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Themes;
-			sourceTree = "<group>";
-		};
-		94AB88002CEB2AE600413C2C /* Utilities */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Utilities;
-			sourceTree = "<group>";
-		};
-		94AB88012CEB2AE600413C2C /* ViewModifiers */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ViewModifiers;
 			sourceTree = "<group>";
 		};
 		94AB88082CEB2BF000413C2C /* Frameworks */ = {
@@ -600,6 +484,7 @@
 				9442263D2FBABAFA00CE29B7 /* StdoutExporter */,
 				944226402FBABB5600CE29B7 /* SwiftDate */,
 				944226432FBABE4D00CE29B7 /* FileMonitor */,
+				944226522FBACEE200CE29B7 /* GRDB */,
 			);
 			productName = HyperTagBrowser;
 			productReference = 947341C22C7EADB70047C718 /* HyperTagBrowser.app */;
@@ -723,6 +608,7 @@
 				944226362FBABAFA00CE29B7 /* XCRemoteSwiftPackageReference "opentelemetry-swift-core" */,
 				9442263F2FBABB5600CE29B7 /* XCRemoteSwiftPackageReference "SwiftDate" */,
 				944226422FBABE4D00CE29B7 /* XCRemoteSwiftPackageReference "FileMonitor" */,
+				9442264F2FBAC89900CE29B7 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 			);
 			productRefGroup = 947341C32C7EADB70047C718 /* Products */;
 			projectDirPath = "";
@@ -902,7 +788,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HyperTagBrowser/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = HyperTagBrowserBeta;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -910,7 +796,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = "$(VERSION)";
+				MARKETING_VERSION = 2.0.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
 				PRODUCT_BUNDLE_IDENTIFIER = com.robinsr.HyperTagBrowser;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1114,7 +1000,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HyperTagBrowser/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = HyperTagBrowserAlpha;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1122,7 +1008,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = "$(VERSION)";
+				MARKETING_VERSION = 2.0.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
 				PRODUCT_BUNDLE_IDENTIFIER = com.robinsr.HyperTagBrowser;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1154,7 +1040,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HyperTagBrowser/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = HyperTagBrowser;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1162,7 +1048,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = "$(VERSION)";
+				MARKETING_VERSION = 2.0.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
 				PRODUCT_BUNDLE_IDENTIFIER = com.robinsr.HyperTagBrowser;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1365,6 +1251,14 @@
 				version = 1.2.1;
 			};
 		};
+		9442264F2FBAC89900CE29B7 /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 7.9.0;
+			};
+		};
 		94448C3D2DC146F0009D1051 /* XCRemoteSwiftPackageReference "with" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/capnslipp/with.git";
@@ -1483,14 +1377,6 @@
 			requirement = {
 				kind = exactVersion;
 				version = 3.1.1;
-			};
-		};
-		94998BC22DF0F96D00C0E6D6 /* XCRemoteSwiftPackageReference "EnumOptionSet" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:DnV1eX/EnumOptionSet.git";
-			requirement = {
-				kind = exactVersion;
-				version = 2.0.0;
 			};
 		};
 		94A4D07E2CCAF78600017FBA /* XCRemoteSwiftPackageReference "JulianDayNumber" */ = {
@@ -1692,6 +1578,41 @@
 			package = 944226422FBABE4D00CE29B7 /* XCRemoteSwiftPackageReference "FileMonitor" */;
 			productName = FileMonitor;
 		};
+		944226452FBAC7E800CE29B7 /* CustomDump */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 947F40592C9B528F00EF0D12 /* XCRemoteSwiftPackageReference "swift-custom-dump" */;
+			productName = CustomDump;
+		};
+		944226472FBAC7F400CE29B7 /* Quick */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 94A646EA2CEB299B00C7E459 /* XCRemoteSwiftPackageReference "Quick" */;
+			productName = Quick;
+		};
+		944226492FBAC7FB00CE29B7 /* RationalModule */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 945DC2EA2D290CF300242CF5 /* XCRemoteSwiftPackageReference "swift-rational" */;
+			productName = RationalModule;
+		};
+		9442264B2FBAC80200CE29B7 /* SDWebImageSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 943610942D7771AD00583057 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
+			productName = SDWebImageSwiftUI;
+		};
+		9442264D2FBAC80900CE29B7 /* ZipArchive */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9482DCE22DC6174900EF725C /* XCRemoteSwiftPackageReference "ZipArchive" */;
+			productName = ZipArchive;
+		};
+		944226502FBAC89900CE29B7 /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9442264F2FBAC89900CE29B7 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			productName = GRDB;
+		};
+		944226522FBACEE200CE29B7 /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9442264F2FBAC89900CE29B7 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			productName = GRDB;
+		};
 		94448C3E2DC146F0009D1051 /* With */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 94448C3D2DC146F0009D1051 /* XCRemoteSwiftPackageReference "with" */;
@@ -1727,40 +1648,15 @@
 			package = 94EBA5392C8657D100CA40A0 /* XCRemoteSwiftPackageReference "Factory" */;
 			productName = FactoryTesting;
 		};
-		9446774B2DF371E400D10EE2 /* Flow */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 94832AD62C898B6900E94361 /* XCRemoteSwiftPackageReference "SwiftUI-Flow" */;
-			productName = Flow;
-		};
-		9446774D2DF371E400D10EE2 /* IdentifiedCollections */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 94DFAEBE2C9A594600AC0B5A /* XCRemoteSwiftPackageReference "swift-identified-collections" */;
-			productName = IdentifiedCollections;
-		};
 		9446774F2DF371E400D10EE2 /* CustomDump */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 947F40592C9B528F00EF0D12 /* XCRemoteSwiftPackageReference "swift-custom-dump" */;
 			productName = CustomDump;
 		};
-		944677512DF371E400D10EE2 /* DominantColors */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 947F40DE2C9CC0BC00EF0D12 /* XCRemoteSwiftPackageReference "DominantColors" */;
-			productName = DominantColors;
-		};
-		944677532DF371E400D10EE2 /* FullDiskAccess */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 940ED4F82C9FAF1B00F639C8 /* XCRemoteSwiftPackageReference "FullDiskAccess" */;
-			productName = FullDiskAccess;
-		};
 		944677552DF371E400D10EE2 /* Defaults */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 94AB79892CA49D5B00B22EBE /* XCRemoteSwiftPackageReference "Defaults" */;
 			productName = Defaults;
-		};
-		944677572DF371E400D10EE2 /* XAttr */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 94E3C3912CA7DFD8002CF3FC /* XCRemoteSwiftPackageReference "swift-xattr" */;
-			productName = XAttr;
 		};
 		944677592DF371E400D10EE2 /* GRDBQuery */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1776,16 +1672,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 94A4D07E2CCAF78600017FBA /* XCRemoteSwiftPackageReference "JulianDayNumber" */;
 			productName = JulianDayNumber;
-		};
-		9446775F2DF371E400D10EE2 /* DebouncedOnChange */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 945FA79B2CCDF24C005B5EAE /* XCRemoteSwiftPackageReference "DebouncedOnChange" */;
-			productName = DebouncedOnChange;
-		};
-		944677612DF371E400D10EE2 /* LegibleError */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9405650A2CD2024500648DD5 /* XCRemoteSwiftPackageReference "legibleerror" */;
-			productName = LegibleError;
 		};
 		944677632DF371E400D10EE2 /* Quick */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1817,31 +1703,6 @@
 			package = 945DC2EA2D290CF300242CF5 /* XCRemoteSwiftPackageReference "swift-rational" */;
 			productName = RationalModule;
 		};
-		9446776F2DF371E400D10EE2 /* OpenTelemetryApi */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 94FEA8842D50207E00288A21 /* XCRemoteSwiftPackageReference "opentelemetry-swift" */;
-			productName = OpenTelemetryApi;
-		};
-		944677712DF371E400D10EE2 /* OpenTelemetrySdk */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 94FEA8842D50207E00288A21 /* XCRemoteSwiftPackageReference "opentelemetry-swift" */;
-			productName = OpenTelemetrySdk;
-		};
-		944677732DF371E400D10EE2 /* SignPostIntegration */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 94FEA8842D50207E00288A21 /* XCRemoteSwiftPackageReference "opentelemetry-swift" */;
-			productName = SignPostIntegration;
-		};
-		944677752DF371E400D10EE2 /* StdoutExporter */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 94FEA8842D50207E00288A21 /* XCRemoteSwiftPackageReference "opentelemetry-swift" */;
-			productName = StdoutExporter;
-		};
-		944677772DF371E400D10EE2 /* SwiftMetricsShim */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 94FEA8842D50207E00288A21 /* XCRemoteSwiftPackageReference "opentelemetry-swift" */;
-			productName = SwiftMetricsShim;
-		};
 		944677792DF371E400D10EE2 /* CoreMetrics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 94F75E012D51F63D0027B4E0 /* XCRemoteSwiftPackageReference "swift-metrics" */;
@@ -1857,30 +1718,10 @@
 			package = 94F75E012D51F63D0027B4E0 /* XCRemoteSwiftPackageReference "swift-metrics" */;
 			productName = MetricsTestKit;
 		};
-		9446777F2DF371E400D10EE2 /* Outline */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 94CFAE452D603CD7000F8802 /* XCRemoteSwiftPackageReference "Outline" */;
-			productName = Outline;
-		};
 		944677812DF371E400D10EE2 /* Files */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 94E626952D66DBD500F4FD88 /* XCRemoteSwiftPackageReference "Files" */;
 			productName = Files;
-		};
-		944677832DF371E400D10EE2 /* Cache */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 94CEA71C2D69DD3D006B1BB2 /* XCRemoteSwiftPackageReference "Cache" */;
-			productName = Cache;
-		};
-		944677852DF371E400D10EE2 /* SDWebImageSwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 943610942D7771AD00583057 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
-			productName = SDWebImageSwiftUI;
-		};
-		944677872DF371E400D10EE2 /* GrammaticalNumber */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 946DEE772D878B2400697679 /* XCRemoteSwiftPackageReference "GrammaticalNumber" */;
-			productName = GrammaticalNumber;
 		};
 		944677892DF371E400D10EE2 /* Difference */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1896,21 +1737,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 94C5E1082DC082EB00038C72 /* XCRemoteSwiftPackageReference "XCGLogger" */;
 			productName = XCGLogger;
-		};
-		9446778F2DF371E400D10EE2 /* ZipArchive */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9482DCE22DC6174900EF725C /* XCRemoteSwiftPackageReference "ZipArchive" */;
-			productName = ZipArchive;
-		};
-		944677912DF371E400D10EE2 /* KBar */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 945B95652DD03D8A00DDC7F3 /* XCRemoteSwiftPackageReference "KBar" */;
-			productName = KBar;
-		};
-		944677932DF371E400D10EE2 /* EnumOptionSet */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 94998BC22DF0F96D00C0E6D6 /* XCRemoteSwiftPackageReference "EnumOptionSet" */;
-			productName = EnumOptionSet;
 		};
 		944E41AA2D10DF1A00143FC1 /* HighlightSwift */ = {
 			isa = XCSwiftPackageProductDependency;

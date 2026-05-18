@@ -4,7 +4,7 @@ import Foundation
 import GRDB
 import System
 
-@testable import TaggedFileBrowser
+@testable import HyperTagBrowser
 
 
 /// Maps column names to fixture values

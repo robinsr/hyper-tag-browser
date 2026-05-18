@@ -3,7 +3,7 @@
 import SwiftUI
 
 struct KeyBindingsScreen: Scene {
-  static let screenId = "\(Constants.appname).KeyBindings"
+  static let screenId = "\(Constants.appDisplayName).KeyBindings"
   static let screenSize = KeyBindingsTable.presentation.idealSize
   
   @Environment(\.dismissWindow) var dismissWindow

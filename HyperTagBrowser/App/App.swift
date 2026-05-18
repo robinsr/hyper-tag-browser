@@ -39,7 +39,7 @@ struct TaggedFileBrowserApp: App {
   }
   
   var body: some Scene {
-    Window(Constants.appname, id: "\(Constants.appname).Main") {
+    Window(Constants.appDisplayName, id: "\(Constants.appDisplayName).Main") {
       MainScreen()
         .queryObservation(.always)
         .environment(\.queryObservationEnabled, true)

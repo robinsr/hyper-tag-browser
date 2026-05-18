@@ -14,7 +14,7 @@ import SwiftUI
  * rather these are more like global application settings that are shared across all user profiles.
  */
 extension Defaults.Keys {
-  static let profileKeys            = prefKey("profileKeys", Set<String>([DefaultUserProfile.id]))
+  static let knownProfiles            = prefKey("profileKeys", Set<String>([DefaultUserProfile.id]))
   static let activeProfile          = prefKey("activeProfile", DefaultUserProfile.id)
   static let photoGridHSpace        = prefKey("photoGridHSpace", Constants.defaultTileSpacing)
   static let photoGridVSpace        = prefKey("photoGridVSpace", Constants.defaultTileSpacing)

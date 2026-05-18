@@ -19,11 +19,10 @@ struct ProfileListSheetView: View, SheetPresentable {
   @Environment(\.dispatcher) var dispatch
   @Environment(\.sheetPadding) var sheetPadding
 
-  @Injected(\PreferencesContainer.profileKeys) var profileKeys
   @Injected(\PreferencesContainer.externalProfiles) var externProfiles
   @Injected(\PreferencesContainer.appPrefsFile) var prefsFile
   @Injected(\PreferencesContainer.userProfileId) var activeProfileId
-  @Injected(\EnvContainer.stageName) var currentStage
+  @Injected(\EnvContainer.stage) var currentStage
   
   @State var switchToProfileSelection: ExternalUserProfile.ID? = nil
   @State var showCreateForm = false
@@ -138,7 +137,7 @@ struct ProfileListSheetView: View, SheetPresentable {
           .multilineTextAlignment(.leading)
       } label: {
         Text("Preference File")
-        Text("Stage \(currentStage)")
+        Text("Stage \(currentStage.id)")
       }
       .font(.caption2)
       .opacity(0.7)
