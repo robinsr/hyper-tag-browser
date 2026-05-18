@@ -14,3 +14,37 @@ extension ContentItem {
         return self.name
     }
 }
+
+
+extension Sequence where Element == ContentItem {
+  
+  var ids: [ContentId] {
+    self.map(\.id)
+  }
+  
+  var pointers: [ContentPointer] {
+    self.map(\.pointer)
+  }
+  
+  var records: [IndexRecord] {
+    self.map(\.index)
+  }
+  
+  var transferables: ContentPointers {
+    ContentPointers(self.pointers)
+  }
+  
+  func contains(_ id: ContentId) -> Bool {
+    self.contains { $0.id == id }
+  }
+  
+  func item(for id: ContentId) -> Element? {
+    self.first { $0.id == id }
+  }
+  
+  func visibility(eq value: ContentItemVisibility) -> [Element] {
+    self.filter {
+      $0.index.visibility == value
+    }
+  }
+}

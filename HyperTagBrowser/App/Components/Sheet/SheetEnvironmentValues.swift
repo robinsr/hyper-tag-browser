@@ -54,3 +54,19 @@ extension EnvironmentValues {
     set { self[SheetPresentationEnvKey.self] = newValue }
   }
 }
+
+
+struct ExpandSheetEnvKey: EnvironmentKey {
+  static let defaultValue: Binding<Bool> = .constant(false)
+}
+
+extension EnvironmentValues {
+  
+  /**
+    Returns a `Binding<Bool>` to control the expanded state of the current sheet
+   */
+  var expandSheet: Binding<Bool> {
+    get { self[ExpandSheetEnvKey.self] }
+    set { self[ExpandSheetEnvKey.self] = newValue }
+  }
+}

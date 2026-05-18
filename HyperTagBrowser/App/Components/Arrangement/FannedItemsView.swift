@@ -74,7 +74,7 @@ struct FannedItemsView<Data: Hashable, Content: View>: View {
     }
     .background {
       RoundedRectangle(cornerRadius: 8)
-        .fill(Color.gray.opacity(0.05))
+        .fill(Color.gray.opacity(0.15))
         .stroke(Color.gray.opacity(0.4), lineWidth: 1.25) // Optional border for visibility
     }
   }

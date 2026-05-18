@@ -22,7 +22,7 @@ import Foundation
  *                             makes it possible to still set some values from the current profile (such updating the
  *                             name, the database file, etc) without having to switch to that profile first.
  */
-protocol UserProfile: Identifiable {
+protocol UserProfile: Identifiable, Sendable {
   var suite: UserDefaults { get }
   var suiteName: String { get }
   var id: String { get }
@@ -34,6 +34,12 @@ protocol UserProfile: Identifiable {
 }
 
 typealias AnyUserProfile = any UserProfile
+
+extension UserProfile {
+  static var login: String {
+    ProcessInfo.processInfo.userName
+  }
+}
 
 
 

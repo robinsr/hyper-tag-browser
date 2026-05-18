@@ -26,12 +26,13 @@ extension EnvironmentValues {
   
   @Entry var dispatcher: DispatchFn = { _ in }
   @Entry var notify: NotifyFn = { _ in }
+  @Entry var messages: AppMessageQueue = Container.shared.messageQueue()
   
     // Navigation State
   @Entry var pushState: PushNavigationFn = { _ in }
   @Entry var popState: PopNavigationFn = {  }
   @Entry var replaceState: ReplaceNavigationFn = { _ in }
-  @Entry var location: URL = Container.shared.appViewModel().location
+  @Entry var location: URL = PreferencesContainer.shared.startingLocation().fileURL
   @Entry var route: Route = .main
   @Entry var page: Route.Page = .main
   
@@ -50,13 +51,11 @@ extension EnvironmentValues {
   @Entry var dbContentItemsVisible: [ContentItem] = []
   @Entry var dbContentItemsHiddenCount: Int = 0
   @Entry var dbContentItemsMissingCount: Int = 0
-  @available(*, deprecated, message: "Same as Defaults[.photoGridItemLimit]")
-  @Entry var itemDisplayCount: Int = PreferencesContainer.shared.userPreferences().forKey(.photoGridItemLimit)
   @Entry var dbContentItemCount: Int = 0
-  @Entry var queryResultCount: Int = 0
+  @Entry var dbContentItemTagMap: [ContentId:Int] = [:]
   
     /// Parameters used to populate the content items currently displayed
-  @Entry var dbContentItemParameters: IndxRequestParams = Container.shared.appViewModel().dbIndexParameters
+  @Entry var parameters: IndxRequestParams = IndxRequestParams.defaults.contentItems
   
     // Detail Item
   @Entry var dbItemDetail: ContentItem? = nil
@@ -82,8 +81,7 @@ struct BrowseEnvironmentViewModifier: ViewModifier {
   @Environment(\.enabledFlags) var devFlags
   @Environment(\.replaceState) var replace
   
-  // @Query(ListIndexInfoRequest(parameters: Container.shared.appViewModel().dbIndexParameters)) var dbContentItems
-  @Query(CountIndexesRequest(parameters: Container.shared.appViewModel().dbIndexParameters)) var dbIndexCount
+  @Query(CountIndexesRequest(parameters: .defaults.contentItemCount)) var dbIndexCount
   @Query(GetIndexInfoRequest(contentId: nil)) var dbItemDetail
   @Query(ListQueueIndexesRequest()) var dbQueues
   @Query(ListBookmarksRequest()) var dbBookmarks
@@ -104,49 +102,6 @@ struct BrowseEnvironmentViewModifier: ViewModifier {
     appVM.contentItems.whereFileExists()
   }
   
-  func body(content: Content) -> some View {
-    Group {
-      ZStack {
-        content
-          .visible(dbErrorsClear)
-        
-        DatabaseErrorView(errorMap: queryErrors)
-          .hidden(dbErrorsClear)
-      }
-      .environment(\.location, appVM.location)
-      .environment(\.route, appVM.currentRoute)
-      .environment(\.page, appVM.currentRoute.page)
-      .environment(\.appPanels, appVM.activeAppPanels)
-      .environment(\.currentSheet, appVM.activeSheet)
-      .environment(\.dbContentItems, appVM.contentItems)
-      .environment(\.dbContentItemsVisible, visibleItems)
-      .environment(\.dbContentItemsHiddenCount, hiddenItemCount)
-      .environment(\.dbContentItemsMissingCount, missingItemsCount)
-      .environment(\.dbContentItemCount, dbIndexCount)
-      .environment(\.dbContentItemParameters, appVM.dbIndexParameters)
-      .environment(\.queryResultCount, dbIndexCount)
-      .environment(\.dbItemDetail, dbItemDetail)
-      .environment(\.dbLocations, dbLocations)
-      .environment(\.dbQueues, dbQueues)
-      .environment(\.dbBookmarks, dbBookmarks)
-    }
-    .onChange(of: appVM.dbIndexParameters, debounceTime: .milliseconds(200)) {
-      onQueryParamsChanged()
-//      DispatchQueue.main.asyncAfter(.milliseconds(1200)) {
-//        onQueryParamsChanged()
-//      }
-    }
-    .onChange(of: appVM.detailItemPointer) {
-      $dbItemDetail.contentId.wrappedValue = appVM.detailItemPointer?.contentId
-    }
-    .onChange(of: systemScheme, initial: true) {
-      colorModel.update(systemScheme)
-    }
-    .onChange(of: userPreferenceColor, initial: true) {
-      colorModel.update(userPreferenceColor)
-    }
-  }
-  
   var queryErrors: Dictionary<String, Optional<any Error>> { [
     //"$dbContentItems": $dbContentItems.error,
     "$dbIndexCount":   $dbIndexCount.error,
@@ -160,11 +115,50 @@ struct BrowseEnvironmentViewModifier: ViewModifier {
     queryErrors.compactMapValues{ $0 }.isEmpty
   }
   
-  func onQueryParamsChanged() {
-    //$dbContentItems.parameters.wrappedValue = appVM.dbIndexParameters.clone()
-    
-    DispatchQueue.main.asyncAfter(.seconds(0.8)) {
+  func onQueryParamsChanged() async {
+    await MainActor.run {
       $dbIndexCount.parameters.wrappedValue = appVM.dbIndexParameters.clone()
+    }
+  }
+  
+  func body(content: Content) -> some View {
+    Group {
+      ZStack {
+        content
+          .visible(dbErrorsClear)
+        
+        DatabaseErrorView(errorMap: queryErrors)
+          .hidden(dbErrorsClear)
+      }
+      .environment(\.location, appVM.currentURL)
+      .environment(\.route, appVM.currentRoute)
+      .environment(\.page, appVM.currentPage)
+      .environment(\.appPanels, appVM.activeAppPanels)
+      .environment(\.currentSheet, appVM.activeSheet)
+      .environment(\.dbContentItems, appVM.contentItems)
+      .environment(\.dbContentItemsVisible, visibleItems)
+      .environment(\.dbContentItemsHiddenCount, hiddenItemCount)
+      .environment(\.dbContentItemsMissingCount, missingItemsCount)
+      .environment(\.dbContentItemCount, dbIndexCount)
+      .environment(\.parameters, appVM.dbIndexParameters)
+      .environment(\.dbItemDetail, dbItemDetail)
+      .environment(\.dbLocations, dbLocations)
+      .environment(\.dbQueues, dbQueues)
+      .environment(\.dbBookmarks, dbBookmarks)
+    }
+    .onChange(of: appVM.dbIndexParameters, debounceTime: .milliseconds(800)) {
+      Task {
+        await onQueryParamsChanged()
+      }
+    }
+    .onChange(of: appVM.detailItemPointer) {
+      $dbItemDetail.contentId.wrappedValue = appVM.detailItemPointer?.contentId
+    }
+    .onChange(of: systemScheme, initial: true) {
+      colorModel.update(systemScheme)
+    }
+    .onChange(of: userPreferenceColor, initial: true) {
+      colorModel.update(userPreferenceColor)
     }
   }
 }

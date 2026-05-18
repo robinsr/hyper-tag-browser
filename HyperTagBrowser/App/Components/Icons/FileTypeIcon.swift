@@ -41,7 +41,7 @@ struct FileTypeIcon: RawRepresentable, AppIcon {
     FileTypeIcon(uttype: fileType, size: size)
   }
   
-  static let folder = FileTypeIcon(uttype: .folder, size: 12)
+  @MainActor static let folder = FileTypeIcon(uttype: .folder, size: 12)
   
   static let systemIconMap: [UTType: String] = [
     .folder: "folder",

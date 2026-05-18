@@ -1,5 +1,6 @@
 // created on 4/5/25 by robinsr
 
+import Factory
 import SwiftUI
 
 extension EnvironmentValues {
@@ -10,5 +11,5 @@ extension EnvironmentValues {
 }
 
 struct DetailScreenViewModelEnvironmentKey: EnvironmentKey {
-  static let defaultValue = DetailScreenViewModel()
+  static let defaultValue = Container.shared.detailViewModel()
 }

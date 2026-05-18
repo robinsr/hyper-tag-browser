@@ -18,7 +18,8 @@ struct CommandsView: Commands {
   @Default(.gridTileSize) var tileSize
   
   @Injected(\Container.executor) var exec
-  @Injected(\Container.thumbnailStore) var thumbnailStore
+  @Injected(\Container.dispatcher) var dispatch
+  @Injected(\ThumbnailContainer.store) var thumbnailStore
   
   @Query(ListSavedQueriesRequest()) var savedQueries
   
@@ -128,7 +129,8 @@ struct CommandsView: Commands {
   
   var AppHelpMenu: some Commands {
     CommandGroup(replacing: .help) {
-      ShowHelpButton
+      Help_KeyboardShortcutsWindowButton
+      Help_KeyboardShortcutsSheetButton
       
       Divider()
       
@@ -145,14 +147,6 @@ struct CommandsView: Commands {
     }
   }
   
-  /// Proxy to the app's dispatch function.
-  func dispatch(_ action: ModelActions) {
-    if let vm = appVM {
-      vm.dispatch(action)
-    }
-  }
-  
-  
     // MARK: - Menu Items
   
   var TestDispatchQueueButton: some View {
@@ -167,27 +161,27 @@ struct CommandsView: Commands {
   
   func KeyBindingButton(
     _ kb: KeyBinding,
-    disablers: Set<KeyBinding.DisableWhen> = [],
+    disabled: @autoclosure @escaping () -> Bool = false,
     action: @escaping () -> Void
   ) -> some View {
-    var buttonDisabled: Bool = FirstTrueBuilder.withDefault(false) {
-      (appVM == nil, false)
-      (disablers.isEmpty, false)
-      (disablers.contains(.anySheet) && activeSheet != AppSheet.none, true)
-      (disablers.contains(sheet: activeSheet), true)
-    }
+//    let buttonDisabled: Bool = FirstTrueBuilder.withDefault(false) {
+//      (appVM == nil, false)
+//      (disablers.isEmpty, false)
+//      (disablers.contains(.anySheet) && activeSheet != AppSheet.none, true)
+//      (disablers.contains(sheet: activeSheet), true)
+//    }
     
     return
-      Button(kb.description, action: action)
+      Button(kb.name, action: action)
         .keyboardShortcut(kb)
-        .disabled(buttonDisabled)
+        .disabled(disabled())
   }
   
   func SheetBindingButton(_ sheet: AppSheet) -> some View {
     let isShowing = activeSheet == sheet
     let shortcut = sheet._case.shortcut(isShowing: isShowing)
     
-    return Button(shortcut.description, action: exec.toggleSheetAction(sheet))
+    return Button(shortcut.name, action: exec.toggleSheetAction(sheet))
       .keyboardShortcut(shortcut)
   }
   
@@ -212,11 +206,19 @@ struct CommandsView: Commands {
     // MARK: - Navigate Menu Items
   
   var Navigate_BackButton: some View {
-    KeyBindingButton(.back, disablers: [.anySheet], action: exec.navigate_BackButton)
+    KeyBindingButton(
+      .back,
+      disabled: appVM?.activeSheet != nil && appVM?.activeSheet != AppSheet.none,
+      action: exec.navigate_BackButton
+    )
   }
   
   var Navigate_UpDirButton: some View {
-    KeyBindingButton(.navDirUp, disablers: [.anySheet], action: exec.navigate_UpDirButton)
+    KeyBindingButton(
+      .navDirUp,
+      disabled: appVM?.activeSheet != nil && appVM?.activeSheet != AppSheet.none,
+      action: exec.navigate_UpDirButton
+    )
   }
   
   var Navigate_HomeButton: some View {
@@ -293,8 +295,7 @@ struct CommandsView: Commands {
   
   @ViewBuilder
   var View_UIPanelButtons: some View {
-    ActionMenuButton(command: TogglePanelAction(panel: .quickActions))
-    ActionMenuButton(command: TogglePanelAction(panel: .quickActions))
+    // ActionMenuButton(command: TogglePanelAction(panel: .quickActions))
     ActionMenuButton(command: TogglePanelAction(panel: .browseRefinements))
     ActionMenuButton(command: TogglePanelAction(panel: .sidebar))
     ActionMenuButton(command: TogglePanelAction(panel: .bookmarks))
@@ -331,17 +332,22 @@ struct CommandsView: Commands {
     } label: {
       Text("Toggle Sidebar Position")
     }
-    .keyboardShortcut(.toggleSidebarPosition)
+    .keyboardShortcut(.toggleSidebarSide)
   }
 
   
     // MARK: - View → Panels Menu Items
 
-  var ShowHelpButton: some View {
-    Button("\(Constants.appname) Help") {
-      openWindow(id: HelpScreen.screenId)
+  var Help_KeyboardShortcutsWindowButton: some View {
+    WindowVisibilityToggle(windowID: KeyBindingsScreen.screenId)
+      .keyboardShortcut(KeyBinding.help.shortcut)
+  }
+  
+  var Help_KeyboardShortcutsSheetButton: some View {
+    Button("Show keys") {
+      dispatch(.showSheet(.keyBindings))
     }
-    .keyboardShortcut(.help)
+    .keyboardShortcut(.help.plus(.control, named: "Keyboard Shortcuts Sheet"))
   }
   
   
@@ -363,4 +369,3 @@ struct CommandsView: Commands {
     Button("Select All", action: exec.edit_SelectAllItemsButton)
   }
 }
-

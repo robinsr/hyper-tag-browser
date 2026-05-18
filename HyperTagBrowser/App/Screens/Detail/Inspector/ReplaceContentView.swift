@@ -9,6 +9,7 @@ struct ReplaceContentDropArea: View {
   @Environment(\.dispatcher) var dispatch
   @Environment(\.detailEnv) var detailEnv
   @Environment(\.notify) var notify
+  @Environment(\.location) var location
   
   @State var showConfirmation = false
   @State var showFileImporter = false
@@ -17,7 +18,7 @@ struct ReplaceContentDropArea: View {
   @State var targetImgURL: URL?
   
   var fileImporterConfig: FileImporterConfiguration {
-    .init(folder: appVM.location, allow: [.image], onChoice: onURLsDropped)
+    .init(folder: location, allow: [.image], onChoice: onURLsDropped)
   }
   
   func onURLsDropped(_ urls: [URL]) {

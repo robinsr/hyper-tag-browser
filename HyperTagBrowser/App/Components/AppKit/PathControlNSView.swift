@@ -4,7 +4,7 @@ import AppKit
 import SwiftUI
 import CustomDump
 
-
+@MainActor
 struct PathContrlNSView: View, NSViewRepresentable {
   
   @Binding var url: URL
@@ -27,6 +27,7 @@ struct PathContrlNSView: View, NSViewRepresentable {
     )
   }
 
+  @MainActor
   class Coordinator : NSObject, NSPathControlDelegate {
     let nsPathView = NSPathControl()
     

@@ -11,7 +11,15 @@ import Foundation
  * be available, while others will be logically excluded
  */
 enum ContentItemMenuAction: MenuActionable {
+  
   case showDetails
+
+    /// Debug/Dev item to show item's model JSON
+  case showItemData
+  
+    /// Debug/Dev item to show item's Spotlight data (CSSearchableItem)
+  case showSpotlightData
+  
   case goToFolder
   case openInFinder
   case copyPath
@@ -39,6 +47,8 @@ enum ContentItemMenuAction: MenuActionable {
   
   case addToQueueMenu
   case addToQueue(QueueRecord)
+  
+  case copyBookmarkData
   
     /// Adds a separator
   case separator
@@ -123,6 +133,8 @@ enum ContentItemMenuAction: MenuActionable {
     case .changeVisibility(_, _): SymbolIcon.eyeslash.systemName
     case .updateThumbnail(_): SymbolIcon.camera.systemName
     case .addToQueueMenu: SymbolIcon.queue.systemName
+    case .showSpotlightData: SymbolIcon.debug.systemName
+    case .showItemData: SymbolIcon.debug.systemName
     case .text(_, let symbol): symbol
     default: nil
     }
@@ -136,12 +148,18 @@ enum ContentItemMenuAction: MenuActionable {
     case .separator, .noop: return ""
       
     case .showDetails: return "Item Details"
+      
+    case .showItemData: return "Show App Data"
+    
+    case .showSpotlightData: return "Show Spotlight Data"
     
     case .goToFolder: return "Open Containing Folder"
     
     case .openInFinder: return "Open in Finder"
       
     case .copyPath: return "Copy Pathname"
+      
+    case .copyBookmarkData: return "Copy Bookmark Data"
     
     case .createBookmark: return "Create Bookmark"
     

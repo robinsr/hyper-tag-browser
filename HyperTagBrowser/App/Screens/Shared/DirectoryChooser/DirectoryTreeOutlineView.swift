@@ -73,8 +73,11 @@ struct DirectoryTreeOutlineView: View {
     ) { value in
       SidebarButton(
         isActive: .constant(dirTree.selection.contains(value.id)),
-        isHovered: .constant(hoveredItem == value),
-        hoverEffectOn: [.inactive]
+        isHovered: .constant(false),
+        activateOn: .all,
+        onTapAction: {
+          dirTree.select(id: value.id)
+        }
       ) {
         FolderIndicator(name: value.displayName)
       }

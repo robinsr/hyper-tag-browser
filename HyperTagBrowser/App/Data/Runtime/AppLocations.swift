@@ -13,6 +13,11 @@ struct UserLocation {
     .appending(path: "Desktop", directoryHint: .isDirectory)
   
   static let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0].filepath
+  
+  static let homeURL = URL.homeDirectory
+  static let downloadsURL = URL.downloadsDirectory
+  static let documentsURL = URL.documentsDirectory
+  static let driveURL = FileManager.default.url(forUbiquityContainerIdentifier: "com.apple.icloud")
 }
 
 

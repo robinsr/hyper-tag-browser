@@ -5,7 +5,7 @@ import GRDB
 
 extension QueryInterfaceRequest {
   
-  public func toSQL(using db: Database, format: Bool = false) throws -> String {
+  public func toSQL(using db: Database) throws -> String {
     let stmt = try self.makePreparedRequest(db).statement
     
     let parts = "\(stmt)"
@@ -38,11 +38,7 @@ extension QueryInterfaceRequest {
       
       index += 1
     }
-    
-    if format {
-      return SQLTraceFormatter(enabledTables: SchemaConfiguration.tableNames).formatEvent(string: sql)
-    }
-    
+
     return sql
   }
   

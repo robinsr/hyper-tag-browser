@@ -18,6 +18,8 @@ enum ModeledError: Error, CustomStringConvertible, LocalizedError {
   case unmodeled(Error)
   case failed(to: String, fallback: String? = nil, error: Error? = nil, reason: String? = nil)
   
+  case action(ModelActions)
+  
   
   func with(error newError: Error) -> ModeledError {
     switch self {
@@ -45,12 +47,20 @@ enum ModeledError: Error, CustomStringConvertible, LocalizedError {
   
   var name: String {
     switch self {
-    case .clearThumbnailCache(_): "clearThumbnailCache"
-    case .duplicateContentFound(_): "duplicateContentFound"
-    case .grdb(_): "grdb"
-    case .unmodeled(_): "unmodeled"
-    case .expectedContentIdMissing(_): "expectedContentIdMissing"
-    case .failed(_,_,_,_): "failed(to:fallback:err:reason:)"
+    case .clearThumbnailCache(_): 
+      return "clearThumbnailCache"
+    case .duplicateContentFound(_):
+      return "duplicateContentFound"
+    case .grdb(_):
+      return "grdb"
+    case .unmodeled(_):
+      return "unmodeled"
+    case .expectedContentIdMissing(_):
+      return "expectedContentIdMissing"
+    case .failed(_,_,_,_):
+      return "failed(to:fallback:err:reason:)"
+    case .action(let action):
+      return "errorAction.\(action.id)"
     }
   }
   

@@ -14,7 +14,7 @@ import os
 struct ThumbnailView: View {
   let logger = EnvContainer.shared.logger("ThumbnailView")
 
-  @Injected(\Container.thumbnailStore) var thumbnailStore
+  @Injected(\ThumbnailContainer.store) var thumbnailStore
 
   let content: ContentItem
 

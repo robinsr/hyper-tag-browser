@@ -4,7 +4,8 @@ import SwiftUI
 
 
 struct AlertViewSheetContent: View, SheetPresentable {
-  static let presentation: SheetPresentation = .infoFitted(controls: .none)
+  //static let presentation: SheetPresentation = .infoFitted(controls: .none)
+  static let presentation: SheetPresentation = .infoSticky(controls: .none)
   
   @Environment(\.dispatcher) var dispatch  
   
@@ -31,11 +32,11 @@ struct AlertViewSheetContent: View, SheetPresentable {
       }
       
       Group {
-        Text(message.body)
+        Text(message.message)
           .fontWeight(.medium)
           .fixedSize(horizontal: false, vertical: true)
           .lineLimit(20)
-          .hidden(message.body.isEmpty)
+          .hidden(message.message.isEmpty)
         
         Text(message.details)
           .fixedSize(horizontal: false, vertical: true)

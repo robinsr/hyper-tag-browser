@@ -14,9 +14,9 @@ extension Text {
   
   
   /**
-    * Initializes a Text view from a ``KeyEquivalent`` value.
+    * Initializes a Text view from a ``SwiftUI/KeyEquivalent`` value.
    */
   init(_ key: KeyEquivalent) {
-    self.init(key.asCharacter)
+    self.init(key.asSymbol)
   }
 }

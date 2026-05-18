@@ -12,12 +12,14 @@ import SwiftUI
  */
 struct CursorControlsView: ViewModifier {
   private let logger = EnvContainer.shared.logger("CursorControlsView")
+  private let logLevel = EnvContainer.shared.logLevel("off")
   
   @Injected(\Container.cursorState) var cursor
   
   @Environment(\.modifierKeys) var modState
   @Environment(\.dispatcher) var dispatch
-  @Environment(\.page) var currentPage
+  @Environment(\.route) var route
+  @Environment(AppViewModel.self) var appVM
   
   
   @Environment(\.isTyping) @Binding var isTyping: Bool
@@ -25,7 +27,7 @@ struct CursorControlsView: ViewModifier {
   typealias Action = CursorState.CursorActions
   
   func getCursorAction(for binding: KeyBinding) -> Action? {
-    let mods = modState.eventModifiers
+    let mods = modState.modifiers
     
     let nextAction: Action? = switch binding {
     case .gridCursorLeft: .leftArrow(mods: mods)
@@ -37,31 +39,46 @@ struct CursorControlsView: ViewModifier {
     default: nil
     }
     
-    logger.emit(.debug.off, "getCursorAction for binding \(binding.description.quoted): \(nextAction?.description ?? "nil")")
+    logger.emit(logLevel, "getCursorAction for binding \(binding.description.quoted): \(nextAction?.description ?? "nil")")
     
     return nextAction
   }
   
-  func onCursorMove(_ evt: KeyBinding, forPages enabledPages: [Route.Page]) {
+  func onCursorMove(_ binding: KeyBinding, forPages enabledPages: [Route.Page]) {
+    
+    // NOTE: @Environment(\.page) and @Environment(\.route) are not being updated accurately. Must use reference
+    //       to AppViewModel directly here. TODO: debug stale values from \.page and \.route
+    let currentPage: Route.Page = appVM.currentPage
+    
+    logger.emit(logLevel, "onCursorMove: \(describing: binding) for pages \(enabledPages), on page \(currentPage)")
+    
     guard !isTyping else {
-      logger.emit(.debug, "onCursorMove: \(evt.description.quoted) ignored while typing")
+      logger.emit(logLevel, "onCursorMove: \(describing: binding) ignored while typing")
       return
     }
     
     if currentPage.oneOf(enabledPages) == false {
-      logger.emit(.debug, "onCursorMove: \(evt.description.quoted) not enabled for current page \(currentPage)")
+      logger.emit(logLevel, "onCursorMove: \(describing: binding) not enabled for current page \(currentPage)")
       return
     }
     
-    var result: KeyPress.Result = .ignored
-    
-    if let next = getCursorAction(for: evt) {
-      result = cursor.dispatch(next, from: currentPage)
+    if let next = getCursorAction(for: binding) {
+      let result = cursor.dispatch(next, from: currentPage)
+      
+      logger.emit(logLevel, "Result of cursor dispatch of \(next): \(result)")
+      
+      if result == .handled {
+        return
+      }
     }
     
-    if result == .ignored && evt == .dismiss {
+    if binding == .dismiss {
+      logger.emit(logLevel, "onCursorMove: .dismiss triggered")
       dispatch(.dismissRequested)
+      return
     }
+    
+    logger.emit(.warning, "KeyBinding unhandled by CursorState: \(describing: binding)")
   }
   
   func body(content: Content) -> some View {
@@ -82,7 +99,7 @@ struct CursorControlsView: ViewModifier {
         onCursorMove(.gridSelect, forPages: .browseOnly)
       }
       .buttonShortcut(binding: .dismiss) {
-        onCursorMove(.dismiss, forPages: .browseOnly)
+        onCursorMove(.dismiss, forPages: .all)
       }
   }
 }

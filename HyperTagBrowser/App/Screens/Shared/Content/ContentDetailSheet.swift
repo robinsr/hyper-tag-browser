@@ -6,7 +6,7 @@ import SwiftUI
 struct ContentDetailSheet: View, SheetPresentable {
   static private let widthRange: ClosedRange<CGFloat> = 500...800
   
-  @Injected(\Container.thumbnailStore) var tStore
+  @Injected(\ThumbnailContainer.store) var tStore
   
   static let presentation: SheetPresentation = .full(controls: .close)
 
@@ -17,50 +17,54 @@ struct ContentDetailSheet: View, SheetPresentable {
   }
 
   var body: some View {
-    VStack {
+    NavigationStack {
       VStack {
-        
-        HStack(alignment: .top, spacing: 0) {
-          VStack(alignment: .center) {
-            ThumbnailDetail
-          }
-          .frame(maxWidth: 200, maxHeight: 200)
-          .modalContentSection("Thumbnail", spacing: 0)
-          
-          VStack {
-            ContentAttributes(contentItem: content)
-          }
-          .modalContentSection("Attributes", spacing: 0)
-        }
-        
-        
         VStack {
-          CurrentTagsView(
-            contentItem: .constant(content),
-            domains: .constant([.attribution, .descriptive, .queue])
-          )
+          HStack(alignment: .top, spacing: 0) {
+            ContentThumbnailInfo
+            ContentAttributeTable
+          }
+          ContentTagsBlock
         }
-        .modalContentSection("Current Tags", spacing: 0)
+        .modalContentMain(alignment: .top, padding: .zero)
       }
-      .modalContentMain(alignment: .top, padding: .zero)
-      
+      .modalContentBody()
+      .navigationTitle("Details for \(content.name, truncate: 50)")
     }
-    .modalContentBody()
   }
   
-  var ThumbnailDetail: some View {
-    VStack(alignment: .center, spacing: 4) {
-      if let img = thumbnailImage {
-        ImageBox("Cached Thumbnail", nsImage: img, resizable: true)
-          //.frame(maxWidth: 200, maxHeight: 200)
-          //.fillFrame(.horizontal)
-      } else {
-        Text("No thumbnail available")
-          .foregroundColor(.secondary)
+  var ContentThumbnailInfo: some View {
+    VStack(alignment: .center) {
+      Group {
+        if let img = thumbnailImage {
+          ImageBox("Cached Thumbnail", nsImage: img, resizable: true)
+        } else {
+          Text("No thumbnail available")
+        }
       }
+      .padding(8)
+      .frame(maxWidth: .infinity)
+      .foregroundColor(.secondary)
     }
-    .padding(8)
-    .frame(maxWidth: .infinity)
+    .frame(maxWidth: 200, maxHeight: 200)
+    .modalContentSection("Thumbnail", spacing: 0)
+  }
+  
+  var ContentAttributeTable: some View {
+    VStack {
+      ContentAttributes(contentItem: content)
+    }
+    .modalContentSection("Attributes", spacing: 0)
+  }
+  
+  var ContentTagsBlock: some View {
+    VStack {
+      CurrentTagsView(
+        contentItem: .constant(content),
+        domains: .constant([.attribution, .descriptive, .queue])
+      )
+    }
+    .modalContentSection("Current Tags", spacing: 0)
   }
 }
 

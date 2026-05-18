@@ -2,110 +2,110 @@
 
 import SwiftUI
 
-struct SidebarButton<LabelContent: View>: View {
 
-  var isActive: Binding<Bool> = .constant(false)
-  var isHovered: Binding<Bool>? = nil
-  var hoverEffectOn: SelectionItem.ActiveState = .all
+struct SidebarButton<ButtonContent: View>: View {
+
+  @Binding var isActive: Bool
+  @Binding var isHovered: Bool
+  var activateOn: UIActivationState = .none
   var onTapAction: (() -> Void)? = nil
-  let label: () -> LabelContent
-
-  @State private var isHovering = false
-
-  var currentStates: [ButtonState] {
-    let states: [ButtonState?] = [
-      isActive.wrappedValue ? .active : nil,
-      isHovered != nil
-        ? (isHovered!.wrappedValue ? .hover : nil)
-        : (isHovering ? .hover : nil),
-    ]
-
-    return states.compactMap({ $0 })          // Filter out nil values
-  }
+  let content: () -> ButtonContent
 
   var borderColor: Color {
-    let isHovering = currentStates.contains(.hover)
-
-    if !isHovering || hoverEffectOn.isEmpty { return Color.clear }
-
-    let isActive = currentStates.contains(.active)
-    let effectOnActive = hoverEffectOn.contains(.active)
-    let effectOnInactive = hoverEffectOn.contains(.inactive)
-    let effectColor = Color.accentColor.opacity(0.55)
-
-    if isActive && effectOnActive { return effectColor }
-    if !isActive && effectOnInactive { return effectColor }
+    if isHovered && isActive && activateOn.active {
+      return .sidebarButtonBorder
+    }
+    
+    if isHovered && !isActive && activateOn.inactive {
+      return .sidebarButtonBorder
+    }
 
     return Color.clear
   }
 
   var borderWidth: CGFloat {
-    currentStates.contains(.hover) ? 1.15 : 0.0
+    isHovered ? 1.15 : 0.0
   }
 
   var backgroundColor: Color {
-    currentStates.contains(.active) ? Color.quaternaryLabelColor.opacity(0.80) : .clear
+    isActive ? .sidebarButtonBackground : .clear
   }
-
-  let hoverDuration: Double = 0.15
-
-  var hoverAnimation: Animation {
-    .timingCurve(.circularEaseOut, duration: hoverDuration)
+  
+  var innerPadding: EdgeInsets {
+    .fromEdges(4.75, 3.25, 5.25, 3.25)
+  }
+  
+  var outerPadding: EdgeInsets {
+    .fromSides(horizontal: 2.0, vertical: 1.25)
+  }
+  
+  var BtnContainer: some View {
+    RoundedRectangle(cornerRadius: 6.0)
+      .fill(backgroundColor)
+      .strokeBorder(borderColor, lineWidth: 1.15)
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
+      .animation(.sidebarButtonHover, value: animateState)
+  }
+  
+  var animateState: String {
+    isActive.string + isHovered.string
   }
 
   var body: some View {
-    label()
-      .padding(.top, 4.75)
-      .padding(.bottom, 5.25)
-      .padding(.horizontal, 3.25)
+    content()
+      .padding(innerPadding)
       .frame(maxWidth: .infinity, alignment: .topLeading)
-      .padding(.vertical, 1.25)
-      .padding(.horizontal, 2)
+      .padding(outerPadding)
       .background {
-        RoundedRectangle(cornerRadius: 6.0)
-          .fill(backgroundColor)
-          .strokeBorder(borderColor, lineWidth: borderWidth)
-          .frame(maxWidth: .infinity, maxHeight: .infinity)
-          .animation(hoverAnimation, value: currentStates)
+        BtnContainer
       }
-      .onHover { isOver in
-        if let hoverBinding = isHovered {
-          hoverBinding.wrappedValue = isOver
-        } else {
-          isHovering = isOver
-        }
+      .onHover { isHov in
+        isHovered = isHov
       }
       .contentShape(Rectangle())
-      .ifLet(onTapAction) { view, action in
-        view.onTapGesture {
-          guard !currentStates.contains(.active) else {
-            // If already active, do not trigger onTapAction again
-            return
-          }
-          action()
+      .onTapGesture {
+        if !isActive {
+          onTapAction?()
         }
       }
-      .pointerStyle(.link)
-  }
-
-  enum ButtonState: String {
-    case hover, active
   }
 }
 
 
-#Preview("SidebarButton", traits: .fixedLayout(width: 300, height: 100), .testBordersOn) {
+extension Animation {
+  static var sidebarButtonHover: Animation {
+    .timingCurve(.circularEaseOut, duration: 0.15)
+  }
+}
+
+
+extension Color {
+  static var sidebarButtonBorder: Color {
+    .accentColor.opacity(0.55)
+  }
+  
+  static var sidebarButtonBackground: Color {
+    .quaternaryLabelColor.opacity(0.80)
+  }
+}
+
+
+#Preview("SidebarButton", traits: .fixed(300, 800), .testBordersOn) {
   @Previewable @State var fontSize = NSFont.systemFontSize(for: .regular)
   @Previewable @State var browseURL: URL = .homeDirectory
-  @Previewable @State var bookmarkURLS: [URL] = [
-    .homeDirectory, .applicationDirectory, .desktopDirectory,
-  ]
+  @Previewable @State var bookmarkURLS: [URL] = TestData.testDirFolders
 
   VStack(alignment: .leading, spacing: 2) {
     ForEach(bookmarkURLS, id: \.self) { url in
-      SidebarButton(isActive: .constant(browseURL == url)) {
-        browseURL = url
-      } label: {
+      SidebarButton(
+        isActive: .constant(browseURL == url),
+        isHovered: .constant(false),
+        activateOn: .all,
+        onTapAction: {
+          // browseURL = url
+          print("Tapped \(url.filepath.string)")
+        }
+      ) {
         Text(url.filename)
           .prefixWithFileIcon(.folder, size: fontSize, presentation: .image)
           .font(.system(size: fontSize))

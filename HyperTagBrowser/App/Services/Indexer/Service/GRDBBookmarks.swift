@@ -26,7 +26,11 @@ extension GRDBIndexService: BookmarkAccess {
   
   func findBookmark(withPath path: FilePath) throws -> BookmarkInfoRecord? {
     try dbReader.read { db in
-      try BookmarkInfoRecord.withPath(path).fetchOne(db)
+      let req = BookmarkInfoRecord.withPath(path)
+      
+      print(try req.toSQL(using: db))
+        
+      return try req.fetchOne(db)
     }
   }
   

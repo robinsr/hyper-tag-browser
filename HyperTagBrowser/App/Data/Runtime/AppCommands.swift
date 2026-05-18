@@ -2,8 +2,8 @@
 
 import SwiftUI
 
-
-protocol ActionableCommand: Identifiable {
+@MainActor
+protocol ActionableCommand: Identifiable, Sendable {
   var id: String { get }
   var title: String { get }
   var menuItemTitle: String? { get }

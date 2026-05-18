@@ -12,7 +12,7 @@ typealias ThumbnailType = QLThumbnailRepresentation.RepresentationType
 typealias ThumbnailRequestType = QLThumbnailGenerator.Request.RepresentationTypes
 typealias QLRequest = QLThumbnailGenerator.Request
 
-extension ThumbnailType: Codable {}
+//extension ThumbnailType: Codable {}
 
 
 /**
@@ -22,7 +22,6 @@ actor QuicklookService {
   static let shared = QuicklookService()
   
   private let logger = EnvContainer.shared.logger("QuicklookService")
-  private let fs = Container.shared.fileService()
   private let timer = Container.shared.timer()
   private let generator = QLThumbnailGenerator.shared
   
@@ -131,7 +130,7 @@ actor QuicklookService {
       return cached
     }
     
-    guard fs.exists(at: url) else {
+    guard url.filepath.exists else {
       throw QuicklookServiceError.noSuchFile(url)
     }
     
@@ -162,25 +161,25 @@ actor QuicklookService {
    */
   struct QLResult: Codable, Sendable {
     let imageData: Data
-    let type: ThumbnailType
+//    let type: ThumbnailType
     
     init(_ rep: QLThumbnailRepresentation) {
       self.imageData = rep.nsImage.tiffRepresentation ?? Data()
-      self.type = rep.type
+//      self.type = rep.type
     }
     
     init(_ image: NSImage, _ type: ThumbnailType) {
       self.imageData = image.tiffRepresentation ?? Data()
-      self.type = type
+//      self.type = type
     }
     
-    var isEmpty: Bool {
-      imageData.isEmpty
-    }
-    
-    var image: NSImage {
-      NSImage(data: imageData) ?? NSImage.empty
-    }
+//    var isEmpty: Bool {
+//      imageData.isEmpty
+//    }
+//    
+//    var image: NSImage {
+//      NSImage(data: imageData) ?? NSImage.empty
+//    }
   }
 }
 

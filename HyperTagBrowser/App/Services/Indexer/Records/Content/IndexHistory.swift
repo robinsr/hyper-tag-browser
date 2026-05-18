@@ -20,7 +20,9 @@ struct IndexHistory: Codable, Identifiable {
   enum Status: String, Codable, SQLSpecificExpressible {
     case synced, pending, failed
     
-    static let databaseValueType: DatabaseValueConvertible.Type = String.self
+    static var databaseValueType: DatabaseValueConvertible.Type {
+      String.self
+    }
   }
 }
 
@@ -29,7 +31,7 @@ extension IndexHistory: FetchableRecord, PersistableRecord {
     case id, timestamp, fsStatus, indexId, indexType, columnName, newValue, oldValue
   }
   
-  enum Columns: String, ColumnExpression {
+  public enum Columns: String, ColumnExpression {
     case id, timestamp, fsStatus, indexId, indexType, columnName, newValue, oldValue
   }
   
@@ -144,11 +146,13 @@ extension IndexHistory: TableRecord {
 
 extension IndexHistory {
 
-  static let triggerColumns: [ColumnExpression] = [IndxCol.location, IndxCol.name]
+  
   
   static func createTriggers(_ db: Database, recreate: Bool = false) throws {
     let thisTable = Self.databaseTableName
     let indexTable = IndexRecord.databaseTableName
+    
+    let triggerColumns: [ColumnExpression] = [IndxCol.location, IndxCol.name]
     
     for column in triggerColumns.map(\.name) {
       if recreate {

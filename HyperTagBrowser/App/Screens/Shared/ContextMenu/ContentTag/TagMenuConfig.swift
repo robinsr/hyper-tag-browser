@@ -40,36 +40,34 @@ enum TagMenuConfig: Equatable, Hashable {
     TagMenuConfig.noMenu
   }
   
-  static var whenAppliedAsQueryFilter: Self {
-    .buttons([
-      [ .label(for: .mutable), .changeDate, .relabel(.whenAppliedAsQueryFilter), .filterOff, .invert ],
-      [ .label(for: .editable), .renameAll, .removeAll ],
-      [ .searchFor, .copyText ]
-    ])
-  }
-  
-  static var whenSuggestedAsQueryFilter: Self {
-    .sections([.refining, .editable, .searchable])
-  }
-  
-  static func whenAppliedAsContentTag(_ content: ContentItem) -> Self {
-    .whenAppliedAsContentTag(content.pointer)
-  }
-  
-  static func whenAppliedAsContentTag(_ pointer: ContentPointer) -> Self {
-    .buttons([
-      [ .label(for: .refining), .filterIncluding, .filterExcluding ],
-      [ .label(for: .broadening), .removeFrom(pointer), .relabel(.whenAppliedAsContentTag) ],
-      [ .label(for: .editable), .renameAll, .removeAll ],
-      [ .searchFor, .copyText ],
-    ])
-  }
-  
-  static var whenSuggestedAsContentTag: Self {
-    .sections([.refining, .editable, .searchable])
-  }
-  
-  static var whenSuggestedDuringSearch: Self {
-    .sections([.refining, .searchable])
+  static func tagMenu(when ctx: TagMenuContext) -> TagMenuConfig {
+    switch ctx {
+    case .taggedOn(let contentItem):
+      return .buttons([
+        [ .label(for: .refining), .filterIncluding, .filterExcluding ],
+        [ .label(for: .broadening), .removeFrom(contentItem.id), .relabel(ctx) ],
+        [ .label(for: .editable), .renameAll, .removeAll ],
+        [ .searchFor, .copyText ],
+      ])
+      
+    case .taggingContent:
+      return .sections([ .refining, .editable, .searchable ])
+      
+    case .editingBrowseFilters:
+      return .buttons([
+        [ .label(for: .mutable), .changeDate, .relabel(ctx), .filterOff, .invert ],
+        [ .label(for: .editable), .renameAll, .removeAll ],
+        [ .searchFor, .copyText ]
+      ])
+    
+    case .addingBrowseFilters:
+      return .sections([ .refining, .editable, .searchable ])
+      
+    case .refiningSearchQuery:
+      return .sections([ .refining, .searchable ])
+      
+    case .noContext:
+      return .noMenu
+    }
   }
 }

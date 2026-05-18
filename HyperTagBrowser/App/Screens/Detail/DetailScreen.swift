@@ -58,17 +58,7 @@ struct DetailScreen: View {
   
   var body: some View {
     ContentView
-      .contextMenu {
-        ContentItemContextMenu(contentItem: contentItem) { action in
-          switch action {
-          case .removeFilter(_):
-            dispatch(action)
-          default:
-            dispatch(action)
-            dispatch(.popRoute)
-          }
-        }
-      }
+      .contextMenu { CtxMenu }
       .inspector(isPresented: $panelState.contains(.container)) {
         ImageInspector()
           .fillFrame(.vertical, alignment: .top)
@@ -89,8 +79,14 @@ struct DetailScreen: View {
         }
       }
       .withToolbarBackground(useTransparent: .readOnly(detailEnv.fillMode.usesTransparentToolbar))
-      .onChange(of: contentItem, initial: true) {
+      .onChange(of: contentItem, initial: false) {
         onNewImage()
+      }
+      .onAppear {
+        onNewImage()
+      }
+      .onDisappear {
+        detailEnv.teardown()
       }
       .onChange(of: cursor.cursorItem) { oldItem, newItem in
         if let item = newItem {
@@ -157,6 +153,18 @@ struct DetailScreen: View {
       .onAppear {
         bgColor.reset()
       }
+  }
+  
+  var CtxMenu: some View {
+    ContentItemContextMenu(contentItem: contentItem) { action in
+      switch action {
+      case .removeFilter(_):
+        dispatch(action)
+      default:
+        dispatch(action)
+        dispatch(.popRoute)
+      }
+    }
   }
 }
 

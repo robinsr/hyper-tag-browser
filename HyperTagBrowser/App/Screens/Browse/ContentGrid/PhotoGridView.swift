@@ -2,6 +2,7 @@
 
 import Defaults
 import Factory
+import GRDBQuery
 import SwiftUI
 import SwiftUIIntrospect
 
@@ -9,17 +10,16 @@ import SwiftUIIntrospect
 struct PhotoGridView: View {
   private let logger = EnvContainer.shared.logger("PhotoGridView")
   
-  typealias ContentItem = IndexInfoRecord
-  
   @Injected(\Container.executor) var exec
   
   @Environment(\.dispatcher) var dispatch
   @Environment(\.pushState) var navigate
-  @Environment(\.cursorState) var cursor
+  @Environment(\.cursorState) var cursorState
   @Environment(\.modifierKeys) var modState
-  @Environment(\.route) var route
-  
+  @Environment(\.route) var currentRoute
   @Environment(\.dbContentItemsVisible) var items: [IndexInfoRecord]
+  
+  @Query(ListIndexTagCountRequest(contentIds: [])) var dbTagCounts
   
   
   /// Defines the smallest square size a grid item can be. This value is the only one intended to be user-adjustable
@@ -31,22 +31,26 @@ struct PhotoGridView: View {
   /// Defines additional *horizontal* space between items in a row. This value is Zero by default meaning a grid items'
   /// container is directly touching it's neighbors. When the grid item is `active` or `dimmed`, the resulting border
   /// drawn will also have no space between itself and it's neighbors border, which looks a bit awkward.
-  @Default(.photoGridHSpace) var gridItemSpacing
+  @Default(.photoGridHSpace) var photoGridHSpace
   
   /// Defines the same as `gridItemSpacing` but for the vertical space between rows. These can be different, but doing
   /// so will make the grid appear to have non-square items. Ideally these will be refactored to be one value.
-  @Default(.photoGridVSpace) var gridRowSpacing
+  @Default(.photoGridVSpace) var photoGridVSpace
   
-  @Default(.showTagCountOnTiles) var showTagCount
-  
-  //@State var gridItemHovered: ContentIdFocusable = .unset
+  @Default(.seamlessGrid) var seamlessGrid
   
   @State var showGridSheet = false
-  
   @State var gridState = PhotoGridState()
-  
   @State var gridRect: CGRect = .zero
   @State var itemRects: [CGRect]
+  
+  var gridItemSpacing: CGFloat {
+    seamlessGrid ? 0.0 : photoGridHSpace
+  }
+  
+  var gridRowSpacing: CGFloat {
+    seamlessGrid ? 0.0 : photoGridVSpace
+  }
   
   
   /// While `CursorState` manages the more advanced cursor interactions, this state
@@ -62,19 +66,19 @@ struct PhotoGridView: View {
   }
   
   func onItemFirstTap(_ item: ContentItem) {
-    cursor.dispatch(.tap(item, mods: modState.eventModifiers), from: .folder)
+    cursorState.dispatch(.tap(item, mods: modState.modifiers), from: .folder)
   }
   
   func onItemSecondTap(_ item: ContentItem) {
-    if modState.eventModifiers.none {
+    if modState.modifiers.isEmpty {
       navigate(item.link)
     } else {
-      cursor.dispatch(.tap(item, mods: modState.eventModifiers), from: .folder)
+      cursorState.dispatch(.tap(item, mods: modState.modifiers), from: .folder)
     }
   }
   
   func onItemAltTap(_ item: ContentItem) {
-    cursor.dispatch(.tap(item, mods: .control), from: .folder)
+    cursorState.dispatch(.tap(item, mods: .control), from: .folder)
   }
   
   func onGridGeometryChange()  {
@@ -90,10 +94,18 @@ struct PhotoGridView: View {
 
     gridState.gridWidth = gridRect.width
     gridState.itemWidth = itemWidth
-    cursor.verticalDistance = Int(gridState.gridWidth/gridState.itemWidth)
+    cursorState.verticalDistance = Int(gridState.gridWidth/gridState.itemWidth)
   }
   
-  
+  func onGridItemGeometryChange(_ prefs: GridItemGeometryPreferenceKey.Value) {
+    for pref in prefs {
+      // Prevents out-of-range error when the number of grid items configured to
+      // show changes (eg on user preference chagne)
+      if self.itemRects.count > pref.viewIdx {
+        self.itemRects[pref.viewIdx] = pref.rect
+      }
+    }
+  }
   
   var body: some View {
     ScrollViewReader { proxy in
@@ -103,18 +115,9 @@ struct PhotoGridView: View {
             LazyGridContent
               .padding(.horizontal, gridItemSpacing)
               .frame(maxWidth: .infinity)
+              .onPreferenceChange(GridItemGeometryPreferenceKey.self, perform: onGridItemGeometryChange)
               .contextMenu {
                 GridContextMenu
-              }
-              .onPreferenceChange(GridItemGeometryPreferenceKey.self) { prefs in
-                for pref in prefs {
-                  
-                  // Prevents out-of-range error when the number of grid items configured to
-                  // show changes (eg on user preference chagne)
-                  if self.itemRects.count > pref.viewIdx {
-                    self.itemRects[pref.viewIdx] = pref.rect
-                  }
-                }
               }
             
             ErrorCallouts()
@@ -126,16 +129,20 @@ struct PhotoGridView: View {
         ShowAdjustmentsBtn
           .debugVisible(flag: .views_debug)
       }
-      .onChange(of: cursor.position) {
-        proxy.scrollTo(cursor.cursorItem?.id.value)
+      .onChange(of: cursorState.position) {
+        proxy.scrollTo(cursorState.cursorItem?.id.value)
       }
     }
     .onChange(of: items, initial: true) {
-      cursor.items = items
+      cursorState.items = items
+      $dbTagCounts.contentIds.wrappedValue = items.ids
     }
-    .onChange(of: route) { prevRoute, nextRoute in
+    .onChange(
+      of: currentRoute,
+      debounceTime: .milliseconds(200)
+    ) { prevRoute, nextRoute in
       if prevRoute.page == .folder && nextRoute.page == .folder {
-        cursor.clearAndReset()
+        cursorState.clearAndReset()
       }
     }
     .onChange(of: gridRect, debounceTime: .milliseconds(50)) {
@@ -145,17 +152,18 @@ struct PhotoGridView: View {
       onGridGeometryChange()
     }
     .buttonShortcut(binding: .onEnter) {
-      if let item = cursor.anyOneSelected {
+      if let item = cursorState.anyOneSelected {
         navigate(item.link)
       }
     }
     .buttonShortcut(binding: .info) {
-      if let item = cursor.anyOneSelected {
+      if let item = cursorState.anyOneSelected {
         dispatch(.showSheet(.contentDetailSheet(item: item)))
       }
     }
     .buttonShortcut(binding: .editTags, action: exec.edit_EditTagsButton)
     .environment(\.photoGridState, gridState)
+    .environment(\.dbContentItemTagMap, dbTagCounts)
   }
   
   var adaptiveCols: [GridItem] {
@@ -178,106 +186,44 @@ struct PhotoGridView: View {
   
   func PhotoGridItem(item: ContentItem, index: Int) -> some View {
     SelectableItemView(
-      itemState: cursor.focusState(of: item.pointer),
+      itemState: cursorState.focusState(of: item.pointer),
       insetAmount: 0,
       onTap: { interaction, mods in
         switch interaction {
-        case .select:
+        case .willSelect:
           onItemFirstTap(item)
-        case .isSelected:
+        case .willDeselect:
           onItemSecondTap(item)
         default:
           break;
         }
-      }) { state in
-        GridItemView(item: item, index: index, state: state)
-          .padding(9)
-          .background(state.colors.fill)
-          .border(state.colors.stroke, width: 8, cornerRadius: gridState.itemWidth / 24)
       }
-  }
-
-  func GridItemView(item: ContentItem, index: Int, state: SelectionItem.State) -> some View {
-    ThumbnailView(content: item, tileSize: CGSize(gridItemMinSize))
-      .overlay {
-        
-        if showTagCount && item.conforms(to: .content) {
-          TagCountOverlay(item.tags.count)
-        }
-        
-        if cursor.manySelected && cursor.contains(item) {
-          SelectedOverlay
-        }
-        
-        if item.index.visibility == .hidden {
-          ItemVisibilityOverlay
-        }
-      }
-    
-        /// For non-folder types, enable Tag drops
-      .modify(when: item.diverges(from: .folder)) {
-        $0.acceptsTagDrops(addTo: item)
-      }
-    
-        /// For folder types, enable content item drops
-      .modify(when: item.conforms(to: .folder)) {
-        $0.acceptsContentDrops(moveItemTo: item)
-      }
-    
-        /// For content items, enable single-file, file-to-folder transfers
-      .modify(when: item.conforms(to: .content) && cursor.noneSelected) {
-        $0.draggable(ContentPointers([item.pointer])) {
-          ContentDragPreview(items: [item])
-        }
-      }
-    
-        /// When dragging an item not in the selection, allow dragging it as a single item
-      .modify(when: item.conforms(to: .content) && cursor.anySelected && !cursor.contains(item)) {
-        $0.draggable(ContentPointers([item.pointer])) {
-          ContentDragPreview(items: [item])
-        }
-      }
-    
-        /// For content items, enable cursor-based file-to-folder transfers
-      .modify(when: item.conforms(to: .content) && cursor.anySelected && cursor.contains(item)) {
-        $0.draggable(cursor.transferable) {
-          ContentDragPreview(items: cursor.selection)
-            
-        }
-      }
-  }
+    ) { state in
+      GridItemView(item: item, index: index)
+        .padding(9)
+        .background(state.colors.fill)
+        .border(state.colors.stroke, width: 8, cornerRadius: gridState.itemWidth / 24)
+    }
+    /// Enable dragging of content items into folders
+    .draggable(contentItem: item)
   
-  func TagCountOverlay(_ count: Int) -> some View {
-    GridItemThumbnailOverlayView(icon: .tag, label: "\(count)", alignment: .bottomLeading)
-      .fontWeight(.medium)
+    /// For non-folder types, enable Tag drops
+    .modify(when: item.diverges(from: .folder)) { $0
+      .acceptsTagDrops(addTo: item)
+    }
+  
+    /// For folder types, enable content item drops
+    .modify(when: item.conforms(to: .folder)) { $0
+      .acceptsContentDrops(moveItemTo: item.index)
+    }
   }
-  
-  var SelectedOverlay: some View {
-    GridItemThumbnailOverlayView(icon: .itemChecked, alignment: .bottomTrailing)
-      .fontWeight(.bold)
-      .foregroundStyle(.blue)
-  }
-  
-  var ItemVisibilityOverlay: some View {
-    GridItemThumbnailOverlayView(icon: .eyeslash, alignment: .topTrailing)
-      .foregroundStyle(.red)
-  }
-  
-  var ThumbnailIndicatorOverlay: some View {
-    GridItemThumbnailOverlayView(icon: .camera, alignment: .topLeading)
-      .fontWeight(.medium)
-  }
-  
-  
   
   @ViewBuilder
   var GridContextMenu: some View {
-    if cursor.manySelected {
+    if cursorState.manySelected {
       MultiSelectContextMenu(onSelection: dispatch)
-    }
-    
-    if cursor.oneSelected {
-      if let item = items[safe: cursor.position] {
+    } else {
+      if let item = items[safe: cursorState.position] {
         ContentItemContextMenu(contentItem: item, onSelection: dispatch)
       }
     }
@@ -313,7 +259,7 @@ struct GridItemGeometryPreferenceKey: PreferenceKey {
   
   typealias Value = [Data]
 
-  static var defaultValue: Value = []
+  static let defaultValue: Value = []
     
   static func reduce(value: inout Value, nextValue: () -> Value) {
     value.append(contentsOf: nextValue())

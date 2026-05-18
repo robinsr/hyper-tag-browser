@@ -42,7 +42,7 @@ extension SavedQueryRecord: PersistableRecord, FetchableRecord {
     case id, name, query, createdAt, updatedAt
   }
   
-  enum Columns {
+  public enum Columns {
     static let id = Column(CodingKeys.id)
     static let name = Column(CodingKeys.name)
     static let query = JSONColumn(CodingKeys.query)

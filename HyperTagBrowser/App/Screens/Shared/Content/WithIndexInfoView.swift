@@ -24,6 +24,9 @@ struct WithIndexInfoView<Content: View, NotFoundContent: View>: View {
   let content: (IndexInfoRecord) -> Content
   let notFoundContent: () -> NotFoundContent
   
+  @State var contentItem: IndexInfoRecord?
+  @State var loaded = false
+  
   init(
     contentId: ContentId,
     @ViewBuilder content: @escaping (IndexInfoRecord) -> Content,
@@ -35,10 +38,26 @@ struct WithIndexInfoView<Content: View, NotFoundContent: View>: View {
   }
   
   var body: some View {
-    if let indexInfo = try? indexer.getIndexInfo(withId: contentId) {
-      content(indexInfo)
-    } else {
-      notFoundContent()
+    Group {
+      if let contentItem = contentItem {
+        content(contentItem)
+      } else if loaded {
+        notFoundContent()
+      } else {
+        ProgressView()
+      }
+    }
+    .task(id: contentId) {
+      loaded = false
+      contentItem = nil
+      
+      do {
+        contentItem = try await indexer.getContentItem(withId: contentId)
+      } catch {
+        contentItem = nil
+      }
+      
+      loaded = true
     }
   }
 }

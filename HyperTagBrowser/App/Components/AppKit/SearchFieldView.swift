@@ -4,12 +4,25 @@ import AppKit
 import Factory
 import SwiftUI
 
+@MainActor
 struct SearchField: NSViewRepresentable {
+  
+  
+  
+  @MainActor
   class Coordinator: NSObject, NSSearchFieldDelegate {
+    typealias SuggestionItemType = String
+
     private let logger = EnvContainer.shared.logger("SearchField.Coordinator")
     
     var parent: SearchField
     var nsSearchField: NSSearchField
+    
+    enum Mode: Int {
+      case contains, startsWith, exact
+    }
+    
+    private(set) var mode: Mode = .contains
 
     init(_ parent: SearchField) {
       self.parent = parent
@@ -17,6 +30,8 @@ struct SearchField: NSViewRepresentable {
       self.nsSearchField = NSSearchField()
       
       super.init()
+      
+      self.nsSearchField.placeholderString = parent.placeholder
       
       self.nsSearchField.delegate = self
       self.nsSearchField.focusRingType = .none
@@ -31,7 +46,52 @@ struct SearchField: NSViewRepresentable {
       }
       
       self.nsSearchField.isAutomaticTextCompletionEnabled = true
+      
+      // TODO: Support suggestions
+      // self.nsSearchField.suggestionsDelegate = self
+      
+      
+      // TODO: Support search menu template
+      // let menu = NSMenu(title: "Search Options")
+      //
+      // menu.addItem(
+      //   withTitle: "Sort A-Z",
+      //   action: #selector(selectMode(_:)),
+      //   keyEquivalent: ""
+      // )
+      // .tag = Mode.contains.rawValue
+      //
+      // menu.addItem(
+      //   withTitle: "Sort most used",
+      //   action: #selector(selectMode(_:)),
+      //   keyEquivalent: ""
+      // )
+      // .tag = Mode.startsWith.rawValue
+      //
+      // menu.addItem(
+      //   withTitle: "Sort least used",
+      //   action: #selector(selectMode(_:)),
+      //   keyEquivalent: ""
+      // )
+      // .tag = Mode.exact.rawValue
+      //
+      // // Important: make sure actions can reach your target.
+      // menu.items.forEach { $0.target = self }
+      //
+      // self.nsSearchField.searchMenuTemplate = menu
     }
+    
+//    @objc private func selectMode(_ sender: NSMenuItem) {
+//      mode = Mode(rawValue: sender.tag) ?? .contains
+//
+//      // Trigger a re-search if you want:
+//      // performSearch(searchField.stringValue, mode: mode)
+//    }
+//
+//    func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+//      menuItem.state = (menuItem.tag == mode.rawValue) ? .on : .off
+//      return true
+//    }
     
     func controlTextDidChange(_ obj: Notification) {
       if let textField = obj.object as? NSTextField {

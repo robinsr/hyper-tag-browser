@@ -5,12 +5,15 @@ import SwiftUI
 
 
 struct TogglePanelAction: ActionableCommand {
-  @Injected(\Container.appViewModel) private var appVM
+  @InjectedObservable(\Container.appViewModel) private var appVM
+  @Injected(\Container.dispatcher) var dispatch
   
   let panel: AppPanels
+  nonisolated let id: String
   
-  var id: String {
-    "\(panel.rawValue)"
+  init(panel: AppPanels) {
+    self.panel = panel
+    self.id = "\(panel.rawValue)"
   }
   
   var title: String {
@@ -26,6 +29,6 @@ struct TogglePanelAction: ActionableCommand {
   }
 
   func perform(app: AppViewModel) {
-    appVM.dispatch(.togglePanel(panel))
+    dispatch(.togglePanel(panel))
   }
 }

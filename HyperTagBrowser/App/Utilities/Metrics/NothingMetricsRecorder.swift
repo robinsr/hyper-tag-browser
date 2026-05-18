@@ -10,27 +10,19 @@ import StdoutExporter
 import SwiftMetricsShim
 
 
-
-
 /**
  * A no-op metrics recorder that does nothing.
  */
 struct NothingMetricsRecorder : MetricsRecorder {
   
-  let tracerProvider: TracerSdk
-  
   init() {
+    
     let traceProvider = TracerProviderBuilder()
-      //.add(spanProcessor: SimpleSpanProcessor(spanExporter: StdoutSpanExporter(format: .text)))
       .add(spanProcessor: SignPostIntegration())
       .with(resource: DefaultResources().get())
       .build()
 
     OpenTelemetry.registerTracerProvider(tracerProvider: traceProvider)
-    
-    self.tracerProvider = OpenTelemetry.instance.tracerProvider.get(
-      instrumentationName: Constants.appname,
-      instrumentationVersion: "semver:0.1.0") as! TracerSdk
   }
   
   func startAction(named: String, attributes: AttributeValueMap) -> any StoppableMeasurement {

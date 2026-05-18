@@ -20,12 +20,9 @@ enum TagMenuAction: MenuActionable, Equatable, Hashable {
   
     /// Toggle inclusive/exclusive setting for "X"
   case invert
-  
-    /// Remove "X" from some item
-  // case remove
     
     /// Remove "X" from current item
-  case removeFrom(_ content: ContentPointer)
+  case removeFrom(ContentId)
   
     /// Rename all/selected occurrences of "X"
   case renameAll
@@ -34,7 +31,7 @@ enum TagMenuAction: MenuActionable, Equatable, Hashable {
   case removeAll
   
     /// Re-categorize a tag (eg from "artist" to "creator")
-  case relabel(_ context: TagMenuContext)
+  case relabel(TagMenuContext)
   
     /// Search for "X"
   case searchFor
@@ -47,6 +44,9 @@ enum TagMenuAction: MenuActionable, Equatable, Hashable {
   
     /// Adds a non-clickable section header to the context menu
   case text(_ value: String, symbol: String = "")
+  
+    /// A no-op option to indicate no action should be performed
+  case noop
   
   
   /**
@@ -72,6 +72,7 @@ enum TagMenuAction: MenuActionable, Equatable, Hashable {
     case .changeDate: return "changeDate"
     case .text(_,_): return "text"
     case .separator: return "separator"
+    case .noop: return ""
     }
   }
   
@@ -107,19 +108,19 @@ enum TagMenuAction: MenuActionable, Equatable, Hashable {
     case .filterExcluding: return "Filter Not Like This"
     case .filterOff: return "Remove from Filters"
     case .invert: return "Invert Filtering"
-    case .removeFrom: return "Remove Tag from Item"
+    case .removeFrom: return "Untag Item"
     case .renameAll: return "Rename Occurrences"
     case .removeAll: return "Remove Occurrences"
     case .relabel(let context):
       switch context {
-      case .whenAppliedAsQueryFilter: return "Change Attribution Type"
-      case .whenAppliedAsContentTag: return "Recatagorize Tag"
-      default: return ""
+      case .taggedOn(_): return "Recatagorize Tag"
+      default: return "Change Filter Type"
       }
     case .searchFor: return "Search Tag Value"
     case .changeDate: return "Update Date Value"
     case .separator: return ""
     case .text(let title, _): return title
+    case .noop: return ""
     }
   }
 }

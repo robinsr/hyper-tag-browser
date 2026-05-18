@@ -6,6 +6,8 @@ enum AppSheet: Identifiable, Equatable, Hashable {
 
   /// An empty case; receiving `.none` indicates no sheets should be shown
   case none
+  
+  case keyBindings
 
   /// Displays properties of a ContentItem
   case contentDetailSheet(item: ContentItem)
@@ -62,35 +64,38 @@ enum AppSheet: Identifiable, Equatable, Hashable {
     return self._case.rawValue
   }
 
+  @MainActor
   var presentation: SheetPresentation {
     switch self {
-      case .chooseDirectory, .changeDirectory:
-        return ChooseDirectoryForm.presentation
-      case .contentDetailSheet:
-        return ContentDetailSheet.presentation
-      case .createQueueSheet:
-        return CreateQueueView.presentation
-      case .datePickerSheet:
-        return AdjustFilterDateView.presentation
-      case .renameContentSheet:
-        return TextFieldSheet.presentation
-      case .renameTagSheet:
-        return RenameTagSheetView.presentation
-      case .replaceImage:
-        return ImageDiffSheetView.presentation
-      case .newSavedQuerySheet, .updateSavedQuerySheet:
-        return SaveQuerySheetView.presentation
-      case .searchSheet:
-        return SearchView.presentation
-      case .editItemTagsSheet, .editItemsTagsSheet:
-        return ListEditorSheetView.presentation
-      case .userProfiles:
-        return ProfileListSheetView.presentation
-      case .debug_inspectContentItem,
-        .debug_inspectSpotlightData,
-        .debug_inspectFileMetadata:
-        return SheetPresentation.code
-      default:
+    case .keyBindings:
+      return KeyBindingsTable.presentation
+    case .chooseDirectory, .changeDirectory:
+      return ChooseDirectoryForm.presentation
+    case .contentDetailSheet:
+      return ContentDetailSheet.presentation
+    case .createQueueSheet:
+      return CreateQueueView.presentation
+    case .datePickerSheet:
+      return AdjustFilterDateView.presentation
+    case .renameContentSheet:
+      return TextFieldSheet.presentation
+    case .renameTagSheet:
+      return RenameTagSheetView.presentation
+    case .replaceImage:
+      return ImageDiffSheetView.presentation
+    case .newSavedQuerySheet, .updateSavedQuerySheet:
+      return SaveQuerySheetView.presentation
+    case .searchSheet:
+      return SearchView.presentation
+    case .editItemTagsSheet, .editItemsTagsSheet:
+      return TagsEditorSheetView.presentation
+    case .userProfiles:
+      return ProfileListSheetView.presentation
+    case .debug_inspectContentItem,
+      .debug_inspectSpotlightData,
+      .debug_inspectFileMetadata:
+      return JsonSheetView.presentation
+    default:
       return SheetPresentation.modalSticky(controls: .close)
     }
   }
@@ -103,6 +108,7 @@ enum AppSheet: Identifiable, Equatable, Hashable {
   enum Cases: String, CaseIterable, Hashable, Identifiable {
     case none
     
+    case keyBindings
     case changeDirectory
     case chooseDirectory
     case contentDetailSheet
@@ -128,6 +134,8 @@ enum AppSheet: Identifiable, Equatable, Hashable {
 
     var title: String {
       switch self {
+      case .keyBindings:
+          "Keyboard Shortcuts"
         case .contentDetailSheet:
           "File Details"
         case .searchSheet:
@@ -163,6 +171,8 @@ enum AppSheet: Identifiable, Equatable, Hashable {
 
     var keys: String {
       switch self {
+      case .keyBindings:
+          "⌘⇧/"
         case .contentDetailSheet:
           "⌘I"
         case .searchSheet:
@@ -206,6 +216,7 @@ enum AppSheet: Identifiable, Equatable, Hashable {
   var _case: Cases {
     switch self {
       case .none: .none
+      case .keyBindings: .keyBindings
       case .contentDetailSheet: .contentDetailSheet
       case .searchSheet: .searchSheet
       case .editItemTagsSheet: .editItemTagsSheet

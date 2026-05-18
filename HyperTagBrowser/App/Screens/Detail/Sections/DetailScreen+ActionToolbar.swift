@@ -12,7 +12,7 @@ struct DetailScreenToolbarItems: View {
   
   @Default(.inspectorPanels) var panelState
   
-  @Injected(\PreferencesContainer.userPreferences) var userPrefs
+  @Injected(\PreferencesContainer.prefs) var userPrefs
   
   let content: ContentItem
   

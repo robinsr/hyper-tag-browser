@@ -3,9 +3,12 @@
 import Foundation
 
 
-struct ErrorMsg: Codable, CustomStringConvertible, CustomDebugStringConvertible {
+struct ErrorMsg: CustomStringConvertible, CustomDebugStringConvertible {
   var message: String = "No error message given"
-  var details: String = ""
+  var errorDescription: String? = nil
+  var errorDetails: String? = nil
+  
+  var error: Error? = nil
   
   init(_ message: String) {
     self.message = message
@@ -13,22 +16,42 @@ struct ErrorMsg: Codable, CustomStringConvertible, CustomDebugStringConvertible 
   
   init(_ error: any Error) {
     self.message = error.legibleLocalizedDescription
+    self.errorDescription = error.legibleLocalizedDescription
     
-    print(error, to: &self.details)
+    var errorPrintout = ""
+    print(error, to: &errorPrintout)
+    
+    self.errorDetails = errorPrintout
   }
   
   init(_ message: String, _ error: any Error) {
-    self.message = "\(message): \(error.legibleLocalizedDescription)"
+    self.message = message
+    self.errorDescription = error.legibleLocalizedDescription
     
-    print(error, to: &self.details)
+    var errorPrintout = ""
+    print(error, to: &errorPrintout)
+    
+    self.errorDetails = errorPrintout
   }
   
   var description: String {
-    "\(message) \(details)"
+    """
+    ErrorMsg(
+      message: "\(message)"
+      errorDescription: \(errorDescription ?? "none")
+      errorDetails: \(errorDetails ?? "none")
+    )
+    """
   }
   
   var debugDescription: String {
-    "\(message) \(details)"
+    JSONEncoder.pretty(self)
+  }
+  
+  enum CodingKeys: String, CodingKey {
+    case message
+    case errorDescription
+    case errorDetails
   }
   
   

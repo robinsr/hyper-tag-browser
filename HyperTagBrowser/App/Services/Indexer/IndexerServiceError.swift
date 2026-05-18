@@ -2,83 +2,64 @@
 
 import Foundation
 
-enum IndexerServiceError: Error, CustomStringConvertible {
+enum IndexerServiceError: Error, CustomStringConvertible, Sendable {
 
   /// Indicates that the database location is invalid, or otherwise could not be loaded
-  case DatabaseNotFound(URL, attributes: [String: Any]? = nil)
+  case DatabaseNotFound(URL)
   
   /// Indicates that an ID was not found in the database
-  case IdNotFound(String, attributes: [String: Any]? = nil)
+  case IdNotFound(String)
 
   /// Indicates an error occurred during database initialization or migration
-  case InitializationError(Error, attributes: [String: Any]? = nil)
+  case InitializationError(Error)
 
   /// Indicates an unexpected scenario where the database is in an inconsistent state
-  case DataIntegrityError(String, attributes: [String: Any]? = nil)
+  case DataIntegrityError(String)
 
   /// Thrown when a parameter passed to a function is invalid or out of expected range
-  case InvalidParameter(String, attributes: [String: Any]? = nil)
+  case InvalidParameter(String)
 
   /// Thrown when a database operation fails unexpectedly, such as a failed insert or update
-  case OperationFailed(String, err: Error? = nil, attributes: [String: Any]? = nil)
+  case OperationFailed(String, err: Error? = nil)
+  
+  case searchFailed(String)
 
   var description: String {
     switch self {
 
-      case .DatabaseNotFound(let url, _):
+      case .DatabaseNotFound(let url):
         return "Database not found at \(url.path)"
       
-      case .IdNotFound(let id, _):
+      case .IdNotFound(let id):
         return "ID not found in database: \(id)"
 
-      case .InitializationError(let error, _):
+      case .InitializationError(let error):
         return "Database init error: \(error.localizedDescription)"
 
-      case .DataIntegrityError(let message, _):
+      case .DataIntegrityError(let message):
         return "Data integrity error: \(message)"
 
-      case .InvalidParameter(let message, _):
+      case .InvalidParameter(let message):
         return "Invalid parameter: \(message)"
 
-      case .OperationFailed(let message, let err, _):
+      case .OperationFailed(let message, let err):
         if let error = err {
           return "Operation failed: \(message), error: \(error.localizedDescription)"
         } else {
           return "Operation failed: \(message)"
         }
+      
+      case .searchFailed(let message):
+        return "Search failed: \(message)"
     }
   }
 
   var originalError: Error? {
     switch self {
-      case .InitializationError(let error, _): error
-      case .OperationFailed(_, let error, _): error
+      case .InitializationError(let error): error
+      case .OperationFailed(_, let error): error
       default: nil
     }
-  }
-
-  var asNSError: NSError {
-    let attributes =
-      switch self {
-        case .DatabaseNotFound(_, let attributes),
-          .IdNotFound(_, let attributes),
-          .InitializationError(_, let attributes),
-          .DataIntegrityError(_, let attributes),
-          .InvalidParameter(_, let attributes),
-          .OperationFailed(_, _, let attributes):
-          attributes ?? [:]
-      }
-
-    var userInfo: [String: Any] = [
-      NSLocalizedFailureReasonErrorKey: self.description,
-      NSLocalizedRecoverySuggestionErrorKey: "Please check the database or parameters.",
-    ]
-
-    for attr in attributes {
-      userInfo[attr.key] = attr.value
-    }
-
-    return NSError(domain: "IndexerServiceError", code: self.errorCode, userInfo: userInfo)
   }
 }
 
@@ -95,11 +76,8 @@ extension IndexerServiceError: CustomNSError {
       case .DataIntegrityError: 500          // Internal Server Error
       case .InvalidParameter: 400          // Bad Request
       case .OperationFailed: 500          // Internal Server Error
+      case .searchFailed: 500
     }
-  }
-
-  public var errorUserInfo: [String: Any] {
-    asNSError.userInfo
   }
 }
 
@@ -122,6 +100,8 @@ extension IndexerServiceError: LocalizedError {
         return "One or more parameters are invalid."
       case .OperationFailed:
         return "A database operation failed unexpectedly."
+      case .searchFailed:
+        return "Unable to perform search."
     }
   }
 }

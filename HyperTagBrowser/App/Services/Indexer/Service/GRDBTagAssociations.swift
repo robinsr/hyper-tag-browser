@@ -50,9 +50,11 @@ extension GRDBIndexService: ContentTagAssociation {
   //    }
   //  }
 
+  //
   // MARK: - Add Tags (new TagRecord)
+  //
 
-  func associateTag(_ filter: FilteringTag, toContentIds ids: [ContentId]) throws -> [IndexTagRecord] {
+  func tag(_ filter: FilteringTag, on ids: [ContentId]) throws -> [IndexTagRecord] {
     guard let tag = try findOrCreateTagRecords(for: [filter]).first else {
       throw IndxError.OperationFailed("Failed to create tag for value \(filter)")
     }
@@ -64,7 +66,7 @@ extension GRDBIndexService: ContentTagAssociation {
     }
   }
 
-  func associateTags(_ tags: [FilteringTag], toContentIds ids: [ContentId]) throws -> [IndexTagRecord] {
+  func tag(_ tags: [FilteringTag], on ids: [ContentId]) throws -> [IndexTagRecord] {
     let tagRecords = try findOrCreateTagRecords(for: tags)
 
     return try dbWriter.write { db in
@@ -80,12 +82,12 @@ extension GRDBIndexService: ContentTagAssociation {
     }
   }
   
-  func associateTag(_ filter: FilteringTag, matching params: IndxRequestParams) throws -> [IndexTagRecord] {
-    return try associateTag(filter, toContentIds: try getIndexIds(matching: params))
+  func tag(_ filter: FilteringTag, matching params: IndxRequestParams) throws -> [IndexTagRecord] {
+    return try tag(filter, on: try getIndexIds(matching: params))
   }
   
-  func associateTags(_ filters: [FilteringTag], matching params: IndxRequestParams) throws -> [IndexTagRecord] {
-    return try associateTags(filters, toContentIds: try getIndexIds(matching: params))
+  func tag(_ filters: [FilteringTag], matching params: IndxRequestParams) throws -> [IndexTagRecord] {
+    return try tag(filters, on: try getIndexIds(matching: params))
   }
 
   // MARK: - Modify Tags (new TagRecord, new TagIndexRecord, delete TagIndexRecord, delete TagRecord)
@@ -106,9 +108,11 @@ extension GRDBIndexService: ContentTagAssociation {
     }
   }
 
-  private func modifyTags(contentId: ContentId, addedTags: [TagRecord], removingTags: [TagRecord])
-    throws -> TagAssociationChanges
-  {
+  private func setTags(
+    adding addedTags: [TagRecord],
+    removing removingTags: [TagRecord],
+    on contentId: ContentId
+  ) throws -> IndexTagRecord.ChangeSet {
 
     var extantAssociations: [IndexTagRecord] = []
     var deletedAssociations: [IndexTagRecord] = []
@@ -129,7 +133,7 @@ extension GRDBIndexService: ContentTagAssociation {
           .deleteAndFetchAll(db)
       )
 
-      logger.debug(
+      logger.emit(.debug,
         """
           \(associations.count) "existing tag associations found for content \(contentId.shortId.quoted)
           - Adding tags: \(missingTagIds)
@@ -141,33 +145,31 @@ extension GRDBIndexService: ContentTagAssociation {
   }
 
   @discardableResult
-  func modifyTags(
-    forContent contentIds: [ContentId],
-    ensure keepFilters: [FilteringTag],
-    remove deleteFilters: [FilteringTag]
-  ) throws -> TagAssociationChanges {
+  func setTags(
+    adding keepFilters: [FilteringTag],
+    removing deleteFilters: [FilteringTag],
+    on contentIds: [ContentId]
+  ) async throws -> IndexTagRecord.ChangeSet {
 
     let addedTags = try findOrCreateTagRecords(for: keepFilters)
-    let removingTags = try getTagRecords(for: deleteFilters)
+    let removingTags = try await getTagRecords(for: deleteFilters)
 
     var extantAssociations: [IndexTagRecord] = []
     var deletedAssociations: [IndexTagRecord] = []
 
     for contentId in contentIds {
-      let (extant, deleted) = try modifyTags(
-        contentId: contentId, addedTags: addedTags, removingTags: removingTags)
+      let (extant, deleted) = try setTags(adding: addedTags, removing: removingTags, on: contentId)
 
       extantAssociations.append(contentsOf: extant)
       deletedAssociations.append(contentsOf: deleted)
     }
 
-    let deleteCount =
-      try removingTags
+    let deleteCount = try removingTags
       .map { tag in try removeTagIfUnused(tag) }
       .filter { $0 == true }
       .count
 
-    logger.debug(
+    logger.emit(.debug,
       """
         Sumamry of tag association changes
         - ContentIds: \(contentIds.values):
@@ -182,18 +184,76 @@ extension GRDBIndexService: ContentTagAssociation {
 
     return (extantAssociations, deletedAssociations)
   }
+  
+  //
+  // MARK: - Delete Tags (delete IndexTagRecord)
+  //
 
+  func untag(_ filter: FilteringTag, scope: BatchScope) async throws -> Int {
+    guard let tag = try await getTagRecord(for: filter) else {
+      throw IndxError.DataIntegrityError("No tag found for value '\(filter)'")
+    }
+
+    let request =
+      switch scope {
+        case .all:
+          IndexTagRecord.all().matching(filter: filter)
+        default:
+          throw IndxError.InvalidParameter("Scope '\(scope)' not yet supported for tag deletion")
+      }
+
+    let deleteCount = try await dbWriter.write { db in
+      return try request.deleteAll(db)
+    }
+
+    let tagWasDeleted = try removeTagIfUnused(tag)
+
+    logger
+      .emit(
+        .info,
+        "Deleted \("tag associations", qty: deleteCount) for tag \(filter). Deleted tag: \(tagWasDeleted)"
+      )
+
+    return deleteCount
+  }
+
+  func untag(_ filter: FilteringTag, from ids: [ContentId]) async throws -> Int {
+    guard let tag = try await getTagRecord(for: filter) else {
+      throw IndxError.DataIntegrityError("No tag found for value \(filter.rawValue)")
+    }
+
+    let deleteCount = try await dbWriter.write { db in
+      try IndexTagRecord.all()
+        .matching(contentId: ids)
+        .matching(filter: filter)
+        .deleteAll(db)
+    }
+
+    try removeTagIfUnused(tag)
+
+    return deleteCount
+  }
+
+  func untag(_ filter: FilteringTag, from id: ContentId) async throws -> Int {
+    try await untag(filter, from: [id])
+  }
+
+  func untag(_ filter: FilteringTag, matching params: IndxRequestParams) async throws -> Int {
+    let contentIds = try getIndexes(matching: params).map(\.contentId)
+    
+    return try await untag(filter, from: contentIds)
+  }
+
+  //
   // MARK: - Replace Tags (new TagRecord, delete/new TagIndexRecord)
+  //
 
   /**
-   Removes all existing tag associations on contentIds and replaces them with new tags.
+   * Removes all existing tag associations on contentIds and replaces them with new tags.
    */
-  func replaceTags(forContent ids: [ContentId], withSet newTags: [FilteringTag]) throws
-    -> [IndexTagRecord]
-  {
-
+  func setTags(_ newTags: [FilteringTag], on ids: [ContentId]) throws -> [IndexTagRecord] {
     /// Get the current state before making any changes
-    let indexRecords = try getIndexInfo(withId: ids)
+    let indexRecords = try getContentItems(withId: ids)
     let oldAssociations = indexRecords.flatMap(\.tagValues)
 
     /// Ensure there is a TagRecord for each new tag, either creating a new one or fetching an existing
@@ -229,30 +289,30 @@ extension GRDBIndexService: ContentTagAssociation {
     return newAssociations
   }
 
-  func replaceTags(forContent id: ContentId, withSet values: [FilteringTag]) throws
-    -> [IndexTagRecord]
-  {
-    try self.replaceTags(forContent: [id], withSet: values)
+  func setTags(_ values: [FilteringTag], on id: ContentId) throws -> [IndexTagRecord] {
+    try self.setTags(values, on: [id])
   }
 
   // MARK: - Rename Tags (delete TagRecord, new TagRecord/TagIndexRecord)
 
-  func renameTag(_ prevFilter: FilteringTag, to newFilter: FilteringTag) throws -> (
-    TagRecord, [IndexTagRecord]
-  ) {
-    guard let prevTagId = try getTagRecord(for: prevFilter)?.id else {
+  func renameTag(
+    _ prevFilter: FilteringTag,
+    to newFilter: FilteringTag,
+  ) async throws -> (TagRecord, [IndexTagRecord]) {
+    
+    guard let prevTagId = try await getTagRecord(for: prevFilter)?.id else {
       throw IndxError.DataIntegrityError("No tag found for value \(prevFilter.rawValue)")
     }
 
-    if try tagRecordExists(for: newFilter) {
+    if try await tagRecordExists(for: newFilter) {
       logger.emit(
         .info, "Tag with value '\(newFilter.rawValue)' already exists. Consolidating tags instead")
 
-      let updated = try consolidateTag(prevFilter, into: newFilter)
+      let updated = try await consolidateTag(prevFilter, into: newFilter)
 
       logger.emit(.info, "Consolidated tags: \(updated.count) tag association updates")
 
-      guard let tag = try getTagRecord(for: newFilter) else {
+      guard let tag = try await getTagRecord(for: newFilter) else {
         throw IndxError.OperationFailed("Expected tag \(prevFilter) to exist after consolidation")
       }
 
@@ -273,15 +333,17 @@ extension GRDBIndexService: ContentTagAssociation {
     return (targetTag, tagAssociations)
   }
 
-  func renameTag(_ prev: FilteringTag, to updated: FilteringTag, for ids: [ContentId]) throws -> (
-    TagRecord, [IndexTagRecord]
-  ) {
+  func renameTag(
+    _ prev: FilteringTag,
+    to updated: FilteringTag,
+    for ids: [ContentId]
+  ) async throws -> (TagRecord, [IndexTagRecord]) {
 
-    guard let prevTag = try getTagRecord(for: prev) else {
+    guard let prevTag = try await getTagRecord(for: prev) else {
       throw IndxError.DataIntegrityError("No tag found for value \(prev)")
     }
 
-    let currentTagAssociations = try dbReader.read { db in
+    let currentTagAssociations = try await dbReader.read { db in
       try IndexTagRecord.all()
         .matching(tagId: prevTag.id)
         .fetchAll(db)
@@ -291,9 +353,9 @@ extension GRDBIndexService: ContentTagAssociation {
       throw IndxError.DataIntegrityError("No tag associations found for tag \(prev)")
     }
 
-    let newTag = try createTagRecord(for: updated)
+    let newTag = try await createTagRecord(for: updated)
 
-    let touched = try dbWriter.write { db in
+    let touched = try await dbWriter.write { db in
       try IndexTagRecord.all()
         .matching(tagId: prevTag.id)
         .matching(contentId: ids)
@@ -315,10 +377,12 @@ extension GRDBIndexService: ContentTagAssociation {
     return (newTag, touched)
   }
 
-  func renameTag(_ prev: FilteringTag, to updated: FilteringTag, matching params: IndxRequestParams)
-    throws -> (TagRecord, [IndexTagRecord])
-  {
-    return try renameTag(prev, to: updated, for: try getIndexes(matching: params).map(\.contentId))
+  func renameTag(
+    _ prev: FilteringTag,
+    to updated: FilteringTag,
+    matching params: IndxRequestParams
+  ) async throws -> (TagRecord, [IndexTagRecord]) {
+    try await renameTag(prev, to: updated, for: try getIndexes(matching: params).map(\.contentId))
   }
 
   // MARK: - Consolidate Tags (new TagIndexRecord, delete TagRecord)
@@ -344,13 +408,13 @@ extension GRDBIndexService: ContentTagAssociation {
     return updated
   }
 
-  func consolidateTag(_ from: FilteringTag, into: FilteringTag) throws -> [IndexTagRecord] {
-    guard let sourceTag = try getTagRecord(for: from) else {
-      throw IndxError.InvalidParameter("No tag found for value \(from)")
+  func consolidateTag(_ source: FilteringTag, into target: FilteringTag) async throws -> [IndexTagRecord] {
+    guard let sourceTag = try await getTagRecord(for: source) else {
+      throw IndxError.InvalidParameter("No tag found for value \(source)")
     }
 
-    guard let targetTag = try getTagRecord(for: into) else {
-      throw IndxError.InvalidParameter("No tag found for value \(into)")
+    guard let targetTag = try await getTagRecord(for: target) else {
+      throw IndxError.InvalidParameter("No tag found for value \(target)")
     }
 
     return try consolidateTag(fromTag: sourceTag, intoTag: targetTag)

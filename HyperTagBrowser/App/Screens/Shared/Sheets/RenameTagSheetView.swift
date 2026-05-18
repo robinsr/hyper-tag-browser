@@ -4,7 +4,9 @@ import Factory
 import SwiftUI
 
 struct RenameTagSheetView: View, SheetPresentable {
-  static let presentation: SheetPresentation = .modalSticky(controls: .close)
+  // TODO: should be fixed
+  //static let presentation: SheetPresentation = .modalSticky(controls: .close)
+  static let presentation: SheetPresentation = .fixed(width: 520, height: 300)
   
   private let logger = EnvContainer.shared.logger("RenameTagSheetView")
   
@@ -58,7 +60,9 @@ struct RenameTagSheetView: View, SheetPresentable {
   var InfoHeader: some View {
     HStack {
       Text("Renaming tag")
-      TagLabel(tag: tag)
+      TagLabel(for: tag) {
+        TagButtonConfiguration(counts: .never)
+      }
       Text("to:")
     }
   }

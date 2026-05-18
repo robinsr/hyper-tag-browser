@@ -29,7 +29,9 @@ extension NSImage {
   /**
    * Resize the image to the given size.
    *
-   * - Parameter size: The size to resize the image to.
+   * - Parameters:
+   *   - targetSize: The size to resize the image to.
+   *
    * - Returns: The resized image.
    */
   func resize(to targetSize: NSSize) -> NSImage {

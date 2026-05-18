@@ -8,7 +8,7 @@ struct FilePathInput: View {
   
   @Binding var selected: URL?
   var label: String
-  var allowedTypes: AllowedFileTypes
+  var allowedTypes: ContentTypeGroup
   
   @State var fileDialogShowing = false
   
@@ -46,7 +46,7 @@ struct FilePathInput: View {
     }
     .fileImporter(
       isPresented: $fileDialogShowing,
-      allowedContentTypes: AllowedFileTypes.types(for: allowedTypes),
+      allowedContentTypes: allowedTypes.expandedTypes.asArray,
       allowsMultipleSelection: false,
       onCompletion: onFileImporterCompletion)
   }

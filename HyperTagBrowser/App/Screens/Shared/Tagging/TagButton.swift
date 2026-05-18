@@ -3,138 +3,129 @@
 import Factory
 import SwiftUI
 
-/**
- A button pre-configured for a ``FilteringTag``
 
- - Parameter tag: The ``FilteringTag`` to display
- - Parameter size: The ``PillButtonSize`` size of the button
- - Parameter variant: The ``PillButtonVariant`` variant of the button
- - Parameter label: An optional label to display instead of the tag's `value`
- - Parameter menus: A set of menu options ``ContentTagContextMenu/MenuSections`` sections to display in the context menu. Or:
- - Parameter ctxActions: A set of ``ContentTagContextMenu/Component`` components to display in the context menu
- - Parameter dispatch: The function to call when an action is selected
- - Parameter action: The function to call when the button is tapped
-
- The most common pattern in this app is the TagButton, and for the most part
- there is little variation between them. The general requirements are:
-
- - Displays the tag's `value` (with the option to override with a label
- - Displays the tag's icon (from ``FilteringTag/icon``)
- - Can be either ``PillButtonSize/small`` or ``PillButtonSize/large``
- - Has a context menu, configurable with some set of ``ContentTagContextMenu/Component``
-  components, which when selected will pass the action to the `dispatch` function
-  so that the action can be handled by the parent view
- - Has a *primary action* that is performed when tapped, and when the return key is pressed
-
- Some TODOs left:
-
- - Prevents the keyboard controls from changing the underlying view when a button is focused
-
- */
 struct TagButton: View {
-  private let logger = EnvContainer.shared.logger("TagButton")
+  
+  private let logger = CustomLogger("TagButton", level: .debug)
 
-  @Environment(\.windowSize) var windowSize
+  @Environment(\.isPresented) var isPresented
+  @Environment(\.isFocused) var isFocused
   @Environment(\.dispatcher) var dispatch
 
-  let tag: FilteringTag
+  let filter: AnyFilterable
   let config: TagButtonConfiguration
 
-  init(for tag: FilteringTag, config: TagButtonConfiguration) {
-    self.tag = tag
+  init(for filter: AnyFilterable, config: TagButtonConfiguration) {
+    self.filter = filter
     self.config = config
+  }
+  
+  init(for filter: AnyFilterable, _ config: @escaping () -> TagButtonConfiguration) {
+    self.init(for: filter, config: config())
   }
 
   @State var isPressing = false
   @FocusState var isActiveFocus: Bool
+  
+  var tag: FilteringTag { filter.asFilter }
 
-  func onButtonTap() {
-    config.onTap(tag)
+  func onTapGesture() {
+    if !isPressing {
+      config.onTap(tag)
+    }
   }
-
-
-  var body: some View {
-    Button {
-      logger.emit(.debug, "TagButton - Button action, isPressing=\(isPressing)")
-      
-      if !isPressing {
-        config.onTap(tag)
+  
+  func onLongPressComplete() {
+    logger.debug("Long Press performing callback")
+    config.onLongPress?(tag)
+  }
+  
+  var tapGesture: some Gesture {
+    TapGesture()
+      .onEnded {
+        
       }
-    } label: {
-      config.label(forTag: tag)
-    }
-    .buttonStyle(
-      config.buttonStyle(forWindowSize: windowSize.size)
-    )
-    .modify(when: config.contextMenuConfig != .noMenu) {
-      $0.contextMenu { BtnContextMenu }
-    }
-    .ifLet(config.keyConfig.keyShortcut) {
-      $0.keyboardShortcut($1.keyboardShortcut)
-    }
-    .longPressTagAction(
-      isPressing: $isPressing, action: config.longPressAction, referencing: tag
-    )
-    .simultaneousGesture(
-      TapGesture(count: 2).onEnded {
-        logger.emit(.debug, "TagButton - Double Tap")
-        // TODO: Support TagButton Double Tap action. Scaffolding left here for now.
-      }.exclusively(
-        before: TapGesture(count: 1).onEnded {
-          logger.emit(.debug, "TagButton - Single Tap")
-          config.onTap(tag)
-        })
-    )
+  }
+  
+  @GestureState var isLongPressing = false
+  
+  var longPressGesture: some Gesture {
+    LongPressGesture(minimumDuration: 0.45)
+      .updating($isLongPressing) { cur, prev, _ in
+        logger.debug("Long Press Updated; setting isPressing=true")
+        isPressing = true
+        prev = cur
+      }
+      .onEnded { pressed in
+        logger.debug("Long Press Ended; setting isPressing=false")
+        isPressing = false
+        onLongPressComplete()
+      }
+  }
+  
+  var combinedGesture: some Gesture {
+    tapGesture.exclusively(before: longPressGesture)
+  }
+  
+  var body: some View {
+    TagLabel(for: filter, isPressed: $isPressing, config: config)
+      
+      // Context Menu
+      .modify(when: config.hasMenu) { $0
+        .contextMenu { BtnContextMenu }
+      }
+      
+      // Keyboard shortcut
+      .modify(when: config.hasKeyBinding) { $0
+        .buttonShortcut(binding: config.binding!, action: onTapGesture)
+      }
+    
+      // System drag & drop payload
+      .modify(when: config.draggable) { $0
+        .draggable(filteringTag: tag)
+      }
+      
+      // Tap - least invasive
+      .modify(when: config.hasTap) { $0
+        .onTapGesture {
+          logger.debug("TapGesture ended")
+          onTapGesture()
+        }
+      }
+      
+      // Long press — run alongside tap (shouldn't steal it)
+      .modify(when: config.hasLongPress) { $0
+        .gesture(longPressGesture)
+      }
+    
+      // Accessibility: if it behaves like a control, mark it as such
+      .modify(when: config.hasTap || config.hasLongPress || config.hasMenu) { $0
+        .accessibilityAddTraits(.isButton)
+      }
   }
 
   var BtnContextMenu: some View {
     ContentTagContextMenu(
-      tag: tag,
-      actions: config.contextMenuConfig.buttons,
-      onSelection: config.contextMenuDispatch
+      for: tag,
+      actions: config.buttons,
+      onSelection: config.onMenuItem
     )
-  }
-
-}
-
-struct TagLabel: View {
-  var tag: FilteringTag
-  var label: Text? = nil
-
-  var tagBtnConfig: TagButtonConfiguration {
-    .noopButton(
-      size: .small,
-      variant: .primary(.inclusive)
-    )
-  }
-
-  var body: some View {
-    tagBtnConfig.label(forTag: tag)
-      .labelStyle(
-        PillLabelStyle(
-          size: .small,
-          variant: .primary(.inclusive),
-          isPressed: false
-        ))
   }
 }
 
-#Preview(traits: .defaultViewModel, .fixedLayout(width: 300, height: 400)) {
-  @Previewable @Environment(AppViewModel.self) var appVM
 
+#Preview(traits: .defaultViewModel, .fixed(300, 400)) {
   @Previewable @State var tags: [FilteringTag] = TestData.fruitTags
 
   HorizontalFlowView {
-    TagLabel(tag: .tag("Banana"), label: Text("I'm a banana"))
-
     ForEach(tags.indexed, id: \.1.id) { index, tag in
       TagButton(
         for: tag,
         config: .init(
           size: index % 3 == 0 ? .large : .small,
           variant: index % 2 == 0 ? .primary : .secondary,
-          contextMenuConfig: .sections([.refining, .editable, .searchable]),
-          contextMenuDispatch: { action in
+          menu: .tagMenu(when: .taggingContent),
+          onMenuItem: { action in
             print("Dispatching action: \(action)")
           },
           onTap: { tag in
@@ -146,19 +137,3 @@ struct TagLabel: View {
   }
   .preferredColorScheme(.dark)
 }
-
-
-//  init(
-//    _ tag: FilteringTag,
-//    config: TagButtonConfiguration,
-//    active: @escaping @autoclosure () -> Bool,
-//    dispatch: @escaping DispatchFn = { _ in },
-//    action: @escaping (FilteringTag) -> Void
-//  ) {
-//    self.tag = tag
-//
-//    var configCopy = config
-//    configCopy.contextMenuDispatch = dispatch
-//    configCopy.onTap = action
-//    self.config = configCopy
-//  }

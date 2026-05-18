@@ -1,6 +1,8 @@
 // created on 5/11/25 by robinsr
 
+
 extension KeyBinding {
+  
   struct Group: Hashable, Identifiable, CaseIterable {
     var id: String = .randomIdentifier(10)
     var name: String
@@ -52,7 +54,7 @@ extension KeyBinding {
         .showQuickActions,
         .showSearch,
         .toggleSidebar,
-        .toggleSidebarPosition,
+        .toggleSidebarSide,
         .toggleManageTags,
         .toggleFilters,
         .toggleBookmarks,

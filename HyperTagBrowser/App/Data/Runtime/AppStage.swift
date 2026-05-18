@@ -4,10 +4,8 @@ import Foundation
 
 
 enum AppStage: String {
-  case dev = "alpha"
-  case test = "beta"
-  case prod = "release"
-  
+  case release = "release"
+  case debug = "debug"
   case _preview = "preview"
   
   static var isUnitTest: Bool {
@@ -18,19 +16,19 @@ enum AppStage: String {
     self.rawValue
   }
   
-  var isDev: Bool { self == .dev }
-  var isTest: Bool { self == .test }
-  var isProd: Bool { self == .prod }
-  var isAlpha: Bool { self == .dev }
-  var isBeta: Bool { self == .test }
-  var isRelease: Bool { self == .prod }
+  var isRelease: Bool { self == .release }
+  var isDebug: Bool { self == .debug }
+  var isPreview: Bool { self == ._preview }
+  
   
   var bundleName: String {
     switch self {
-    case ._preview: "TaggedFileBrowserPreview"
-    case .dev: "TaggedFileBrowserAlpha"
-    case .test: "TaggedFileBrowserBeta"
-    case .prod: "TaggedFileBrowser"
+    case ._preview: 
+      return "\(Constants.appname)Previews"
+    case .debug: 
+      return "\(Constants.appname)Debug"
+    default:
+      return Constants.appname
     }
   }
 }
@@ -38,12 +36,12 @@ enum AppStage: String {
 extension AppStage: ExpressibleByStringLiteral {
   init(stringLiteral value: String) {
     switch value.lowercased() {
-    case "dev", "alpha":
-      self = .dev
-    case "test", "beta":
-      self = .test
+    case "preview":
+      self = ._preview
+    case "test", "debug":
+      self = .debug
     case "prod", "release":
-      self = .prod
+      self = .release
     default:
       fatalError("Invalid AppStage value: \(value)")
     }

@@ -82,7 +82,7 @@ struct AlertToastView: View {
   }
   
   var AlertMessage: some View {
-    Text(.init(message.body))
+    Text(.init(message.message))
       .foregroundStyle(foregroundColor.lighten(by: 0.5))
       .font(.system(size: 12))
       .truncationMode(.tail)
@@ -91,21 +91,17 @@ struct AlertToastView: View {
 }
 
 
-
-
-
 #Preview("AlertToastView", traits: .fixedLayout(width: 600, height: 800)) {
-  
   @Previewable @State var messages: [AppMessage] = [
-    .info(TestData.lorem(sentences: .random(in: 2...4))),
-    .ok(TestData.lorem(sentences: .random(in: 2...4))),
-    .warning(TestData.lorem(sentences: .random(in: 2...4))),
-    .error(TestData.lorem(sentences: .random(in: 2...4))),
-    .fatal(TestData.lorem(sentences: .random(in: 2...4))),
+    .info(TestLorem.sentences(count: .random(in: 2...4))),
+    .ok(TestLorem.sentences(count: .random(in: 2...4))),
+    .warning(TestLorem.sentences(count: .random(in: 2...4))),
+    .error(TestLorem.sentences(count: .random(in: 2...4))),
+    .fatal(TestLorem.sentences(count: .random(in: 2...4))),
   ]
   
   BackgroundGradientView(color: .accentColor, intensity: 0.999) {
-    
+    EmptyView()
   }
   .frame(width: 600, height: 800, alignment: .bottom)
   .overlay(alignment: .topLeading) {

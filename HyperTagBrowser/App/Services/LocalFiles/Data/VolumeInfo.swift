@@ -7,9 +7,20 @@ import Regex
 extension URL {
   
   var volumeInfo: VolumeInfo? {
-    guard FileManager.default.fileExists(at: self) else { return nil }
-    
+    guard self.filepath.exists else { return nil }
     return VolumeInfo(url: self)
+  }
+  
+  func getBookmarkData() throws -> Data {
+    try self.bookmarkData(
+      options: [],
+      includingResourceValuesForKeys: [.volumeNameKey, .volumeURLKey, .volumeIdentifierKey, .volumeIsRootFileSystemKey],
+      relativeTo: nil
+    )
+  }
+  
+  var isMounted: Bool {
+    return (try? self.checkPromisedItemIsReachable()) == true
   }
   
   /**
@@ -27,63 +38,81 @@ extension URL {
   }
   
   /**
-   * The name of the volume containing this url, or "Macintosh HD" if not available
+   * The (likely) volume name, derived from `.volumeNameKey` if reachable, else derived
+   * from path if the URL points under /Volumes/<Name>/...
    */
   var volumeName: String {
-    self.volumeInfo?.name ?? VolumeInfo.defaultName
+    if isMounted {
+      if let name = try? self.resourceValues(forKeys: [.volumeNameKey]).volumeName {
+        return name
+      }
+    }
+    
+    let components = self.standardized.pathComponents
+    guard components.count > 2, components[1] == "Volumes" else { return "Unknown Volume" }
+    return components[2]
   }
 }
 
 
 struct VolumeInfo: Encodable {
+  static let defaultVolumeName = "Macintosh HD"
+  
   let url: URL
-  let isVolume: Bool
-  let name: String
-  let uuid: String
-  let identifier: String
-  let subtype: String
-  let isRoot: Bool
-  let isReadable: Bool
-  let isWritable: Bool
-  let isRemovable: Bool
-  let isInternal: Bool
-  let isEjectable: Bool
-  let isBrowsable: Bool
-  let isReadOnly: Bool
-  let isEncrypted: Bool
   
-  init(url: URL) {
-    self.url = url
-    
-    isVolume = url.boolResourceValue(forKey: .isVolumeKey)
-    name = url.resourceValue(forKey: .volumeNameKey) ?? ""
-    uuid = url.resourceValue(forKey: .volumeUUIDStringKey) ?? ""
-    identifier = url.resourceValue(forKey: .volumeIdentifierKey) ?? ""
-    subtype = url.resourceValue(forKey: .volumeSubtypeKey) ?? ""
-    isRoot = url.boolResourceValue(forKey: .volumeIsRootFileSystemKey)
-    isReadable = url.boolResourceValue(forKey: .isReadableKey)
-    isWritable = url.boolResourceValue(forKey: .isWritableKey)
-    isRemovable = url.boolResourceValue(forKey: .volumeIsRemovableKey)
-    isInternal = url.boolResourceValue(forKey: .volumeIsInternalKey)
-    isEjectable = url.boolResourceValue(forKey: .volumeIsEjectableKey)
-    isBrowsable = url.boolResourceValue(forKey: .volumeIsBrowsableKey)
-    isReadOnly = url.boolResourceValue(forKey: .volumeIsReadOnlyKey)
-    isEncrypted = url.boolResourceValue(forKey: .volumeIsEncryptedKey)
+  var isVolume: Bool {
+    url.boolResourceValue(forKey: .isVolumeKey)
   }
   
-  var displayName: String {
-    if isRoot {
-      return Self.defaultName
-    }
-    
-    if name.notEmpty {
-      return name
-    }
-    
-    let volumeNameRegex = Regex(#"^\/Volumes\/([^\/]+)\/.*$"#)
-    
-    return volumeNameRegex.firstMatch(in: url.filepath.string)?.captures[0] ?? "Unknown"
+  var name: String {
+    url.volumeName
   }
   
-  static let defaultName = "Macintosh HD"
+  var uuid: String {
+    url.resourceValue(forKey: .volumeUUIDStringKey) ?? ""
+  }
+  
+  var identifier: String {
+    url.resourceValue(forKey: .volumeIdentifierKey) ?? ""
+  }
+  
+  var subtype: String {
+    url.resourceValue(forKey: .volumeSubtypeKey) ?? ""
+  }
+  
+  var isReadable: Bool {
+    url.boolResourceValue(forKey: .isReadableKey)
+  }
+  
+  var isWritable: Bool {
+    url.boolResourceValue(forKey: .isWritableKey)
+  }
+  
+  var isRemovable: Bool {
+    url.boolResourceValue(forKey: .volumeIsRemovableKey)
+  }
+  
+  var isInternal: Bool {
+    url.boolResourceValue(forKey: .volumeIsInternalKey)
+  }
+  
+  var isEjectable: Bool {
+    url.boolResourceValue(forKey: .volumeIsEjectableKey)
+  }
+  
+  var isBrowsable: Bool {
+    url.boolResourceValue(forKey: .volumeIsBrowsableKey)
+  }
+  
+  var isReadOnly: Bool {
+    url.boolResourceValue(forKey: .volumeIsReadOnlyKey)
+  }
+  
+  var isEncrypted: Bool {
+    url.boolResourceValue(forKey: .volumeIsEncryptedKey)
+  }
+  
+  var isRoot: Bool {
+    url.boolResourceValue(forKey: .volumeIsRootFileSystemKey)
+  }
 }

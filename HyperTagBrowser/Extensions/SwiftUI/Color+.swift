@@ -18,6 +18,10 @@ extension Color {
     self.mix(with: .black, by: percentage)
   }
   
+  var dimmed: Color {
+    self.opacity(0.5)
+  }
+  
   func backgroundGradient(contrast: Double = 0.1) -> LinearGradient {
     let gradient = Gradient(colors: [
       self,

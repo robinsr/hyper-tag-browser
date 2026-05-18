@@ -4,7 +4,7 @@ import Factory
 import SwiftUI
 
 struct TagButtonLongPressViewModifier: ViewModifier {
-  private let logger = EnvContainer.shared.logger("TagButtonLongPressMod")
+  private let logger = CustomLogger("TagButtonLongPressMod", level: .debug)
 
   @Environment(\.dispatcher) var dispatch
 
@@ -14,7 +14,7 @@ struct TagButtonLongPressViewModifier: ViewModifier {
   
   
   func longPressCompleteHandler() {
-    logger.emit(.debug, "onLongPressGesture - perform callback")
+    logger.debug("perform callback")
     
     switch action {
       case .changeDate:
@@ -35,33 +35,35 @@ struct TagButtonLongPressViewModifier: ViewModifier {
         dispatch(.showSheet(.renameTagSheet(tag: tag, scope: .all)))
       case .searchFor:
         dispatch(.showSheet(.searchSheet(query: tag.asSearchString)))
-      case .relabel(.whenAppliedAsContentTag),
-        .relabel(.whenAppliedAsQueryFilter),
-        .relabel(.whenSuggestedAsContentTag),
-        .relabel(.whenSuggestedAsQueryFilter):
-        logger.emit(.error, "Relabeling not possible on long-press")
+      case .relabel(_):
+        logger.error("Relabeling not possible on long-press")
       default:
-        logger.emit(.error, "TagMenuAction not configured for long press: \(action.id)")
+        logger.error("TagMenuAction not configured for long press: \(action.id)")
     }
+  }
+  
+  
+  var longPressGesture: some Gesture {
+    LongPressGesture(minimumDuration: 1.5)
+      .onChanged { _ in
+        logger.debug("Long Press Started; setting isPressed=true")
+        isPressing = true
+      }
+      .onEnded { pressed in
+        logger.debug("Long Press Ended")
+        longPressCompleteHandler()
+        
+        Task { @MainActor in
+          try? await Task.sleep(for: .milliseconds(800))
+          logger.debug("setting isPressed=false")
+          isPressing = false
+        }
+      }
   }
 
   func body(content: Content) -> some View {
     content
-      .simultaneousGesture(
-        LongPressGesture(minimumDuration: 1.5).onChanged { _ in
-          logger.emit(.debug, "onLongPressGesture - Long Press Started")
-          isPressing = true
-        }
-        .onEnded { pressed in
-          logger.emit(.debug, "onLongPressGesture - Long Press Ended")
-          longPressCompleteHandler()
-          
-          DispatchQueue.main.asyncAfter(.milliseconds(800)) {
-            logger.emit(.debug, "onLongPressGesture - setting isPressed=false")
-            isPressing = false
-          }
-        }
-      )
+      .simultaneousGesture(longPressGesture)
   }
 }
 

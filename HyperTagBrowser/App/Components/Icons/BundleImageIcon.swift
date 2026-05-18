@@ -41,6 +41,6 @@ struct BundleImageIcon: RawRepresentable, AppIcon {
     BundleImageIcon(rawValue: rawValue, size: size)
   }
   
-  static let database = BundleImageIcon(rawValue: "dbimport")
+  @MainActor static let database = BundleImageIcon(rawValue: "dbimport")
 }
 

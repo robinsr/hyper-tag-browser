@@ -18,6 +18,7 @@ protocol SearchQueryFragment {
 
 
 extension SearchQuery {
+  
   /**
    * A container for a single comparison operation, typically between a file attribute type and a value
    */
@@ -25,9 +26,10 @@ extension SearchQuery {
     var lhs: String
     var rhs: String
     var compare: ComparisonOperator = .equalTo
+    var modifiers: Set<SearchTermModifier> = []
 
     var queryString: String {
-      compare.statement(for: lhs, value: rhs)
+      compare.statement(for: lhs, value: rhs, mods: modifiers.mdQueryModifiers)
     }
 
     var nsPredicate: NSPredicate {
@@ -61,25 +63,14 @@ extension SearchQuery {
       )
     }
   }
-}
-
-
-/**
- * Conformance to SearchableContentAttribute allows an object to be used as a search attribute.
- */
-protocol SearchableContentAttribute {
-  var searchPredicate: SearchQueryFragment { get }
-}
-
-
-extension UTType: SearchableContentAttribute {
-  var searchPredicate: SearchQueryFragment {
-    SearchQuery.Predicate(lhs: "contentType", rhs: identifier, compare: .equalTo)
+  
+  static func and(_ statements: Statements) -> SearchQueryFragment {
+    Compound(opr: .and, statements: statements)
+  }
+  
+  static func or(_ statements: Statements) -> SearchQueryFragment {
+    Compound(opr: .or, statements: statements)
   }
 }
 
-extension ContentTypeGroup: SearchableContentAttribute {
-  var searchPredicate: SearchQueryFragment {
-    SearchQuery.Compound(opr: .or, statements: filetypes.map(\.searchPredicate))
-  }
-}
+

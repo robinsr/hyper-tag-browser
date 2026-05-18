@@ -1,102 +1,130 @@
 // created on 4/2/25 by robinsr
 
-import Factory
-import Foundation
 import AppKit
-import UniformTypeIdentifiers
+import Factory
+@preconcurrency import FileMonitor
+import Foundation
 import System
+import UniformTypeIdentifiers
 
 
-/**
- * Conforming to `FolderObserverDelegate` allows you to receive
- * notifications when the contents of a folder change.
- */
-protocol FolderObserverDelegate {
-  var ignorePaths: Set<FilePath> { get set }
-  func onUnknownChange(at: URL)
-  func onFamiliarChange(item: ContentItem, url: URL)
+enum FolderObserverEvent {
+  case known(ContentItem, FilePath)
+  case unknown(FilePath)
 }
 
+actor FolderObserver {
 
-class FolderObserver: NSObject, NSFilePresenter {
-  
-  @Injected(\IndexerContainer.indexService) var indexer
-  @Injected(\Container.metadataService) var metadata
-  
-  lazy var presentedItemOperationQueue = OperationQueue.main
-  
-  var presentedItemURL: URL?
-  
-  private let delegate: FolderObserverDelegate
-  
-  init(withDelegate delegate: FolderObserverDelegate, url: URL) {
-    self.delegate = delegate
-    self.presentedItemURL = url
+  typealias Event = FolderObserverEvent
 
-    super.init()
+  private let indexer = IndexerContainer.shared.indexService()
+  private let metadata = Container.shared.metadataService()
+  private let logger = EnvContainer.shared.logger("FolderObserverResponder")
 
-    NSFileCoordinator.addFilePresenter(self)
-  }
-  
-  deinit {
-    NSFileCoordinator.removeFilePresenter(self)
-  }
-  
-  private let ignoreNames: [String] = [
-    ".DS_Store", // macOS system file
-    ".localized", // macOS localization file
-    "Thumbs.db", // Windows thumbnail cache
-    "__MACOSX" // macOS archive metadata folder
-  ]
-  
-  private lazy var includeTypes: Set<UTType> = {
-    ContentTypeGroup.content.filetypes
-  }()
-  
-  private let homePath = URL.homeDirectory.filepath
-  
-    // Tells the delegate that the contents or attributes of the specified item changed.
-  func presentedSubitemDidChange(at url: URL) {
-    let urlpath = url.filepath
-    let urlext = url.fileExtension
+  private let filepath: FilePath
+  private var monitor: FileMonitor?
+  private var cont: AsyncStream<Event>.Continuation?
+  private var task: Task<(), Never>?
+
+  init(at path: FilePath) throws {
+    filepath = path
+    //presenter = Presenter(url: path.fileURL)
+    monitor = try FileMonitor(directory: path.fileURL)
     
-    let ignoreDirs = self.delegate.ignorePaths
-    
-    // This method will be called a lot, so attempting to return as early as possible with the least amount of work.
-    
-    // First check the content-type. Dont use URL.contentType as it invokes URLResourceKey which will fail
-    // for non-existent files or files that can't be accessed. Instead derive the type from the file extension.
-    // Any files where getting the UTType fails are irrelevant for the app anyway, so are ignored
-    guard let contentType = UTType(filenameExtension: urlext) else { return }
-    
-    // Check if the contentType is of a type we care about
-    guard includeTypes.contains(contentType) else { return }
-    
-    // Check if the changed file is a descendant of any of the ignored directories
-    guard !ignoreDirs.contains(startOf: urlpath) else { return }
-    
-    
-    // Check if its disallowed by filename (e.g. system files)
-    if ignoreNames.contains(url.filename) { return }
-    
-    
-    guard let contentId = try? metadata.retrieveXID(for: url) else {
-      // Ignore files that are not recognized as content
-      self.delegate.onUnknownChange(at: url)
+    guard let stream = monitor?.stream else {
+      logger.emit(.error, "No stream from file monitor")
       return
     }
     
-    do {
-      guard let indx = try indexer.getIndexInfo(withId: contentId) else {
-        print("No index found for contentId \(contentId)")
-        return
+    Task {
+      for await event in stream {
+        switch event {
+        case .added(let file):
+          logger.emit(.info, "New file \(file.path)")
+          await self.handle(file)
+        case .changed(let changedURL):
+          logger.emit(.info, "Ignored file change event: \(changedURL.path)")
+        case .deleted(let deletedFile):
+          logger.emit(.info, "Ignored file deleted event: \(deletedFile.path)")
+        }
       }
-      
-      self.delegate.onFamiliarChange(item: indx, url: url) 
-    } catch {
-      print("Error reading index for contentId \(contentId): \(error)")
+    }
+    
+    Task {
+      try await monitor?.start()
+    }
+
+    logger.emit(.info, "New FolderObserverResponder at url \(filepath.string)")
+  }
+  
+  deinit {
+    monitor?.stop()
+    monitor = nil
+  }
+
+
+  func stream() -> AsyncStream<Event> {
+    AsyncStream(Event.self) { continuation in
+      self.cont = continuation
+      continuation.onTermination = { [weak self] _ in
+        Task {
+          await self?.stop()
+        }
+      }
+    }
+  }
+
+  func send(_ event: Event) { cont?.yield(event) }
+
+  func stop() {
+    cont?.finish()
+    cont = nil
+  }
+
+  private let ignoredDirectories: Set<FilePath> = [
+    FilePath("~/Library").expandingTilde()
+  ]
+
+  private let ignoreNames: [String] = [
+    ".DS_Store",          // macOS system file
+    ".localized",          // macOS localization file
+    "Thumbs.db",          // Windows thumbnail cache
+    "__MACOSX",          // macOS archive metadata folder
+  ]
+
+
+  /**
+   * Tells the delegate that the contents or attributes of the specified item changed. This method
+   * is invoked a lot, so attempting to return as early as possible with the least amount of work.
+   */
+  func handle(_ url: URL) {
+    // Ignore file deletion and file renames
+    guard url.filepath.exists else { return }
+
+    // First check the content-type. Dont use URL.contentType as it invokes URLResourceKey which will fail
+    // for non-existent files or files that can't be accessed. Instead derive the type from the file extension.
+    // Any files where getting the UTType fails are irrelevant for the app anyway, so are ignored
+    guard let contentType = UTType(filenameExtension: url.fileExtension) else { return }
+
+    // Check if the contentType is of a type we care about
+    guard ContentTypeGroup.content.filetypes.contains(contentType) else { return }
+
+    // Check if the changed file is a descendant of any of the ignored directories
+    guard !ignoredDirectories.contains(startOf: url.filepath) else { return }
+
+    // Check if its disallowed by filename (e.g. system files)
+    if ignoreNames.contains(url.filename) { return }
+
+    logger.emit(.debug.off, "Subitem appeared: \(url.filepath.string)")
+
+    Task {
+      if let contentId = try? metadata.retrieveXID(for: url),
+         let record = try? await indexer.getContentItem(withId: contentId)
+      {
+        self.send(.known(record, url.filepath))
+      } else {
+        self.send(.unknown(url.filepath))
+      }
     }
   }
 }
-
-

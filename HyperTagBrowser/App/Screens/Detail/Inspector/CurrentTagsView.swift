@@ -27,7 +27,6 @@ struct CurrentTagsView: View {
           for: tag.asFilter,
           config: tagButtonConfig
         )
-          //.longPressTagAction(.renameAll, referencing: tag.asFilter)
       }
     }
     .onChange(of: contentItem) {
@@ -42,11 +41,10 @@ struct CurrentTagsView: View {
   }
 
   var tagButtonConfig: TagButtonConfiguration {
-    .init(
-      size: .small,
-      variant: .primary,
-      contextMenuConfig: .whenAppliedAsContentTag(contentItem.pointer),
-      contextMenuDispatch: { action in
+    TagButtonConfiguration(
+      counts: .never,
+      menu: .tagMenu(when: .taggedOn(contentItem)),
+      onMenuItem: { action in
         switch action {
           // By default, no tag context-menu actions really need to go back to
           // the browsescreen, except for the "Add Filter" action.
@@ -57,7 +55,6 @@ struct CurrentTagsView: View {
             dispatch(action)
         }
       },
-      longPressAction: .renameAll
     )
   }
 }

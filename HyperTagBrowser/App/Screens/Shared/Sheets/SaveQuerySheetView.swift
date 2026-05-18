@@ -140,10 +140,11 @@ struct SaveQuerySheetView: View, SheetPresentable {
         } else {
           HorizontalFlowView(itemSpacing: 6, rowSpacing: 4) {
             ForEach(group.items, id: \.tag.id) { item in
-              TagButton(
-                for: item.tag,
-                config: .noopButton(variant: .primary(item.effect))
-              )
+              TagButton(for: item.tag) {
+                TagButtonConfiguration(
+                  variant: .primary(item.effect)
+                )
+              }
             }
           }
         }

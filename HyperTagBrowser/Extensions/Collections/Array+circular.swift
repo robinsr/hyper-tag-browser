@@ -2,17 +2,16 @@
 
 extension Array {
   
-  /**
-   Returns the element at the given index, wrapping around the array.
-   */
-  subscript(circular index: Int) -> Int {
-    var i = index
-    if i < 0 {
-      i = count - 1
-    } else if i > count - 1 {
-      i = 0
+  subscript(wrapping index: Int) -> Element {
+    let remain = index % count
+    
+    if remain == 0 {
+      return self[0]
+    } else if remain > 0 {
+      return self[remain]
+    } else {
+      return self[count + remain]
     }
-    return i
   }
   
   /**

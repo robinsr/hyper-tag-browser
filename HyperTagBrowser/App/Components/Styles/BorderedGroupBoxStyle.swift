@@ -65,7 +65,7 @@ extension GroupBoxStyle where Self == BorderedGroupBoxStyle {
 #Preview("Plain GroupBox", traits: .defaultViewModel) {
   VStack {
     GroupBox("Plain GroupBox") {
-      Text(TestData.LOREM)
+      Text(TestLorem.loremText)
     }
     .groupBoxStyle(.bordered)
     .fillFrame(.horizontal)

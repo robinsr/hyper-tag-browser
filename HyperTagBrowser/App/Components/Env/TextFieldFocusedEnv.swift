@@ -11,8 +11,8 @@ struct IsTypingEnvKey: EnvironmentKey {
   static let defaultValue: IsFocused = .constant(false)
 }
 
-struct TextFieldFocusedEnvKey: EnvironmentKey {
-  static let defaultValue = TextFieldFocusedObserver()
+struct TextFieldFocusedEnvKey: @preconcurrency EnvironmentKey {
+  @MainActor static let defaultValue = TextFieldFocusedObserver()
 }
 
 extension EnvironmentValues {

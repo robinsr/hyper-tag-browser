@@ -5,9 +5,9 @@ import SwiftUI
 extension KeyEquivalent {
   
   /**
-    Returns a single-character string containing the key's unicode glyph equivalent
+   * Returns the key's unicode glyph equivalent as a single-entry string
    */
-  var asCharacter: String {
+  var asSymbol: String {
     switch self {
     case .delete: return "⌫"
     case .escape: return "⎋"
@@ -24,25 +24,48 @@ extension KeyEquivalent {
     }
   }
   
+  var name: String {
+    switch self {
+    case .delete: return "delete"
+    case .escape: return "escape"
+    case .tab: return "tab"
+    case .space: return "space"
+    case .return: return "return"
+    case .rightArrow: return "rightArrow"
+    case .leftArrow: return "leftArrow"
+    case .downArrow: return "downArrow"
+    case .upArrow: return "upArrow"
+    case .pageDown: return "pageDown"
+    case .pageUp: return "pageUp"
+    default: return self.character.uppercased()
+    }
+  }
+  
+  var keyName: String {
+    return "Key\(name.uppercased())"
+  }
+  
   var shiftCharacter: String {
     switch self.character {
     case ",": return "<"
     case ".": return ">"
-    default: return self.asCharacter
+    default: return self.asSymbol
     }
   }
   
   var asText: Text {
-    return Text(self.asCharacter).monospaced()
+    return Text(self.asSymbol).monospaced()
   }
   
-  var symbolName: String {
+  var sfSymbolName: String {
+    // For numeric keys, return "1.square", "2.square", etc
     if KeyEquivalent.numeric.contains(self) {
       return "\(self).square"
     }
     
+    // For alpha keys, return "a.square", "b.square", etc
     if KeyEquivalent.alphabet.contains(self) {
-      return "\(self.asCharacter.lowercased()).square"
+      return "\(self.asSymbol.lowercased()).square"
     }
     
     switch self {
@@ -94,6 +117,6 @@ extension KeyEquivalent {
 
 extension String.StringInterpolation {
   mutating func appendInterpolation(key: KeyEquivalent) {
-    appendInterpolation(key.asCharacter)
+    appendInterpolation(key.keyName)
   }
 }

@@ -4,7 +4,7 @@
     "" : {
 
     },
-    "(%lld)" : {
+    "..." : {
 
     },
     "#%@" : {
@@ -26,9 +26,6 @@
         }
       }
     },
-    "%@ Help" : {
-
-    },
     "%lld hidden" : {
 
     },
@@ -41,19 +38,13 @@
     "100%" : {
 
     },
-    "Add ${fileURL} to the index" : {
-
-    },
-    "Add file to index" : {
-
-    },
     "Add Profile" : {
 
     },
-    "Add to Queue" : {
+    "Add tag (%@)" : {
 
     },
-    "Adds a file to the file-tracking index using the default profile" : {
+    "Add to Queue" : {
 
     },
     "Adjust Date Filter" : {
@@ -95,9 +86,6 @@
     "Choose File" : {
 
     },
-    "Choose Folder" : {
-
-    },
     "Clear Selection" : {
 
     },
@@ -116,10 +104,16 @@
     "Copy ID" : {
 
     },
+    "Copy tags" : {
+
+    },
     "Create a new Queue" : {
 
     },
     "Created" : {
+
+    },
+    "Created %@" : {
 
     },
     "Current folder: %@" : {
@@ -132,6 +126,9 @@
 
     },
     "Date Range" : {
+
+    },
+    "Debug" : {
 
     },
     "Delete" : {
@@ -158,6 +155,9 @@
     "Discard Data" : {
 
     },
+    "Done" : {
+
+    },
     "Drag an image here" : {
 
     },
@@ -167,16 +167,22 @@
     "Edit Tags" : {
 
     },
+    "Eject" : {
+
+    },
     "Enable request and/or response logging for %@ queries" : {
 
     },
     "Enabled" : {
 
     },
-    "File" : {
+    "Error in database: %@" : {
 
     },
     "Filename" : {
+
+    },
+    "Filter on *%@*" : {
 
     },
     "Filter on..." : {
@@ -212,9 +218,6 @@
     "Grid Spacing Controls" : {
 
     },
-    "Grid Tile Inset" : {
-
-    },
     "Grid Tile Min Size" : {
 
     },
@@ -239,7 +242,13 @@
     "Item Visibility: **%@**" : {
 
     },
-    "Keybinds" : {
+    "JSON Data" : {
+
+    },
+    "Key Bindings" : {
+
+    },
+    "Keyboard Shortcuts" : {
 
     },
     "Main Screen" : {
@@ -284,7 +293,16 @@
     "Number of matching files that %@ has a record of, but are no longer accessible at the last known location" : {
 
     },
+    "Paste tags" : {
+
+    },
+    "Preference File" : {
+
+    },
     "Preserve Data" : {
+
+    },
+    "Profile Data" : {
 
     },
     "Profile Name" : {
@@ -337,6 +355,9 @@
         }
       }
     },
+    "Profiles" : {
+
+    },
     "Query" : {
 
     },
@@ -372,6 +393,16 @@
     },
     "Renaming tag" : {
 
+    },
+    "Replace *%@* with *(%@)*" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Replace *%1$@* with *(%2$@)*"
+          }
+        }
+      }
     },
     "ReplaceImageContents.Confirm" : {
       "extractionState" : "manual",
@@ -433,6 +464,9 @@
     "Show in Finder" : {
 
     },
+    "Show keys" : {
+
+    },
     "Show More" : {
 
     },
@@ -445,13 +479,10 @@
     "Sort by" : {
 
     },
-    "Stage %@ preference file" : {
+    "Stage %@" : {
 
     },
     "Stashed Tags" : {
-
-    },
-    "Success! %@ has been added to the index." : {
 
     },
     "Switch profiles" : {
@@ -485,6 +516,9 @@
 
     },
     "to:" : {
+
+    },
+    "Toggle *%@*" : {
 
     },
     "Toggle Sidebar Position" : {

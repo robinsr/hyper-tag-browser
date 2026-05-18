@@ -152,8 +152,6 @@ struct IndxRequestParams: Codable, Identifiable, Copyable {
       case .isFolder: return IndexRecord.Selections.conforms(to: .folder)
       case .fileExists: return IndexRecord.Selections.fileExists
       case .tagCount: return IndexRecord.Selections.tagCount
-      default:
-        return Column(self.rawValue).sqlExpression
       }
     }
   }
@@ -322,8 +320,8 @@ extension IndxRequestParams {
     return FilteringTagMultiParam(tags, operator: tagOperator)
   }
   
-  var creationBounds: [BoundedDate] {
-    tagsMatching.inclusiveValues(inDomains: .creation).tags.compactMap(\.boundedDate)
+  var creationBounds: [DateFilter] {
+    tagsMatching.inclusiveValues(inDomains: .creation).tags.compactMap(\.dateFilter)
   }
   
   var fileCreation: SQLExpression {
@@ -342,35 +340,32 @@ extension IndxRequestParams {
 
 
 extension IndxRequestParams {
-  
-  
-    /// A FilterGroup for the ``TagDomain/descriptive`` tags to be inclusively applied
+    /// A FilterGroup for the ``FilteringTag/TagDomain/descriptive`` tags to be inclusively applied
   var includingTags: FilteringTag.FilterGroup {
     .init(name: "Matching Tags", items: tagsMatching.inclusiveValues(inDomains: .descriptive))
   }
   
-    /// A FilterGroup for the ``TagDomain/descriptive`` tags to be exclusively applied
+    /// A FilterGroup for the ``FilteringTag/TagDomain/descriptive`` tags to be exclusively applied
   var excludingTags: FilteringTag.FilterGroup {
     .init(name: "Not Matching Tags", items: tagsMatching.exclusiveValues(inDomains: .descriptive))
   }
   
-    /// A FilterGroup for the ``TagDomain/attribution`` tags to be inclusively applied
+    /// A FilterGroup for the ``FilteringTag/TagDomain/attribution`` tags to be inclusively applied
   var createdAtTags: FilteringTag.FilterGroup {
     .init(name: "Created At", items: tagsMatching.inclusiveValues(inDomains: .creation))
   }
   
-  
-    /// A FilterGroup for the ``TagDomain/attribution`` tags to be exclusively applied
+    /// A FilterGroup for the ``FilteringTag/TagDomain/attribution`` tags to be exclusively applied
   var notCreatedAtTags: FilteringTag.FilterGroup {
     .init(name: "Not Created At", items: tagsMatching.exclusiveValues(inDomains: .creation))
   }
   
-    /// A FilterGroup for the ``TagDomain/queue`` tags to be inclusively applied
+    /// A FilterGroup for the ``FilteringTag/TagDomain/queue`` tags to be inclusively applied
   var inqueueTags: FilteringTag.FilterGroup {
     .init(name: "In Queue", items: tagsMatching.inclusiveValues(inDomains: .queue))
   }
   
-    /// A FilterGroup for the ``TagDomain/queue`` tags to be exclusively applied
+    /// A FilterGroup for the ``FilteringTag/TagDomain/queue`` tags to be exclusively applied
   var notInqueueTags: FilteringTag.FilterGroup {
     .init(name: "Not In Queue", items: tagsMatching.exclusiveValues(inDomains: .queue))
   }
@@ -429,8 +424,6 @@ extension DerivableRequest<IndexRecord> {
 
 
 extension IndxRequestParams {
-  
-  
   /**
    * Returns a dictionary representation of the parameters for use in telemetry metrics.
    */

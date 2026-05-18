@@ -1,18 +1,12 @@
 // created on 9/26/24 by robinsr
 
 import SwiftUI
-import Factory
 
 
 struct AlertView: View {
-  @Injected(\Container.themeProvider) var theme
-  
-  @Environment(AppViewModel.self) var appVM
-  
+  @Environment(\.messages) var messageQueue
   @Environment(\.dispatcher) var dispatch
   @Environment(\.colorScheme) var colorScheme
-  
-  let alertToastDisplayLimit: Int = 3
   
   let transitionIn: AnyTransition = {
     AnyTransition
@@ -28,21 +22,11 @@ struct AlertView: View {
   }()
   
   var toastMessages: [AppMessage] {
-    appVM.messageQueue
-      .filter { msg in
-        msg.level.oneOf(.info, .success, .warning)
-      }
-      .collect()
-      .first(alertToastDisplayLimit)
-      .asArray
+    messageQueue.filter(by: \.isTransient)
   }
   
   var sheetMessages: [AppMessage] {
-    appVM.messageQueue
-      .filter { msg in
-        msg.level.oneOf(.error, .restart)
-      }
-      .collect().first(1).asArray
+    messageQueue.filter(by: \.isPersistent).first(1).asArray
   }
   
   func isPresented(_ message: AppMessage?) -> Binding<Bool> {

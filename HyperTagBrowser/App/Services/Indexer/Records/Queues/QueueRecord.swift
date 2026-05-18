@@ -6,24 +6,23 @@ import UniformTypeIdentifiers
 import GRDB
 
 
-struct QueueRecord: Codable, Identifiable, Filterable {
+struct QueueRecord: Codable, Identifiable, Hashable {
   var id: String = String.randomIdentifier(24, prefix: "queue:")
   var name: String
   var created: Date
   
-  /// A value matching the `TagRecord` that links `IndexRecord` items to this queue
+    /// A value matching the `TagRecord` that links `IndexRecord` items to this queue
   var tagName: String?
   
-  /**
-   An associated folder, files added to the folder will be added to the queue
-   */
+    /// An associated folder, files added to the folder will be added to the queue
   var folder: URL?
-  
+}
+
+extension QueueRecord: Filterable {
   var asFilter: FilteringTag {
     .queue(self.name)
   }
 }
-
 
 extension QueueRecord: TableRecord, FetchableRecord, PersistableRecord {
   static let databaseTableName = "app_workqueues"
@@ -32,7 +31,7 @@ extension QueueRecord: TableRecord, FetchableRecord, PersistableRecord {
     case id, name, created
   }
   
-  enum Columns: String, ColumnExpression {
+  public enum Columns: String, ColumnExpression {
     case id, name, created, tagName
   }
   

@@ -4,32 +4,6 @@
 import AppKit
 
 
-extension NSWindow {
-  private enum AssociatedKeys {
-    static let cancellable = ObjectAssociation<AnyCancellable?>()
-  }
-
-  func makeVibrant() {
-    // So there seems to be a visual effect view already created by NSWindow.
-    // If we can attach ourselves to it and make it a vibrant one - awesome.
-    // If not, let's just add our view as a first one so it is vibrant anyways.
-    guard let visualEffectView = contentView?.superview?.subviews.lazy.compactMap({ $0 as? NSVisualEffectView }).first
-    else {
-      contentView?.superview?.insertVibrancyView(material: .underWindowBackground)
-      return
-    }
-
-    visualEffectView.blendingMode = .behindWindow
-    visualEffectView.material = .underWindowBackground
-
-    AssociatedKeys.cancellable[self] = visualEffectView.publisher(for: \.effectiveAppearance)
-      .sink { _ in
-        visualEffectView.blendingMode = .behindWindow
-        visualEffectView.material = .underWindowBackground
-      }
-  }
-}
-
 final class ObjectAssociation<Value: Any> {
   private let defaultValue: Value
   private let policy: AssociationPolicy

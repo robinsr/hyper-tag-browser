@@ -3,19 +3,18 @@
 
 extension FilteringTag {
   
-  
   /**
-   * While not named very descriptively, this struct represents a FilteringTag with an _effect_.
+   * While not named very descriptively, this struct models a `FilteringTag`
+   * combined with an `FilterEffect`. It defines how a filter should be applied
+   * to some filterable set of items.
    *
-   *
-   * A ``FilteringTag`` just describes a single differentiated value (a string, a date, an identifier, etc.) amd captures
-   * the various categorically-defined requirements for that tag (what icon to use, what label to display before it, how
-   * to format it's value).
-   *
-   * A ``FilteringTag/Filter`` combines a FilteringTag with a ``FilteringTag/FilterEffect`` which defines how that
-   * tag should be applied to a query, or set of content items.
+   * Same thing as Foundation's `Predicate`:
+   *   - `Predicate.value` (`FilteringTag.Filter.tag`)
+   *   - `Predicate.expression` (`FilteringTag.Filter.effect`)
    */
-  struct Filter: Equatable, Hashable, Identifiable, Codable, CustomStringConvertible {
+  struct Filter: Equatable, Hashable, Identifiable, Codable,
+                 CustomStringConvertible, Filterable {
+    
     // var value: FilteringTag
     var tag: FilteringTag
     var effect: FilteringTag.FilterEffect = .inclusive
@@ -34,6 +33,10 @@ extension FilteringTag {
       "FilteringTag.Filter(\(tag.rawValue), \(effect.description))"
     }
     
+    var asFilter: FilteringTag {
+      self.tag
+    }
+    
     static func == (lhs: Filter, rhs: Filter) -> Bool {
       lhs.tag == rhs.tag && lhs.effect == rhs.effect
     }
@@ -47,7 +50,7 @@ extension FilteringTag {
   
   
   /**
-   * Defines whether a filtering tag is inclusive or exclusive
+   * Defines the different effects a `FilteringTag` 
    */
   enum FilterEffect: String, Codable, CustomStringConvertible {
     

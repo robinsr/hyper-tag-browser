@@ -25,7 +25,7 @@ extension FilteringTag {
    * The `TagType` also allows you to create new tags of the same type, which can be useful for mutating filters
    * already in use.
    */
-  enum TagType: String, Codable, CaseIterable, CustomStringConvertible {
+  enum TagType: String, Codable, CaseIterable {
     
     case tag
     case artist
@@ -42,7 +42,7 @@ extension FilteringTag {
     case createdAfter
 
    
-    var description: String {
+    var displayString: String {
       switch self {
       case .tag: ""
       case .artist: "Artist"
@@ -98,12 +98,50 @@ extension FilteringTag {
       }
     }
     
-    var fsAttribute: String {
-      switch domain {
-      case .descriptive: return "keyword"
-      case .attribution: return "creator"
-      case .creation: return "contentCreationDate"
-      default: return "displayName"
+    var csSearchableAttribute: String {
+      switch self {
+      case .tag,
+          .queue:
+        return "keywords"
+      case .artist,
+          .creator,
+          .contributor,
+          .owner:
+        return "contributors"
+      case .related:
+        return "displayName"
+      case .createdBefore,
+          .createdOnOrBefore,
+          .createdOn,
+          .createdOnOrAfter,
+          .createdAfter:
+        return "contentCreationDate"
+      }
+    }
+    
+    /**
+     * The **Metadata Query Attribute Key** correspndonding to this TagType
+     *
+     * See [Common Metadata Attribute Keys](https://developer.apple.com/documentation/coreservices/file_metadata/mditem/common_metadata_attribute_keys)
+     */
+    var mdQueryAttribute: String {
+      switch self {
+      case .tag, 
+          .queue:
+        return "kMDItemKeywords"
+      case .artist,
+          .creator,
+          .contributor,
+          .owner:
+        return "kMDItemContributors"
+      case .related:
+        return "kMDItemFSName"
+      case .createdBefore,
+          .createdOnOrBefore,
+          .createdOn,
+          .createdOnOrAfter,
+          .createdAfter:
+        return "kMDItemContentCreationDate"
       }
     }
     
@@ -138,22 +176,29 @@ extension FilteringTag {
       case .related:
         return .related(value)
       case .createdBefore:
-        guard let date = Date.parseDateString(value) else { return nil }
-        return .created(BoundedDate(date: date, bounds: .before))
+        guard let dateFilter = DateFilter.before(value) else { return nil }
+        return .created(dateFilter)
       case .createdOnOrBefore:
-        guard let date = Date.parseDateString(value) else { return nil }
-        return .created(BoundedDate(date: date, bounds: .onOrBefore))
+        guard let dateFilter = DateFilter.onOrBefore(value) else { return nil }
+        return .created(dateFilter)
       case .createdOn:
-        guard let date = Date.parseDateString(value) else { return nil }
-        return .created(BoundedDate(date: date, bounds: .on))
+        guard let dateFilter = DateFilter.onDate(value) else { return nil }
+        return .created(dateFilter)
       case .createdOnOrAfter:
-        guard let date = Date.parseDateString(value) else { return nil }
-        return .created(BoundedDate(date: date, bounds: .onOrAfter))
+        guard let dateFilter = DateFilter.onOrAfter(value) else { return nil }
+        return .created(dateFilter)
       case .createdAfter:
-        guard let date = Date.parseDateString(value) else { return nil }
-        return .created(BoundedDate(date: date, bounds: .after))
+        guard let dateFilter = DateFilter.after(value) else { return nil }
+        return .created(dateFilter)
       }
     }
+  }
+}
+
+
+extension FilteringTag.TagType: CustomStringConvertible {
+  var description: String {
+    "FilteringTag.TagType.\(rawValue)"
   }
 }
 

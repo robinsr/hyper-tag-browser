@@ -2,26 +2,28 @@
 
 import Factory
 import Foundation
-import OpenTelemetryApi
-import OpenTelemetrySdk
+@preconcurrency import OpenTelemetryApi
+@preconcurrency import OpenTelemetrySdk
+import OpenTelemetryConcurrency
 import ResourceExtension
 import SignPostIntegration
 import StdoutExporter
 
-//import Logging
 import os
+
+// This typealias will be preferred over the name in either package, so you only have to refer to the module name once
+typealias OpenTelemetry = OpenTelemetryConcurrency.OpenTelemetry
+
 
 
 /**
  * A metrics recorder that records measurements to the console.
  */
-struct StdoutMetricsRecorder: MetricsRecorder {
-  static let shared = StdoutMetricsRecorder()
-  
-  let tracerProvider: TracerSdk
-  let meter: StableMeter
+struct StdoutMetricsRecorder: MetricsRecorder, Sendable {
   
   init() {
+    OpenTelemetry.registerDefaultConcurrencyContextManager()
+    
     let spanExporter = StdoutSpanExporter(format: .text)
     let spanProcessor = SimpleSpanProcessor(spanExporter: spanExporter)
     let resources = DefaultResources().get()
@@ -34,36 +36,37 @@ struct StdoutMetricsRecorder: MetricsRecorder {
 
     OpenTelemetry.registerTracerProvider(tracerProvider: traceProvider)
     
-    self.tracerProvider = OpenTelemetry.instance.tracerProvider.get(
-      instrumentationName: Constants.appname,
-      instrumentationVersion: "semver:0.1.0") as! TracerSdk
-    
-    let periodicExporter = StablePeriodicMetricReaderBuilder(exporter: StdoutMetricExporter(isDebug: false))
+    let periodicExporter = PeriodicMetricReaderBuilder(exporter: StdoutMetricExporter(isDebug: false))
       .setInterval(timeInterval: 5.0)
       .build()
     
-    let metricsProvider = StableMeterProviderBuilder()
+    OpenTelemetry.registerMeterProvider(meterProvider: MeterProviderSdk.builder()
       .registerMetricReader(reader: periodicExporter)
       // .registerView(
       //   selector: InstrumentSelectorBuilder().setInstrument(type: .histogram).build(),
       //   view: OpenTelemetrySdk.StableView.builder().build()
       // )
       .setResource(resource: resources)
-      .build()
-    
-    
-    OpenTelemetry.registerStableMeterProvider(meterProvider: metricsProvider)
-    
-    guard let sMeterProvider = OpenTelemetry.instance.stableMeterProvider?.get(name: Constants.appname) else {
-      fatalError("Failed to get stable meter provider")
+      .build())
+  }
+  
+  func getTracerProvider() -> TracerWrapper {
+    OpenTelemetry.instance.tracerProvider
+      .get(instrumentationName: Constants.appname, instrumentationVersion: "semver:0.1.0")
+  }
+  
+  func getMeter() -> any Meter {
+    guard let sMeterProvider = OpenTelemetry.instance.meterProvider?.get(name: Constants.appname) else {
+      print("Could not get meter provider")
+      return MeterProviderSdk.builder().build().get(name: Constants.appname)
     }
     
-    self.meter = sMeterProvider
-    
+    return sMeterProvider
   }
   
   func startAction(named name: String, attributes: AttributeValueMap) -> any StoppableMeasurement {
-    let span = tracerProvider.spanBuilder(spanName: name)
+    let span = getTracerProvider().inner
+      .spanBuilder(spanName: name)
       .setActive(true)
       .startSpan()
     
@@ -75,7 +78,8 @@ struct StdoutMetricsRecorder: MetricsRecorder {
   }
   
   func startTimer(named name: String, attributes: AttributeValueMap) -> any StoppableMeasurement {
-    let span = tracerProvider.spanBuilder(spanName: name)
+    let span = getTracerProvider().inner
+      .spanBuilder(spanName: name)
       .startSpan()
     
     for (key, value) in attributes {
@@ -86,7 +90,7 @@ struct StdoutMetricsRecorder: MetricsRecorder {
   }
   
   func createHistogram(named name: String) -> any AggregatingMeasurement {
-    HistogramMeasurement(histogram: meter.histogramBuilder(name: name).build())
+    return HistogramMeasurement(histogram: getMeter().histogramBuilder(name: name).build())
   }
 }
 

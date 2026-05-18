@@ -8,7 +8,7 @@ struct SearchTermToken: View {
   var body: some View {
     VStack {
       Text(term.rawValue)
-      Text(term.asFilter.description)
+      Text(term.asFilter.rawValue)
     }
     .padding(4)
     .background(Color.secondary, in: RoundedRectangle(cornerRadius: 5))

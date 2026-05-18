@@ -10,14 +10,14 @@ fileprivate let PIPE = String("|")
 fileprivate let PIPE_CHAR = Character("|")
 
 
-enum FilteringTag: Identifiable, Equatable, Hashable, CustomStringConvertible {
+enum FilteringTag: Identifiable, Equatable, Hashable {
   
   case tag(String)
   case artist(String)
   case creator(String)
   case contributor(String)
   case owner(String)
-  case created(BoundedDate)
+  case created(DateFilter)
   case queue(String)
   case related(String)
 
@@ -57,8 +57,8 @@ enum FilteringTag: Identifiable, Equatable, Hashable, CustomStringConvertible {
         .related(let value):
       return value
     case
-        .created(let boundedDate):
-      return boundedDate.rawValue
+        .created(let dateFilter):
+      return dateFilter.rawValue
     }
   }
 
@@ -82,13 +82,13 @@ enum FilteringTag: Identifiable, Equatable, Hashable, CustomStringConvertible {
         return TagType.queue
     case .related:
         return TagType.related
-    case .created(let date):
-      switch date.bounds {
+    case .created(let dateFilter):
+      switch dateFilter.comparison {
       case .before:
         return TagType.createdBefore
       case .onOrBefore:
         return TagType.createdOnOrBefore
-      case .on:
+      case .onDate:
         return TagType.createdOn
       case .onOrAfter:
         return TagType.createdOnOrAfter
@@ -106,37 +106,35 @@ enum FilteringTag: Identifiable, Equatable, Hashable, CustomStringConvertible {
    * - "createdOn: 2021-10-29"
    * - "tag: rock"
    */
-  var description: String {
-    let label = self.type.description
+  var displayString: String {
+    let tagType = self.type.displayString
     
-    if label.isEmpty {
+    if tagType.isEmpty {
       return self.value
     }
     
-    if let tagDate = self.date {
-      return "\(label) \(DateFormatter.medium.string(from: tagDate))"
+    if let dateFilter = self.dateFilter {
+      return "\(tagType) \(dateFilter.displayString)"
     }
     
-    return "\(label): \(self.value)"
+    return "\(tagType): \(self.value)"
   }
 
   /**
    * Returns the relevant date for the tag if it is a date-related tag.
    */
   var date: Date? {
-    switch self {
-    case.created(let boundedDate):
-      return boundedDate.date
-    default:
-      return nil
+    if let dateFilter = dateFilter {
+      return dateFilter.date
     }
+    return nil
   }
   
   /**
-   * Returns the relevant `BoundedDate` for the tag if it is a date-related tag. A `BoundedDate` encapsulates both
+   * Returns the relevant `DateFilter` for the tag if it is a date-related tag. A `DateFilter` encapsulates both
    * a absoltue date value, and bounds to apply it to such as `before`, `on`, or `after`.
    */
-  var boundedDate: BoundedDate? {
+  var dateFilter: DateFilter? {
     switch self {
     case .created(let date):
       return date
@@ -148,10 +146,10 @@ enum FilteringTag: Identifiable, Equatable, Hashable, CustomStringConvertible {
   /**
    * Creates a filtering tag based on the provided bounded date and tag domain (currently only `creation` is supported).
    */
-  static func timeBounded(date bounds: BoundedDate, domain: TagDomain) -> FilteringTag? {
+  static func timeBounded(date: DateFilter, domain: TagDomain) -> FilteringTag? {
     switch domain {
     case .creation:
-      return .created(bounds)
+      return .created(date)
     default:
       return nil
     }
@@ -209,6 +207,38 @@ enum FilteringTag: Identifiable, Equatable, Hashable, CustomStringConvertible {
     /// Character to separate tag type (label) from tag value. Values need to always be escaped.
   static let separator: String = PIPE
   static let separatorChar: Character = PIPE_CHAR
+  
+  /**
+   * Initialize a FilteringTag from a string value and a `TagType`.
+   * This is a convenience initializer that allows you to specify the type
+   * of the tag directly.
+   *
+   * Examples:
+   *
+   * ```swift
+   * FilteringTag(rawValue: "Bob Dylan", type: .artist)
+   * ```
+   */
+  init?(rawValue: String, type: TagType) {
+    if let tag = type.makeTag(rawValue) {
+      self = tag
+    } else {
+      return nil
+    }
+  }
+}
+
+
+extension FilteringTag: Filterable {
+  var asFilter: Self { self }
+}
+
+
+
+extension FilteringTag: CustomStringConvertible {
+  var description: String {
+    "FilteringTag(\(self.rawValue))"
+  }
 }
 
 
@@ -216,20 +246,20 @@ extension FilteringTag: RawRepresentable {
   typealias RawValue = String
 
   /**
-   Initialize a FilteringTag from a string value, expected to be in the format
-   of `type:value`, where `type` is a `TagType` and `value` is the tag value.
-   Raw values that do not match this format will be treated as a tag with a
-   type of `.tag`.
-
-   Example:
-
-   ```swift
-   FilteringTag(rawValue: "artist|Bob Dylan")
-   FilteringTag(rawValue: "tag|rock")
-   FilteringTag(rawValue: "createdOn|2021-10-29T12:00:00Z")
-   FilteringTag(rawValue: "inQueue|123")
-   FilteringTag(rawValue: "ambient") // equivalent to  "tag:ambient"
-   ```
+   * Initialize a FilteringTag from a string value, expected to be in the format
+   * of `type:value`, where `type` is a `TagType` and `value` is the tag value.
+   * Raw values that do not match this format will be treated as a tag with a
+   * type of `.tag`.
+   *
+   * Example:
+   *
+   * ```swift
+   * FilteringTag(rawValue: "artist|Bob Dylan")
+   * FilteringTag(rawValue: "tag|rock")
+   * FilteringTag(rawValue: "createdOn|2021-10-29T12:00:00Z")
+   * FilteringTag(rawValue: "queue|123")
+   * FilteringTag(rawValue: "ambient") // equivalent to  "tag:ambient"
+   * ```
    */
   init(rawValue str: String) {
     
@@ -266,25 +296,7 @@ extension FilteringTag: RawRepresentable {
   init(_ rawValue: String) {
     self.init(rawValue: rawValue)
   }
-
-  /**
-  Initialize a FilteringTag from a string value and a `TagType`.
-  This is a convenience initializer that allows you to specify the type
-  of the tag directly.
-
-  Examples:
-
-  ```swift
-  FilteringTag(rawValue: "Bob Dylan", type: .artist)
-  ```
-  */
-  init?(rawValue: String, type: TagType) {
-    if let tag = type.makeTag(rawValue) {
-      self = tag
-    } else {
-      return nil
-    }
-  }
+  
   
   /**
    * The value that represents the FilteringTag in a raw format, without any formatting, escaping, or additional processing.
@@ -293,6 +305,13 @@ extension FilteringTag: RawRepresentable {
    */
   var rawValue: String {
     "\(type.rawValue)\(PIPE)\(value)"
+  }
+}
+
+
+extension FilteringTag: ExpressibleByStringLiteral {
+  init(stringLiteral value: String) {
+    self.init(rawValue: value)
   }
 }
 
@@ -342,12 +361,5 @@ struct FilteringTagSet: Equatable, Codable, Transferable {
 
   static var transferRepresentation: some TransferRepresentation {
     CodableRepresentation(contentType: .filteringTag)
-  }
-}
-
-
-extension FilteringTag: ExpressibleByStringLiteral {
-  init(stringLiteral value: String) {
-    self.init(rawValue: value)
   }
 }

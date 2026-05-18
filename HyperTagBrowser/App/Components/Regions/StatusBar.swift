@@ -6,7 +6,7 @@ import SwiftUI
 
 struct StatusBarViewModifier<InnerContent: View>: ViewModifier {
   
-  @Injected(\PreferencesContainer.userPreferences) var userPrefs
+  @Injected(\PreferencesContainer.prefs) var userPrefs
   
   @Binding var isPresnted: Bool
   @ViewBuilder let innerContent: () -> (InnerContent)
@@ -78,7 +78,7 @@ struct StatusBarButton<Content: View>: View {
 
 
 struct StatusBarHeightKey: PreferenceKey {
-  static var defaultValue: CGFloat = 0
+  static let defaultValue: CGFloat = 0
   
   static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
     value = nextValue()

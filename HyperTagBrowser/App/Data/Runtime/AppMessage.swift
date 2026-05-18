@@ -18,23 +18,63 @@ import SwiftUI
 struct AppMessage: Sendable, Equatable, Identifiable, Encodable {
   let id = UUID()
   let timestamp: Date = .now
-  let level: Level
-  let rawValue: String
-  var details: String = ""
 
-  init(_ message: String, _ level: Level = .error, details: String = "") {
-    self.rawValue = message
+  let message: String
+  var details: String = "none"
+  var level: Level = .info
+  
+  enum CodingKeys: String, CodingKey {
+    case id, timestamp, message, level
+  }
+  
+  init(_ message: String) {
+    self.message = message
+  }
+
+  init(_ message: String, _ level: Level) {
+    self.message = message
+    self.level = level
+  }
+  
+  init(_ message: String, _ level: Level, details: String) {
+    self.message = message
     self.level = level
     self.details = details
   }
   
+  init(_ message: String, _ level: Level = .error, _ error: Error) {
+    self.message = message
+    self.level = level
+    self.details = error.localizedDescription
+  }
+  
+  init(_ message: String, _ level: Level = .error, _ error: ErrorMsg) {
+    self.message = message
+    self.level = level
+    self.details = error.errorDescription ?? error.errorDetails ?? ""
+  }
+  
   init(_ message: String, _ level: Level = .success, arguments: CVarArg...) {
-    self.rawValue = String(format: message, arguments)
+    self.message = String(format: message, arguments)
     self.level = level
   }
   
-  var body: String { rawValue }
-
+  @available(*, deprecated, renamed: "message", message: "Use `message` instead")
+  var body: String {
+    self.message
+  }
+  
+  func newerThan(moment: Date) -> Bool {
+    timestamp >= moment
+  }
+  
+  var isTransient: Bool {
+    level.oneOf(.success, .info, .warning)
+  }
+  
+  var isPersistent: Bool {
+    level.oneOf(.error, .restart)
+  }
   
   static func ok(_ msg: String) -> AppMessage {
     AppMessage(msg, .success)
@@ -57,7 +97,7 @@ struct AppMessage: Sendable, Equatable, Identifiable, Encodable {
   }
   
   static func error(_ err: ErrorMsg) -> AppMessage {
-    AppMessage(err.message, .warning, details: err.details)
+    AppMessage(err.message, .warning, err)
   }
   
   static func fatal(_ msg: String) -> AppMessage {
@@ -69,7 +109,7 @@ struct AppMessage: Sendable, Equatable, Identifiable, Encodable {
   }
   
   static func fatal(_ err: ErrorMsg) -> AppMessage {
-    AppMessage(err.message, .error, details: err.details)
+    AppMessage(err.message, .error, err)
   }
 }
 
@@ -79,7 +119,7 @@ extension AppMessage {
   /**
    * Analogous to log level
    */
-  enum Level: String, CaseIterable, Identifiable, Codable {
+  enum Level: String, CaseIterable, Identifiable, Comparable, Codable {
     case success, info, warning, error, restart
 
     var id: Self { self }
@@ -116,6 +156,15 @@ extension AppMessage {
       case .warning: return theme.danger
       case .error: return theme.error
       }
+    }
+    
+    static func < (lhs: AppMessage.Level, rhs: AppMessage.Level) -> Bool {
+      let levelOrder : [AppMessage.Level] = [.success, .info, .warning, .error, .restart]
+      
+      let lhsInd = levelOrder.firstIndex(of: lhs)!
+      let rhsInd = levelOrder.firstIndex(of: rhs)!
+      
+      return lhsInd < rhsInd
     }
   }
 }

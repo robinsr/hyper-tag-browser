@@ -90,9 +90,19 @@ extension Collection where Element == Route.Page {
 extension Route: CustomStringConvertible {
   var description: String {
     switch self {
-    case .main: return "main"
-    case .folder(let path): return "folder: \(path)"
-    case .content(let pointer): return "content: \(pointer)"
+    case .main: return "Route.main"
+    case .folder(let path): return "Route.folder(\(path))"
+    case .content(let pointer): return "Route.content(\(pointer))"
+    }
+  }
+}
+
+extension Route.Page: CustomStringConvertible {
+  var description: String {
+    switch self {
+    case .main: return "Route.Page.main"
+    case .folder: return "Route.Page.folder"
+    case .content: return "Route.Page.content"
     }
   }
 }

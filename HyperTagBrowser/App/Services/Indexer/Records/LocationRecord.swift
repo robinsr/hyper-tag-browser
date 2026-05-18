@@ -17,7 +17,7 @@ struct LocationRecord: Codable, Identifiable {
 extension LocationRecord: TableRecord, PersistableRecord {
   static let databaseTableName = "app_locations"
   
-  enum Columns {
+  public enum Columns {
     static let id = Column(CodingKeys.id)
     static let filepath = Column(CodingKeys.filepath)
   }

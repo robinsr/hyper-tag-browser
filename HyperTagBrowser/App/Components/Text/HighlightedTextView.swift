@@ -34,6 +34,8 @@ struct HighlightedTextView : View {
 
 
 extension HighlightedTextView {
+  
+  @MainActor
   enum EmphasisStyle: String, CaseIterable {
     case info
     case danger
@@ -76,23 +78,21 @@ extension HighlightedTextView {
 }
 
 
-#Preview("", traits: .previewSize(.sq520.taller)) {
+#Preview("HighlightedTextView", traits: .size(.sq520.taller)) {
+  @Previewable @State var emStyles = HighlightedTextView.EmphasisStyle.allCases
+  
   ScrollView {
     VStack(alignment: .leading, spacing: 2) {
-      ForEach(HighlightedTextView.EmphasisStyle.allCases, id: \.self) { style in
+      
+      ForEach(emStyles, id: \.self) { style in
         Text(.init("Style: **\(style.rawValue)**"))
         
-        HighlightedTextView(TestData.LOREM, emphasize: TestData.LOREM_MATCH, emStyle: style)
-          .fixedSize()
-        
-        Divider()
-      }
-      
-      ForEach(TestData.LOREM_NO_MATCH, id: \.self) { emphasize in
-        Text("Input: \(emphasize)")
-        
-        HighlightedTextView(TestData.LOREM, emphasize: emphasize, emStyle: .highlighter)
-          .fixedSize()
+        HighlightedTextView(
+          TestLorem.loremText,
+          emphasize: TestLorem.sampleWords(count: 6),
+          emStyle: style
+        )
+        .fixedSize()
         
         Divider()
       }

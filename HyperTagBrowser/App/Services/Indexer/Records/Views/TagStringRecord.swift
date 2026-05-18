@@ -12,7 +12,7 @@ struct TagstringRecord: FetchableRecord, Codable {
     case contentId, tagString, tagCount
   }
   
-  enum Columns: String, ColumnExpression {
+  public enum Columns: String, ColumnExpression {
     case contentId, tagString, tagCount
   }
 }

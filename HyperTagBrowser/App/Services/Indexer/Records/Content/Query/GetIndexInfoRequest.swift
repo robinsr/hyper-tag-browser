@@ -23,7 +23,7 @@ struct GetIndexInfoRequest: ValueObservationQueryable {
       return nil
     }
     
-    let request = IndexInfoRecord.info(ids: [id])
+    let request = IndexInfoRecord.fetchRecords(ids: [id])
     
     return try timeRequest {
       let result = try prepare(db, request) { req in

@@ -2,6 +2,7 @@ import SwiftUI
 
 
 /// Bridge AppKit's NSVisualEffectView into SwiftUI
+@MainActor
 struct VisualEffectView: NSViewRepresentable {
   var material: NSVisualEffectView.Material = .headerView
   var blendingMode: NSVisualEffectView.BlendingMode = .behindWindow
@@ -25,6 +26,7 @@ struct VisualEffectView: NSViewRepresentable {
     )
   }
 
+  @MainActor
   class Coordinator {
     let visualEffectView = NSVisualEffectView()
 

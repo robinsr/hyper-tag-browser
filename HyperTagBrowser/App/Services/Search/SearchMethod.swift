@@ -30,7 +30,7 @@ enum SearchMethod: String, CaseIterable, Defaults.Serializable {
   var disabled: Bool {
     let stage = EnvContainer.shared.stage()
     
-    if stage.isProd {
+    if stage.isRelease {
       switch self {
       case .userSearch: return false
       default: return true

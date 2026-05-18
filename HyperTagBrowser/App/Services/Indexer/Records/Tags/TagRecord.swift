@@ -5,57 +5,44 @@ import GRDB
 import GRDBQuery
 import UniformTypeIdentifiers
 
-struct TagRecord: Codable, Identifiable, Hashable, Filterable {
+
+/**
+ * Defines the database type of a "tag"
+ *
+ * - Parameters:
+ *    - tagValue: The differentiated value of the tag
+ *    - tagType: The ``FilteringTag/TagType`` type of the tag (keyword/artist/queue/etc)
+ *    - entryType: The ``TagRecord/EntryType`` type of the tag (alias/normal)
+ *    - relatedId: For `alias` types, what the tag is an alias of
+ *    -
+ */
+struct TagRecord: Codable, Identifiable, Hashable, Sendable {
   var id: String
-
-  /// The differentiated value of the tag
   var tagValue: String
-
-  /// Essentially the data-type of the tag, used for filtering.
   var tagType: FilteringTag.TagType
-
-  /// The type of TagRecord entry. Distinguishes between normal tags and aliases.
   var entryType: TagRecord.EntryType
-
-  /// If the entryType is `.alias`, this is the ID of the tag that this alias refers to.
   var relatedId: TagRecord.ID?
-
-  /// The reconstructed filter value for this tag (value + type). A generated column (`.generatedAs(TagRecord.Selections.filterValue)`).
   var filterValue: String?
-
-  /// The `TagDomain` derived from the `TagType` of this record.
-  var tagDomain: FilteringTag.TagDomain {
-    tagType.domain
-  }
-
-  @available(*, deprecated, renamed: "tagValue", message: "Use `tagValue` instead of `value`")
-  var value: String {
-    self.tagValue
-  }
-
-  @available(*, deprecated, renamed: "tagType", message: "Use `tagType` instead of `label`")
-  var label: FilteringTag.TagType {
-    self.tagType
-  }
 
   init(
     id: String = .randomIdentifier(24, prefix: "tag:"),
+    tagValue: String = "",
+    tagType: FilteringTag.TagType = .tag,
     type: TagRecord.EntryType = .normal,
-    value: String = "",
-    label: FilteringTag.TagType = .tag
   ) {
     self.id = id
-    self.tagValue = value.trimmed
-    self.tagType = label
+    self.tagValue = tagValue.trimmed
+    self.tagType = tagType
     self.entryType = type
   }
-
-  var asFilter: FilteringTag {
-    FilteringTag(rawValue: tagValue, type: tagType) ?? .tag(tagValue)
-  }
-
+  
   init(_ filter: FilteringTag) {
-    self.init(value: filter.value, label: filter.type)
+    self.init(tagValue: filter.value, tagType: filter.type)
+  }
+  
+  /// The `TagDomain` derived from the `TagType` of this record.
+  var tagDomain: FilteringTag.TagDomain {
+    tagType.domain
   }
 
   enum EntryType: String, Codable {
@@ -64,25 +51,36 @@ struct TagRecord: Codable, Identifiable, Hashable, Filterable {
   }
 }
 
+
+extension TagRecord: Filterable {
+  var asFilter: FilteringTag {
+    FilteringTag(rawValue: tagValue, type: tagType) ?? .tag(tagValue)
+  }
+}
+
+
 extension TagRecord: TableRecord {
   static let databaseTableName = "app_content_tags"
-
-  static let databaseSelection: [SQLSelectable] = [
-    Columns.id,
-    Columns.tagValue,
-    Columns.tagType,
-    Columns.entryType,
-    Columns.relatedId,
-    Columns.filterValue,
-  ]
+  
+  static var databaseSelection: [SQLSelectable] {
+    return [
+      Columns.id,
+      Columns.tagValue,
+      Columns.tagType,
+      Columns.entryType,
+      Columns.relatedId,
+      Columns.filterValue,
+    ]
+  }
 }
+
 
 extension TagRecord: FetchableRecord, PersistableRecord {
   enum CodingKeys: String, CodingKey {
     case id, tagValue, tagType, entryType, relatedId
   }
 
-  enum Columns: String, ColumnExpression {
+  public enum Columns: String, ColumnExpression {
     case id, tagValue, tagType, entryType, relatedId, filterValue
   }
 
@@ -130,13 +128,10 @@ extension DerivableRequest<TagRecord> {
   }
 
   func tagValueLike(_ value: String = "") -> Self {
-    let scrubbedValue = value
+    filter(Columns.tagValue.like(value
       .subSqlWildcards(for: /[^\w\d]+/)
-      .asSqlLikeString(.matchEither)
-    
-    print("tagValueLike: \(scrubbedValue)")
-    
-    return filter(Columns.tagValue.like(scrubbedValue))
+      .asSqlLikeString(.matchEither))
+    )
   }
   
   func inTagDomains(_ domains: [FilteringTag.TagDomain]) -> Self {

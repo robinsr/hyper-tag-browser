@@ -3,11 +3,12 @@
 import Regex
 import SwiftUI
 
+@MainActor
 @Observable
 class TextFieldModel {
 
   /// A set of validation constraints to apply to the text input.
-  private(set) var validations: [Constraint] = []
+  private(set) var validations: [UserInputConstraint] = []
 
   /// The default value to use when the field is reset.
   private(set) var initialValue: String = ""
@@ -39,7 +40,7 @@ class TextFieldModel {
 
   init(
     initial value: String = "",
-    validate: [Constraint] = [],
+    validate: [UserInputConstraint] = [],
     updateInterval duration: Duration = .milliseconds(200)
   ) {
     self.validations = validate
@@ -78,6 +79,10 @@ class TextFieldModel {
   var isEmpty: Bool {
     _publishedValue.isEmpty
   }
+  
+  var isFilled: Bool {
+    _publishedValue.isEmpty == false
+  }
 
   /**
    * Reads the current value, then resets the value to an empty string
@@ -109,6 +114,11 @@ class TextFieldModel {
     rawValue = newVal.trimmed
     error = nil
   }
+  
+  func reset() {
+    rawValue = initialValue
+    error = nil
+  }
 
   
   /// Publishes the current text value, enabling debounced updates for UI bindings.
@@ -123,62 +133,6 @@ class TextFieldModel {
       textValue = newValue.trimmed
     }
   }
-
-  
-  /**
-   * Defines validation constraints for the `TextFieldModel`.
-   */
-  enum Constraint {
-    case require(_ pattern: String, message: String)
-    case reject(_ pattern: String, message: String)
-    case satisfies(_ closure: (String) -> Bool, message: String)
-
-    /// Validates that the field is not empty
-    static let presence: Constraint = .satisfies(
-      {
-        !$0.trimmed.isEmpty
-      }, message: "This field cannot be empty")
-
-    /// Forward-slashes are not allowed at the OS level
-    static let disallow_forwardslash: Constraint = .reject(
-      #".*\/.*"#, message: "Filenames cannot contain '/'")
-
-    /// Colons are allowed, but this breaks with Finder conventions
-    static let disallow_colon: Constraint = .reject(
-      #".*:.*"#, message: "Filenames cannot contain ':'")
-
-    /// Validates filename has an file extension
-    static let filename_extension: Constraint = .require(
-      #"^.*\.[\d\w]+$"#, message: "Filenames must have a file extension")
-
-    var message: String {
-      switch self {
-        case .satisfies(_, let message), .require(_, let message), .reject(_, let message):
-          return message
-      }
-    }
-
-    func isValidInput(_ value: String) -> Bool {
-      switch self {
-        case .satisfies(let closure, _):
-          return closure(value)
-        case .require(let pattern, _):
-          return parsePattern(pattern).matches(value)
-        case .reject(let pattern, _):
-          return parsePattern(pattern).matches(value) == false
-      }
-    }
-
-    func validate(_ value: String) -> String? {
-      isValidInput(value) ? nil : message
-    }
-
-    private func parsePattern(_ pattern: String) -> Regex {
-      guard let regex = try? Regex(string: pattern) else {
-        fatalError("Invalid validation pattern supplied: \(pattern)")
-      }
-
-      return regex
-    }
-  }
 }
+
+

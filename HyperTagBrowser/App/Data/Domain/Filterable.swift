@@ -8,7 +8,14 @@
  */
 protocol Filterable: Identifiable {
   var asFilter: FilteringTag { get }
+  var count: Int { get }
 }
+
+extension Filterable {
+  var count: Int { 0 }
+}
+
+typealias AnyFilterable = any Filterable
 
 
 extension Sequence where Element: Filterable {

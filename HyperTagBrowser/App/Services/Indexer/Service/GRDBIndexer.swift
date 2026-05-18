@@ -18,7 +18,7 @@ extension GRDBIndexService : ContentIndexer {
   }
   
   private func fetchIndexInfo(inTransaction db: Database, id: ContentId) throws -> IndexInfoRecord? {
-    try IndexInfoRecord.info(id: id).fetchOne(db)
+    try IndexInfoRecord.fetch(withId: id).fetchOne(db)
   }
   
   
@@ -34,13 +34,47 @@ extension GRDBIndexService : ContentIndexer {
     return filenameTags
   }
   
+  private func assignIndexContentId(for path: FilePath) throws(IndexerServiceError) -> ContentId {
+    let metadata = Container.shared.metadataService()
+    
+    var contentId: ContentId?
+    
+    do {
+      contentId = try metadata.retrieveXID(for: path.fileURL)
+      
+      if contentId == nil {
+        contentId = try metadata.assignNewXID(to: path.fileURL)
+      }
+    } catch {
+      throw .OperationFailed("Failed to retrieve or assign contentId for file \(path.string)", err: error)
+    }
+    
+    guard contentId != nil else {
+      throw .OperationFailed("Failed to retrieve or assign contentId for file \(path.string)")
+    }
+    
+    return contentId!
+  }
+  
   
   /// Adds a new file to the index
   ///
   /// TODO: Will this update a file (name change, tag update?)
   func createIndex(inTransaction db: Database, path: FilePath) throws -> IndexInfoRecord {
-    guard let contentId = try metadata.retrieveXID(for: path.fileURL) else {
-      throw IndexerServiceError.DataIntegrityError("ContentId not found for file", attributes: ["url": path.string])
+    let contentId = try assignIndexContentId(for: path)
+    
+      // If IndexRecord already exists when createIndex is called, it is likely a file move or file rename.
+    if var previous = try? IndexRecord.fetchOne(db, id: contentId) {
+      previous.name = path.baseName
+      previous.location = path.directory
+      
+      try previous.update(db)
+      
+      guard let indxinfo = try fetchIndexInfo(inTransaction: db, id: contentId) else {
+        throw opFailed("Failed to load IndexInfoRecord for index \(contentId.value)")
+      }
+      
+      return indxinfo
     }
     
     let indx = try IndexRecord(path: path, contentId: contentId)
@@ -70,6 +104,7 @@ extension GRDBIndexService : ContentIndexer {
     guard let indxinfo = try fetchIndexInfo(inTransaction: db, id: indx.id) else {
       throw opFailed("Failed to load IndexInfoRecord for conflicting ID '\(indx.id.value)'")
     }
+    
     return indxinfo
   }
 
@@ -82,7 +117,8 @@ extension GRDBIndexService : ContentIndexer {
 
   
   func diffDirectoryContents(of path: FilePath, mode: ListMode) throws -> ContentPointerDiff {
-    let dirContents: [ContentPointer] = fs.indexContents(at: path, mode: mode, types: .user)
+    let fileservice = Container.shared.fileService()
+    let dirContents: [ContentPointer] = fileservice.indexContents(at: path, mode: mode, types: .user)
     
     let query = BrowseFilters(
       root: path,
@@ -115,9 +151,9 @@ extension GRDBIndexService : ContentIndexer {
 
     let diff = try diffDirectoryContents(of: path, mode: .immediate(.uncached))
     
-    #if DEBUG
-    logger.dump(diff, label: "ContentIDs listed by fs, not indexed in SwiftData")
-    #endif
+//    #if DEBUG
+//    logger.dump(diff, label: "ContentIDs listed by fs, not indexed in SwiftData")
+//    #endif
     
     
     var relocated: [ContentPointer] = []
@@ -173,5 +209,45 @@ extension GRDBIndexService : ContentIndexer {
       added: created + relocated,
       unchanged: diff.unchanged
     )
+  }
+  
+  func search(_ query: SearchQuery) async throws -> [SpotlightResult] {
+    let domainId = Container.shared.spotlightDomainIdentifier()
+    
+    let queryTerms = query.searchTerms
+
+    var tagTokens = queryTerms
+      .filter { $0.kind != .related }
+      .map { FilteringTag.Filter(tag: $0.asFilter, effect: .inclusive) }
+
+    let nameTokens = queryTerms
+      .filter { $0.kind == .related }
+      .map { $0.value }
+
+    if tagTokens.isEmpty && nameTokens.isEmpty {
+      // If no search terms are provided, use a random token to avoid all-matching query
+      tagTokens.append(FilteringTag.tag(.randomIdentifier(40)).filterAs(.inclusive))
+    }
+
+    let params = BrowseFilters(
+      root: query.searchRoot,
+      mode: .recursive(.uncached),
+      sortBy: query.searchSorting,
+      tagsMatching: .init(tagTokens, operator: query.searchTermOperator),
+      nameMatching: .init(nameTokens, operator: query.searchTermOperator),
+      limit: query.paging.pageSize,
+      offset: query.paging.offset,
+      includeColumns: [.fileExists, .isFolder, .tagCount]
+    )
+
+    do {
+      let contentItems = try await getContentItems(matching: params)
+      
+      return contentItems.map {
+        SpotlightResult($0.asSearchableItem(in: domainId))
+      }
+    } catch {
+      throw IndexerServiceError.searchFailed(error.legibleLocalizedDescription)
+    }
   }
 }

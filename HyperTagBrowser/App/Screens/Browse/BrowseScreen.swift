@@ -26,7 +26,7 @@ struct BrowseScreen: View {
   
   @Environment(\.location) var location
   @Environment(\.appPanels) var panels
-  @Environment(\.dbContentItemParameters) var query
+  @Environment(\.parameters) var query
   @Environment(\.dbContentItems) var dbContentItems
   @Environment(\.dbContentItemsVisible) var visibleItems
   @Environment(\.dbContentItemCount) var dbIndexCount
@@ -52,7 +52,7 @@ struct BrowseScreen: View {
     
     MainContent
       .sidebar(
-        isPresented: appVM.bindToPanel(.sidebar),
+        isPresented: .bindToPanel(appVM, .sidebar),
         position: $sidebarPosition
       ) {
         SideBarContent
@@ -116,11 +116,11 @@ struct BrowseScreen: View {
   var SideBarContent: some View {
     ScrollView {
       VStack(spacing: 8) {
-        BookmarksList(isPresented: appVM.bindToPanel(.bookmarks))
+        BookmarksList(isPresented: .bindToPanel(appVM, .bookmarks))
         Divider()
         WorkQueueSidebarMenu()
         Divider()
-        ManageTagsView(isPresented: appVM.bindToPanel(.tagmanager))
+        ManageTagsView(isPresented: .bindToPanel(appVM, .tagmanager))
       }
       .scenePadding()
     }
@@ -184,7 +184,7 @@ struct BrowseScreen: View {
 
 
 
-#Preview("Browse Screen", traits: .defaultViewModel, .previewSize(.sq340.scaled(by: 2.0))) {
+#Preview("Browse Screen", traits: .app, .size(.sq340.scaled(by: 2.0))) {
   VStack {
     BrowseScreen()
   }

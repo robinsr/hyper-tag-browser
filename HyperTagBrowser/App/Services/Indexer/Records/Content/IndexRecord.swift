@@ -32,20 +32,20 @@ struct IndexRecord: Identifiable, Equatable, Hashable, FileSystemContentItem, Id
   var fileExists: Bool?
   var isIndexed: Bool = true
   
-  var exists: Bool {
-    FileManager.default.fileExists(atPath: filepath.string)
-  }
-  
   var pointer: ContentPointer {
-    .init(id: self.id, filePath: self.filepath)
-  }
-
-  var url: URL {
-    location.appending(name).fileURL
+    .init(id: self.id, filepath: self.filepath)
   }
   
   var filepath: FilePath {
     location.appending(name)
+  }
+  
+  var url: URL {
+    filepath.fileURL
+  }
+  
+  var exists: Bool {
+    filepath.exists
   }
   
   var isFolder: Bool {
@@ -160,7 +160,7 @@ extension IndexRecord: Codable {
     case id, timestamp, name, location, volume, type, size, created, modified, comment, visibility
   }
   
-  enum Columns: String, ColumnExpression, CaseIterable {
+  public enum Columns: String, ColumnExpression, CaseIterable, Sendable {
     case id, timestamp, name, location, volume, type, size, created, modified, comment, visibility
     
     static var allColumns: [SQLSelectable] {
@@ -217,6 +217,10 @@ extension DerivableRequest<IndexRecord> {
   
   func withContentType(_ uttype: UTType) -> Self {
     filter(Indx.Selections.conforms(to: uttype))
+  }
+  
+  func withPath(_ path: FilePath) -> Self {
+    filter(Indx.Selections.fileURL == path.string)
   }
   
   /**
@@ -299,7 +303,7 @@ extension IndexRecord: FetchableRecord {
     self.timestamp = Date.now
     self.name = path.baseName
     self.location = path.directory
-    self.volume = path.fileURL.volumeInfo?.name ?? VolumeInfo.defaultName
+    self.volume = path.fileURL.volumeInfo?.name ?? VolumeInfo.defaultVolumeName
     self.type = path.fileURL.contentType
     self.size = Int(attributes.size ?? 0)
     self.visibility = .normal

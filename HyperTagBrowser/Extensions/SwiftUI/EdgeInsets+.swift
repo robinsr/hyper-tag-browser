@@ -3,9 +3,22 @@
 import SwiftUI
 
 extension EdgeInsets {
-  static func fromEdges(_ tp: CGFloat = 0.0, _ ld: CGFloat = 0.0, _ bt: CGFloat = 0.0, _ tr: CGFloat = 0.0
+  
+  /**
+   * Creates a new `EdgeInsets`. Parameters mirror that of CSS margin/padding, starting
+   * at the top and turning clockwise (top, left, bottom, right)
+   */
+  static func fromEdges(
+    _ top: CGFloat = 0.0,
+    _ trailing: CGFloat = 0.0,
+    _ bottom: CGFloat = 0.0,
+    _ leading: CGFloat = 0.0,
   ) -> EdgeInsets {
-    EdgeInsets(top: tp, leading: ld, bottom: bt, trailing: tr)
+    EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing)
+  }
+  
+  static func fromSides(horizontal: CGFloat, vertical: CGFloat) -> EdgeInsets {
+    EdgeInsets(top: vertical, leading: horizontal, bottom: vertical, trailing: horizontal)
   }
   
   init(_ size: CGSize) {
@@ -30,5 +43,9 @@ extension EdgeInsets {
   
   static var zero: EdgeInsets {
     EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
+  }
+  
+  var inverse: EdgeInsets {
+    EdgeInsets(top: -top, leading: -leading, bottom: -bottom, trailing: -trailing)
   }
 }

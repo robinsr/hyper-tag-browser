@@ -14,23 +14,10 @@ struct BackgroundGradientView<Content: View>: View {
   
   @ViewBuilder let content: () -> (Content)
   
-  var overlayMixAmount: Double {
-    switch colorScheme {
-      case .dark: return Constants.darkModeBackgroundMixAmount
-      default: return 0.0
-    }
-  }
-  
-  var overlayColor: Color {
-    Color.black.opacity(overlayMixAmount)
-  }
+  let darkOverColor: Color = .black.opacity(Constants.darkModeBackgroundMixAmount)
   
   var bgOpacity: Double {
-    if opacity.isBetween(0...1) {
-      return opacity
-    } else {
-      return opacity/100
-    }
+    opacity.isBetween(0...1) ? opacity : opacity/100
   }
 
   var body: some View {
@@ -53,8 +40,9 @@ struct BackgroundGradientView<Content: View>: View {
         .animation(.smooth(duration: 1.0), value: color)
         .opacity(bgOpacity)
         
-      Rectangle()
-        .fill(overlayColor)
+      if colorScheme == .dark {
+        Rectangle().fill(darkOverColor)
+      }
       
       content()
     }
@@ -99,6 +87,7 @@ extension View {
   /**
     Applies a background gradient based on the `backgroundColor` environment value.
    */
+  @available(*, deprecated, message: "Avoid using pending performance improvements. Use withUserPrefBackgroundColor() instead.")
   func withEnvironmentBackgroundColor() -> some View {
     modifier(ActiveBackgroundGradientModifier())
   }

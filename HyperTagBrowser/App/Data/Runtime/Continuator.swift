@@ -3,32 +3,37 @@
 import Foundation
 import Observation
 
-
-struct Continuator: Sendable {
-  func withContinousObservation<T>(of value: @escaping @autoclosure () -> T, execute: @escaping (T) -> Void) {
+@MainActor
+struct Continuator {
+  
+  func withContinousObservation<T>(
+    of value: @escaping @autoclosure @MainActor @Sendable () -> T,
+    execute: @escaping @MainActor @Sendable (T) -> Void
+  ) {
     withObservationTracking {
       execute(value())
     } onChange: {
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [self] in
+      Task { @MainActor in
         self.withContinousObservation(of: value(), execute: execute)
       }
     }
   }
 }
 
-
-final class ChangeMonitor {
+@MainActor
+struct ChangeMonitor {
   private var continuator: Continuator
 
   init() {
     self.continuator = Continuator()
   }
 
-  func observe<T>(_ value: @escaping @autoclosure () -> T, execute: @escaping (T) -> Void) {
-    continuator.withContinousObservation(of: value(), execute: execute)
-  }
-
-  deinit {
-    // Cleanup if needed
+  func observe<T>(
+    _ value: @Sendable @escaping @autoclosure () -> T,
+    execute: @Sendable @escaping (T) -> Void
+  ) {
+    Task {
+      continuator.withContinousObservation(of: value(), execute: execute)
+    }
   }
 }

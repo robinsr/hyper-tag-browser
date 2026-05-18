@@ -7,11 +7,11 @@ import SwiftUI
 
 
 struct ListCountedTagsRequest: ValueObservationQueryable {
-  static let queryableOptions = GRDBIndexService.queryableOptions
+  static let queryableOptions = GRDBDatabaseOptions.queryableOptions
   static var defaultValue: [CountedTagRecord] { [] }
 
   var parameters: TagQueryParameters = .init(
-    queryText: "",
+    query: "",
     excludingTags: [],
     excludingContent: [],
     itemLimit: 25

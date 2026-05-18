@@ -8,9 +8,7 @@ struct TagStash: Identifiable, Hashable {
   var items: [FilteringTag] {
     Array(contents)
   }
-}
 
-extension TagStash {
   enum StashId: Identifiable, Hashable, Equatable {
     case id(String)
     

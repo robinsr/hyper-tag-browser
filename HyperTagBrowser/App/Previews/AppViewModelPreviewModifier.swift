@@ -28,20 +28,24 @@ struct AppViewModelPreviewMod: PreviewModifier {
     EnvContainer.shared.reset(options: .context)
     
     let indexer = IndexerContainer.shared.indexService()
-    let viewmodel = AppViewModel()
+    let app = Container.shared.appViewModel()
+    let dsp = Container.shared.dispatcher()
     
-    viewmodel.navigate(.folder(TestData.testImageDir.filepath))
-    viewmodel.contentItems = try! indexer.getIndexInfo(matching: viewmodel.dbIndexParameters)
+    dsp.navigate(Route.folder(TestData.testImageDir.filepath))
+    
+    Task {
+      app.contentItems = try! await indexer.getContentItems(matching: app.dbIndexParameters)
+    }
     
     
-    return (viewmodel, indexer)
+    return (app, indexer)
   }
 
   func body(content: Content, context: Context) -> some View {
     EnvContainer.shared.autoRegister()
     
     let appVM = context.0
-    let indexService = context.1
+//    let indexService = context.1
 
     return
       content
@@ -52,15 +56,33 @@ struct AppViewModelPreviewMod: PreviewModifier {
         .environment(\.dbContentItemCount, appVM.contentItems.count)
         .environment(\.dbContentItemsHiddenCount, 0)
         .environment(\.dbContentItemsMissingCount, 0)
-        .databaseContext(.readOnly {
-          indexService.dbReader
-        })
+    
+//    Other BrowseEnvironment Environment Keys
+    
+//        .environment(\.location, appVM.currentURL)
+//        .environment(\.route, appVM.currentRoute)
+//        .environment(\.page, appVM.currentPage)
+//        .environment(\.appPanels, appVM.activeAppPanels)
+//        .environment(\.currentSheet, appVM.activeSheet)
+//        .environment(\.dbContentItems, appVM.contentItems)
+//        .environment(\.dbContentItemsVisible, visibleItems)
+//        .environment(\.dbContentItemsHiddenCount, hiddenItemCount)
+//        .environment(\.dbContentItemsMissingCount, missingItemsCount)
+//        .environment(\.dbContentItemCount, dbIndexCount)
+//        .environment(\.dbContentItemParameters, appVM.dbIndexParameters)
+//        .environment(\.parameters, appVM.dbIndexParameters)
+//        .environment(\.queryResultCount, dbIndexCount)
+//        .environment(\.dbItemDetail, dbItemDetail)
+//        .environment(\.dbLocations, dbLocations)
+//        .environment(\.dbQueues, dbQueues)
+//        .environment(\.dbBookmarks, dbBookmarks)
   }
 }
 
 
 extension PreviewTrait where T == Preview.ViewTraits {
   @MainActor static var defaultViewModel: Self = .modifier(AppViewModelPreviewMod())
+  @MainActor static var app: Self = .modifier(AppViewModelPreviewMod())
 }
 
 
@@ -73,8 +95,8 @@ fileprivate struct AppViewModelPropertiesView: View {
   var allProperties: [String:String] {
     [
       "_stageId"          : EnvContainer.shared.stageId(),
-      "databasePath"      : appVM.databasePath,
-      "location"          : appVM.location.filepath.string,
+      "databasePath"      : IndexerContainer.shared.dbPath(),
+      "location"          : appVM.currentPath.string,
       "profile id"        : appVM.currentProfile.id,
       "profile name"      : appVM.currentProfile.name,
       "profile suiteName" : appVM.currentProfile.suiteName,

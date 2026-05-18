@@ -2,6 +2,7 @@
 
 import Defaults
 import GRDB
+import Factory
 import Foundation
 import CustomDump
 import UniformTypeIdentifiers
@@ -18,79 +19,16 @@ extension GRDBIndexService: IndexAccess {
   private typealias TagCol = TagRecord.Columns
   private typealias TagItemCol = IndexTagRecord.Columns
   
-    // MARK: - Query IndexRecords (get IndexInfoRecord)
+    // MARK: - Exists IndexRecords
   
-  func getIndexInfo(withId ids: [ContentId]) throws -> [IndexInfoRecord] {
+  func indexExists(withPath path: FilePath) throws -> Bool {
     try dbReader.read { db in
-      try IndexInfoRecord.info(ids: ids).fetchAll(db)
+      try IndexRecord.all().withPath(path).fetchCount(db) > 0
     }
   }
   
-  /**
-   * Returns a single ``IndexTagRecord`` (IndexRecord and its associations ; TagRecords,
-   * QueueItemRecords, etc) for a given ContentID
-   */
-  func getIndexInfo(withId cid: ContentId) throws -> IndexInfoRecord? {
-    try getIndexInfo(withId: [cid]).first
-  }
-  
-  /**
-   * Returns a list of ``IndexTagRecord`` (IndexRecord plus associations) for all
-   * indexes with location matching `atLocation`
-   */
-  @available(*, deprecated, message: "Unused as of 2024-12-17")
-  func getIndexInfo(atPath path: FilePath) throws -> [IndexInfoRecord] {
-    try dbReader.read { db in
-      try IndexInfoRecord.info(matching: .init(root: path)).fetchAll(db)
-    }
-  }
-  
-  /**
-   * Returns a list of ``IndexTagRecord`` (IndexRecord plus associations) for all
-   * indexes matching parameters defined in a ``IndexRequestParams`` object. NOTE: does not
-   * support filtering by association
-   */
-  func getIndexInfo(matching params: IndxRequestParams) throws -> [IndexInfoRecord] {
-//    try dbReader.read { db in
-//      let request = IndexInfoRecord.info(matching: params)
-//      
-//      self.sqlLogger.dumpRequest(db, request)
-//      
-//        // let countRequest = request
-//        // let count = try await countRequest.fetchCount(db)
-//      
-//        // Applying limit and offset after copying the request to execture fetchCount (if desired)
-//      return try request
-//        .limit(params.limit, offset: params.offset)
-//        .fetchAll(db)
-//    }
-    
-    return try timer.timeExecution {
-      let cacheKey = params.hashId
-      var records: [IndexInfoRecord] = []
-      
-      if let cached = indexInfoQueryCache.get(cacheKey) {
-        records = cached
-      }
-      
-      if records.isEmpty {
-        let result = try dbReader.read { db in
-          return try IndexInfoRecord.info(matching: params)
-            .limit(params.limit, offset: params.offset)
-            .fetchAll(db)
-        }
-        
-        indexInfoQueryCache.set(cacheKey, value: result)
-        
-        records = result
-      }
-      
-      return records
-    }
-  }
   
     // MARK: - Query IndexRecords (get IndexRecord)
-  
   
   func getIndex(withId id: ContentId) throws -> IndexRecord? {
     try dbReader.read { db in
@@ -101,50 +39,12 @@ extension GRDBIndexService: IndexAccess {
     }
   }
   
-  func getIndexes(withIds ids: [ContentId]) throws -> [IndexRecord] {
+  func getIndex(withPath path: FilePath) throws -> IndexRecord? {
     try dbReader.read { db in
-      try IndexRecord.filter(keys: ids).fetchAll(db)
+      try IndexRecord.all().withPath(path).fetchOne(db)
     }
   }
   
-  func getIndexes(withIds ids: [ContentId], conformingTo uttype: UTType) throws -> [IndexRecord] {
-    try dbReader.read { db in
-      try IndexRecord
-        .filter(keys: ids)
-        .filter(IndxCols.type == uttype.identifier)
-        .fetchAll(db)
-    }
-  }
-  
-  func getIndexes(under url: URL) throws -> [IndexRecord] {
-    guard url.isDirectory else {
-      throw IndexerServiceError.InvalidParameter("URL must be a directory; got \(url.filepath)")
-    }
-    
-    return try dbReader.read { db in
-      try IndexRecord
-        .filter(IndxCols.location.like(url.filepath.string + "%"))
-        .fetchAll(db)
-    }
-  }
-  
-  func getIndexes(under url: URL, conformingTo uttype: UTType) throws -> [IndexRecord] {
-    guard url.isDirectory else {
-      throw IndexerServiceError.InvalidParameter("URL must be a directory; got \(url.filepath)")
-    }
-    
-    return try dbReader.read { db in
-      try IndexRecord
-        .filter(IndxCols.location.like(url.filepath.string + "%"))
-        .filter(IndxCols.type == uttype.identifier)
-        .fetchAll(db)
-    }
-  }
-  
-  /**
-   Returns a list of ``IndexRecord``s (no associations) for all indexes matching parameters
-   defined in a ``IndexRequestParams`` object.: NOTE does not support filtering by association
-   */
   func getIndexes(matching params: IndxRequestParams) throws -> [IndexRecord] {
     try dbReader.read { db in
       try IndexRecord
@@ -162,6 +62,82 @@ extension GRDBIndexService: IndexAccess {
         .select(IndxCols.id)
         .applyingParams(params)
         .asRequest(of: ContentId.self)
+        .fetchAll(db)
+    }
+  }
+  
+
+  private func getIndexes(withIds ids: [ContentId]) throws -> [IndexRecord] {
+    try dbReader.read { db in
+      try IndexRecord.filter(keys: ids).fetchAll(db)
+    }
+  }
+  
+  @available(*, deprecated, message: "Unused as of 2025-11-24")
+  private func getIndexes(withIds ids: [ContentId], conformingTo uttype: UTType) throws -> [IndexRecord] {
+    try dbReader.read { db in
+      try IndexRecord
+        .filter(keys: ids)
+        .filter(IndxCols.type == uttype.identifier)
+        .fetchAll(db)
+    }
+  }
+  
+  @available(*, deprecated, message: "Unused as of 2025-11-24")
+  private func getIndexes(under url: URL) throws -> [IndexRecord] {
+    guard url.isDirectory else {
+      throw IndexerServiceError.InvalidParameter("URL must be a directory; got \(url.filepath)")
+    }
+    
+    return try dbReader.read { db in
+      try IndexRecord
+        .filter(IndxCols.location.like(url.filepath.string + "%"))
+        .fetchAll(db)
+    }
+  }
+  
+  @available(*, deprecated, message: "Unused as of 2025-11-24")
+  private func getIndexes(under url: URL, conformingTo uttype: UTType) throws -> [IndexRecord] {
+    guard url.isDirectory else {
+      throw IndexerServiceError.InvalidParameter("URL must be a directory; got \(url.filepath)")
+    }
+    
+    return try dbReader.read { db in
+      try IndexRecord
+        .filter(IndxCols.location.like(url.filepath.string + "%"))
+        .filter(IndxCols.type == uttype.identifier)
+        .fetchAll(db)
+    }
+  }
+  
+    // MARK: - Query IndexRecords (get IndexInfoRecord)
+  
+  func getContentItem(withId cid: ContentId) throws -> IndexInfoRecord? {
+    try getContentItems(withId: [cid]).first
+  }
+  
+  func getContentItem(atPath path: FilePath) throws -> IndexInfoRecord? {
+    try dbReader.read { db in
+      try IndexInfoRecord.fetch(at: path).fetchOne(db)
+    }
+  }
+  
+  func getContentItems(withId ids: [ContentId]) throws -> [IndexInfoRecord] {
+    try dbReader.read { db in
+      try IndexInfoRecord.fetchRecords(ids: ids).fetchAll(db)
+    }
+  }
+
+  func getContentItems(inFolder path: FilePath) throws -> [IndexInfoRecord] {
+    try dbReader.read { db in
+      try IndexInfoRecord.fetchRecords(matching: .init(root: path)).fetchAll(db)
+    }
+  }
+  
+  func getContentItems(matching params: IndxRequestParams) async throws -> [IndexInfoRecord] {
+    try await dbReader.read { db in
+      try IndexInfoRecord.fetchRecords(matching: params)
+        .limit(params.limit, offset: params.offset)
         .fetchAll(db)
     }
   }
@@ -189,13 +165,8 @@ extension GRDBIndexService: IndexAccess {
       let completed = tasks.filter { $0.taskState == .completed }
       let errored = tasks.filter{ $0.taskState.isFailed }
       
-      let errorMessages = errored.map(\.failureMessage).joined(separator: "\n")
-      
-      errored.map { task in
-        task.failureMessage
-      }
-      
       if !errored.isEmpty {
+        let errorMessages = errored.map(\.failureMessage).joined(separator: "\n")
         throw IndexerServiceError.OperationFailed(errorMessages)
       }
       
@@ -225,7 +196,8 @@ extension GRDBIndexService: IndexAccess {
     }
   }
   
-  func updateThumbnails(of records: [IndexRecord], using config: ImageDisplay) throws -> IndexerResult {
+  @available(*, deprecated, message: "Unused as of 2025-11-24")
+  private func updateThumbnails(of records: [IndexRecord], using config: ImageDisplay) throws -> IndexerResult {
     let updates: [(IndexRecord, Data)] = records.compactMap { indx in
       guard let thumbData = config.jpegData(url: indx.url) else { return nil }
       return (indx, thumbData)
@@ -267,7 +239,7 @@ extension GRDBIndexService: IndexAccess {
     }
     
     do {
-      try fs.rename(task.previous, to: task.updated)
+      try task.previous.move(to: task.updated)
       return task.complete()
 //    } catch LocalFileServiceError.targetFileAlreadyExists(let path) {
 //      return task.fail(
@@ -285,7 +257,7 @@ extension GRDBIndexService: IndexAccess {
       }
       .map { task in
         do {
-          try fs.rename(task.previous, to: task.updated)
+          try task.previous.move(to: task.updated)
           return task.complete()
         } catch {
           return task.fail(error)
@@ -297,7 +269,7 @@ extension GRDBIndexService: IndexAccess {
   
     // MARK: - Delete Index Records (remove IndexRecord)
   
-  /// Deletes the IndexRecord for a file with contentId
+  @available(*, deprecated, message: "Unused as of 2025-11-24")
   func deleteIndex(withId cid: ContentId) throws -> Bool {
     return try dbWriter.write { db in
       guard let index = try? IndexRecord.find(db, key: cid) else {
@@ -313,8 +285,9 @@ extension GRDBIndexService: IndexAccess {
   }
   
   func deleteIndexes(withIds ids: [ContentId]) throws -> Int {
-    let items = try getIndexes(withIds: ids)
+    let metadata = Container.shared.metadataService()
     
+    let items = try getIndexes(withIds: ids)
     try metadata.cleanAttributes(from: items.pointers)
     
     var deleted: [ContentId] = []

@@ -184,12 +184,20 @@ extension String.StringInterpolation {
    ```
    */
   mutating func appendInterpolation(homeURL url: URL) {
+    if url.isUbiquitousItem {
+      if let icloudPath = url.ubiquitousRelativePath {
+        if icloudPath.notEmpty {
+          return appendInterpolation("iCloud Drive/\(icloudPath)")
+        }
+      }
+    }
+    
     if url.path.hasPrefix(NSHomeDirectory()) {
       let shortenedPath = url.path.dropFirst(NSHomeDirectory().count)
-      appendInterpolation("~\(shortenedPath)")
-    } else {
-      appendLiteral(url.filepath.string)
+      return appendInterpolation("~\(shortenedPath)")
     }
+    
+    appendLiteral(url.filepath.string)
   }
   
   /**
@@ -228,6 +236,6 @@ extension String.StringInterpolation {
    * Appends the string representation of a ``KeyBinding``.
    */
   mutating func appendInterpolation(shortcut: KeyBinding) {
-    appendInterpolation(shortcut.asCharacters)
+    appendInterpolation(shortcut.symbols)
   }
 }

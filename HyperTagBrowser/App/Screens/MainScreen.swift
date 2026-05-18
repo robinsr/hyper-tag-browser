@@ -7,7 +7,7 @@ import SwiftUI
 struct MainScreen: View {
   private static let logger = EnvContainer.shared.logger("MainScreen")
 
-  @Injected(\PreferencesContainer.userPreferences) var userPrefs
+  @Injected(\PreferencesContainer.prefs) var userPrefs
   @Injected(\PreferencesContainer.userProfileId) var profileKey
   @Injected(\IndexerContainer.indexService) var indexer
   @Injected(\Container.spotlightService) var spotlight
@@ -33,19 +33,17 @@ struct MainScreen: View {
 
         if let content = dbItemDetail {
           DetailScreen(contentItem: content)
+            .background(.ultraThinMaterial)
             .navigationTitle("Detail Screen")
-            .withEnvironmentBackgroundColor()
+            
+            // TODO: Figure out poor performance issues with withEnvironmentBackgroundColor
+            //.withEnvironmentBackgroundColor()
         }
       }
     }
     .overlay(alignment: .bottomTrailing) {
       AlertView()
         .frame(maxWidth: 500)
-    }
-    .overlay {
-      if let dbError = indexer.error {
-        FatalErrorView(error: dbError)
-      }
     }
     .sheet(item: $appVM.activeSheet) { sheet in
       SheetView(style: sheet.presentation) {
@@ -59,6 +57,9 @@ struct MainScreen: View {
 
   @ViewBuilder func MainScreenSheets(_ current: AppSheet) -> some View {
     switch current {
+      
+      case .keyBindings:
+        KeyBindingsTable()
 
       case .contentDetailSheet(let item):
         ContentDetailSheet(content: item)
@@ -96,7 +97,7 @@ struct MainScreen: View {
         ChooseDirectoryForm(
           confirm: "Move \("item", qty: pointers.count)",
           onSelection: { path in
-            dispatch(.updateIndex(.location(of: pointers.ids, with: path)))
+            dispatch(.applyIndexPatch(.location(of: pointers.ids, with: path)))
             dispatch(.showSheet(.none))
           },
           onCancel: {
@@ -107,7 +108,7 @@ struct MainScreen: View {
         TextFieldSheet(
           filename: content.name,
           onUpdate: { newName in
-            dispatch(.updateIndex(.name(of: content.id, with: newName)))
+            dispatch(.applyIndexPatch(.name(of: content.id, with: newName)))
             dispatch(.showSheet(.none))
           },
           onCancel: {
@@ -133,12 +134,24 @@ struct MainScreen: View {
 
       case .debug_inspectContentItem(let item):
         WithIndexInfoView(contentId: item.id) { record in
-          JSONView(object: .constant(record))
+          JsonSheetView(
+            object: .constant(record),
+            onCopy: { txt in
+              dispatch(.copyToClipboard(value: txt))
+              dispatch(.showSheet(.none))
+            }
+          )
         }
 
       case .debug_inspectSpotlightData(let item):
         WithIndexInfoView(contentId: item.id) { record in
-          JSONView(object: .constant(spotlight.prepareItemForIndex(record)))
+          JsonSheetView(
+            object: .constant(record.asSearchableItem(in: "<none>")),
+            onCopy: { txt in
+              dispatch(.copyToClipboard(value: txt))
+              dispatch(.showSheet(.none))
+            }
+          )
         }
 
       case .debug_inspectFileMetadata(let item):
@@ -153,53 +166,51 @@ struct MainScreen: View {
   }
 
   func TagSheet(_ content: ContentItem, _ tags: [FilteringTag]) -> some View {
-    let bgImage = ThumbnailDisplay.full.cgImage(url: content.url)
-
-    return
-      ListEditorSheetView(
-        listItems: tags,
-        onCompletion: { tags in
-          dispatch(.showSheet(.none))
-          dispatch(.replaceTags(tags, of: .one(content.pointer)))
-        },
-        onSelection: { action in
-          dispatch(.showSheet(.none))
-          dispatch(action)
-        },
-        onExit: {
-          dispatch(.showSheet(.none))
-        },
-        backgroundImage: bgImage)
+    TagsEditorSheetView(
+      listItems: tags,
+      onCompletion: { tags in
+        dispatch(.showSheet(.none))
+        dispatch(.replaceTags(tags, of: .only(content.id)))
+      },
+      onSelection: { action in
+        dispatch(.showSheet(.none))
+        dispatch(action)
+      },
+      onExit: {
+        dispatch(.showSheet(.none))
+      },
+      backgroundImage: ThumbnailDisplay.full.cgImage(url: content.url))
   }
 
   func MultiItemTagSheet(_ items: [ContentItem], _ commonTags: [FilteringTag]) -> some View {
-    let pointers = items.map(\.pointer)
-
-    return
-      ListEditorSheetView(
-        listItems: commonTags,
-        onCompletion: { resultTags in
-          dispatch(.showSheet(.none))
-          dispatch(.normalizeTags(initial: commonTags, keeping: resultTags, of: pointers))
-        },
-        onSelection: { action in
-          dispatch(.showSheet(.none))
-          dispatch(action)
-        },
-        onExit: {
-          dispatch(.showSheet(.none))
-        })
+    TagsEditorSheetView(
+      listItems: commonTags,
+      onCompletion: { resultTags in
+        dispatch(.showSheet(.none))
+        dispatch(.normalizeTags(initial: commonTags,
+                                keeping: resultTags,
+                                of: items.map(\.pointer)))
+      },
+      onSelection: { action in
+        dispatch(.showSheet(.none))
+        dispatch(action)
+      },
+      onExit: {
+        dispatch(.showSheet(.none))
+      })
   }
 }
 
-#Preview("", traits: .databaseContext, .defaultViewModel, .previewSize(.sq340.scaled(by: 2.0))) {
-  @Previewable @Environment(AppViewModel.self) var appVM
 
-  VStack {
-    MainScreen()
-      .onAppear {
-        appVM.dispatch(.navigate(to: .main))
-      }
-  }
-  .environment(CursorState())
-}
+//#Preview("", traits: .databaseContext, .defaultViewModel, .previewSize(.sq340.scaled(by: 2.0))) {
+//  @Previewable @Environment(AppViewModel.self) var appVM
+//  @Previewable @Environment(AppDispatcher.self) var dsp
+//
+//  VStack {
+//    MainScreen()
+//      .onAppear {
+//        dsp.dispatch(.navigate(to: .main))
+//      }
+//  }
+//  .environment(CursorState())
+//}

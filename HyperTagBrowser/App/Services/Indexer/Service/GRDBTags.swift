@@ -12,14 +12,14 @@ extension GRDBIndexService: IndexTagAccess {
   // MARK: - Query Tags (get Bool)
   //
 
-  func tagRecordExists(for filter: FilteringTag) throws -> Bool {
-    try dbReader.read { db in
+  func tagRecordExists(for filter: FilteringTag) async throws -> Bool {
+    try await dbReader.read { db in
       try TagRecord.all().matching(filter: filter).fetchCount(db) > 0
     }
   }
   
-  func queryTags(matching params: TagQueryParameters) throws -> [CountedTagRecord] {
-    try dbReader.read { db in
+  func queryTags(matching params: TagQueryParameters) async throws -> [CountedTagRecord] {
+    try await dbReader.read { db in
       try CountedTagRecord.query(matching: params).fetchAll(db)
     }
   }
@@ -28,45 +28,47 @@ extension GRDBIndexService: IndexTagAccess {
   // MARK: - Query Tags (get TagRecord)
   //
 
-  func getTagRecord(for filter: FilteringTag) throws -> TagRecord? {
-    try dbReader.read { db in
+  func getTagRecord(for filter: FilteringTag) async throws -> TagRecord? {
+    try await dbReader.read { db in
       try TagRecord.all().matching(filter: filter).fetchOne(db)
     }
   }
 
-  func getTagRecords(for filters: [FilteringTag]) throws -> [TagRecord] {
-    try dbReader.read { db in
+  func getTagRecords(for filters: [FilteringTag]) async throws -> [TagRecord] {
+    try await dbReader.read { db in
       try TagRecord.all().matching(filter: filters).fetchAll(db)
     }
   }
-
-  func getTagRecords(for id: ContentId) throws -> [TagRecord] {
-    let tagIds = IndexTagValueRecord.tagTable(for: id)
-
-    return try dbReader.read { db in
-      try TagRecord.all()
+  
+  func getTagRecords(for id: ContentId) async throws -> [TagRecord] {
+    try await dbReader.read { db in
+      let tagIds = IndexTagValueRecord.tagTable(for: id)
+      
+      return try TagRecord.all()
         .with(tagIds)
         .filter(tagIds.contains(TagColumns.id))
         .fetchAll(db)
     }
   }
 
-  func getTagRecords(for pointer: ContentPointer) throws -> [TagRecord] {
-    return try getTagRecords(for: pointer.contentId)
+  @available(*, deprecated, message: "Unused as of 2025-12-24")
+  func getTagRecords(for pointer: ContentPointer) async throws -> [TagRecord] {
+    return try await getTagRecords(for: pointer.contentId)
   }
 
-  func getTagRecords(for index: IndexRecord) throws -> [TagRecord] {
-    return try getTagRecords(for: index.contentId)
+  @available(*, deprecated, message: "Unused as of 2025-12-24")
+  func getTagRecords(for index: IndexRecord) async throws -> [TagRecord] {
+    return try await getTagRecords(for: index.contentId)
   }
 
   //
   // MARK: - Create Tags (new TagRecord)
   //
 
-  func createTagRecord(for filter: FilteringTag) throws -> TagRecord {
-    if let existingTag = try getTagRecord(for: filter) { return existingTag }
+  func createTagRecord(for filter: FilteringTag) async throws -> TagRecord {
+    if let existingTag = try await getTagRecord(for: filter) { return existingTag }
 
-    return try dbWriter.write { db in
+    return try await dbWriter.write { db in
       try TagRecord(filter).inserted(db)
     }
   }
@@ -130,69 +132,11 @@ extension GRDBIndexService: IndexTagAccess {
   }
 
   @discardableResult
-  internal func removeTagIfUnused(_ filter: FilteringTag) throws -> Bool {
-    guard let tag = try getTagRecord(for: filter) else {
+  internal func removeTagIfUnused(_ filter: FilteringTag) async throws -> Bool {
+    guard let tag = try await getTagRecord(for: filter) else {
       throw IndxError.DataIntegrityError("No tag found for value \(filter.rawValue)")
     }
 
     return try removeTagIfUnused(tag)
-  }
-
-  //
-  // MARK: - Delete Tags (delete IndexTagRecord)
-  //
-
-  func removeTag(_ filter: FilteringTag, scope: BatchScope) throws -> Int {
-    guard let tag = try getTagRecord(for: filter) else {
-      throw IndxError.DataIntegrityError("No tag found for value '\(filter)'")
-    }
-
-    let request =
-      switch scope {
-        case .all:
-          IndexTagRecord.all().matching(filter: filter)
-        default:
-          throw IndxError.InvalidParameter("Scope '\(scope)' not yet supported for tag deletion")
-      }
-
-    let deleteCount = try dbWriter.write { db in
-      return try request.deleteAll(db)
-    }
-
-    let tagWasDeleted = try removeTagIfUnused(tag)
-
-    logger
-      .emit(
-        .info,
-        "Deleted \("tag associations", qty: deleteCount) for tag \(filter). Deleted tag: \(tagWasDeleted)"
-      )
-
-    return deleteCount
-  }
-
-  func removeTag(_ filter: FilteringTag, fromContent ids: [ContentId]) throws -> Int {
-    guard let tag = try getTagRecord(for: filter) else {
-      throw IndxError.DataIntegrityError("No tag found for value \(filter.rawValue)")
-    }
-
-    let deleteCount = try dbWriter.write { db in
-      try IndexTagRecord.all()
-        .matching(contentId: ids)
-        .matching(filter: filter)
-        .deleteAll(db)
-    }
-
-    try removeTagIfUnused(tag)
-
-    return deleteCount
-  }
-
-  func removeTag(_ filter: FilteringTag, fromContent id: ContentId) throws -> Int {
-    try removeTag(filter, fromContent: [id])
-  }
-
-  func removeTag(_ filter: FilteringTag, matching params: IndxRequestParams) throws -> Int {
-    let contentIds = try getIndexes(matching: params).map(\.contentId)
-    return try removeTag(filter, fromContent: contentIds)
   }
 }

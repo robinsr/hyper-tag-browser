@@ -7,7 +7,7 @@ import System
 /**
  * Just a container for a ordered set of string-like components intended to be dot-separated when formatted
  */
-struct DotPath {
+public struct DotPath {
     // typealias Component = any ExpressibleByStringLiteral
   typealias Component = any ExpressibleByStringInterpolation
   
@@ -62,11 +62,11 @@ extension DotPath {
 }
 
 extension DotPath: CustomStringConvertible {
-  var description: String { self.string }
+  public var description: String { self.string }
 }
 
 extension DotPath: CustomDebugStringConvertible {
-  var debugDescription: String { "DotPath(\(self.string))" }
+  public var debugDescription: String { "DotPath(\(self.string))" }
 }
 
 extension DotPath: ExpressibleByStringLiteral, ExpressibleByStringInterpolation {
@@ -80,7 +80,7 @@ extension DotPath: ExpressibleByStringLiteral, ExpressibleByStringInterpolation 
    * print(path.components) // ["com", "example", "module", "submodule"]
    * ```
    */
-  init(stringLiteral value: String) {
+  public init(stringLiteral value: String) {
     self.init(value.split(separator: ".").map { String($0) })
   }
 }

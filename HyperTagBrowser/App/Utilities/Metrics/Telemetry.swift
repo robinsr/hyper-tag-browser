@@ -3,7 +3,6 @@
 import Factory
 import Foundation
 import OpenTelemetryApi
-import OpenTelemetrySdk
 import StdoutExporter
 import ResourceExtension
 
@@ -15,7 +14,7 @@ typealias AttributeValueMap = [String: AttributeValue]
  * Defines the basic functionality for recording metrics.
  */
 protocol MetricsRecorder {
-  var tracerProvider: TracerSdk { get }
+//  var tracerProvider: TracerSdk { get }
   // var meter: StableMeter { get }
   
   
@@ -58,6 +57,3 @@ struct HistogramMeasurement: AggregatingMeasurement {
     histogram?.record(value: value, attributes: attributes)
   }
 }
-
-
-

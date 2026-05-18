@@ -52,11 +52,11 @@ extension View {
 
 
 struct TestBorderKey: EnvironmentKey {
-  private static var appStage = EnvContainer.shared.stage()
-  private static let prefs = PreferencesContainer.shared.userPreferences()
+  private static let appStage = EnvContainer.shared.stage()
+  private static let prefs = PreferencesContainer.shared.prefs()
   
   static var defaultValue: Bool {
-    if appStage == .prod {
+    if appStage == .release {
       return false
     }
     

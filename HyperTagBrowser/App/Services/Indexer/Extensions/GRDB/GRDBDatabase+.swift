@@ -3,7 +3,7 @@
 import GRDB
 
 extension GRDB.Database {
-  func createView(from table: DatabaseView.Type) throws {
+  func createView(from table: any DatabaseView.Type) throws {
     try self.create(
       view: table.databaseTableName,
       options: [.ifNotExists],
@@ -11,11 +11,11 @@ extension GRDB.Database {
     )
   }
   
-  func dropView(_ table: DatabaseView.Type) throws {
+  func dropView(_ table: any DatabaseView.Type) throws {
     try self.drop(view: table.databaseTableName)
   }
   
-  func drop(table: TableRecord.Type) throws {
+  func drop(table: any TableRecord.Type) throws {
     try self.drop(table: table.databaseTableName)
   }
   
@@ -23,7 +23,7 @@ extension GRDB.Database {
     try self.drop(table: tableName)
   }
   
-  func createTempTable(for table: TableRecord.Type) throws -> String {
+  func createTempTable(for table: any TableRecord.Type) throws -> String {
     let tableName = "temp_\(table.databaseTableName)"
     
     try self.execute(sql: """
@@ -62,17 +62,17 @@ extension GRDB.Database {
     """)
   }
   
-  func hasColumn(_ column: ColumnExpression, in table: TableRecord.Type) throws -> Bool {
+  func hasColumn(_ column: ColumnExpression, in table: any TableRecord.Type) throws -> Bool {
     let columns = try self.columns(in: table.databaseTableName)
     return columns.contains { $0.name == column.name }
   }
   
-  func hasColumn(named columnName: String, in table: TableRecord.Type) throws -> Bool {
+  func hasColumn(named columnName: String, in table: any TableRecord.Type) throws -> Bool {
     let columns = try self.columns(in: table.databaseTableName)
     return columns.contains { $0.name == columnName }
   }
   
-  func hasTable(_ table: TableRecord.Type) throws -> Bool {
+  func hasTable(_ table: any TableRecord.Type) throws -> Bool {
     try self.tableExists(table.databaseTableName)
   }
 }

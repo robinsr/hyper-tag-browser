@@ -1,16 +1,69 @@
 // created on 9/27/24 by robinsr
 
+import Factory
 import SwiftUI
+
+extension Binding {
+  
+  @MainActor
+  static func bindToPanel(_ app: AppViewModel, _ panel: AppPanels) -> Binding<Bool> {
+    let dispatcher = Container.shared.dispatcher()
+    
+    return Binding<Bool>{
+      app.activeAppPanels.contains(panel)
+    } set: { show in
+      if show {
+        dispatcher.dispatch(.showPanel(panel))
+      } else {
+        dispatcher.dispatch(.hidePanel(panel))
+      }
+    }
+  }
+  
+  @MainActor
+  static func bindToPanel(_ source: Binding<Set<AppPanels>>, _ panel: AppPanels) -> Binding<Bool> {
+    let dispatcher = Container.shared.dispatcher()
+    
+    return Binding<Bool>(
+      get: { source.wrappedValue.contains(panel) },
+      set: { show in
+        if show {
+          dispatcher.dispatch(.showPanel(panel))
+        } else {
+          dispatcher.dispatch(.hidePanel(panel))
+        }
+      }
+    )
+  }
+  
+  @MainActor
+  static func bindToPanel(_ source: Set<AppPanels>, _ panel: AppPanels) -> Binding<Bool> {
+    let dispatcher = Container.shared.dispatcher()
+    
+    return Binding<Bool>(
+      get: { source.contains(panel) },
+      set: { show in
+        if show {
+          dispatcher.dispatch(.showPanel(panel))
+        } else {
+          dispatcher.dispatch(.hidePanel(panel))
+        }
+      }
+    )
+  }
+}
 
 extension Binding {
   
   /**
    * Creates a read-only binding
    */
+  @MainActor
   static func readOnly(_ value: Value) -> Binding {
     Binding(get: { value }, set: { _ in })
   }
   
+  @MainActor
   static func valueNotNil(_ value: Optional<Value>) -> Binding<Bool> {
     Binding<Bool>(get: { value != nil }, set: { _ in })
   }
@@ -31,6 +84,7 @@ extension Binding {
    }
    ```
    */
+  @MainActor
   func onChange(_ handler: @escaping (Value) -> Void) -> Binding<Value> {
     Binding(
       get: { self.wrappedValue },
@@ -55,6 +109,7 @@ extension Binding {
    }
     ```
    */
+  @MainActor
   func withDefault<T>(_ defaultValue: T) -> Binding<T> where Value == Optional<T> {
     Binding<T>(
       get: { self.wrappedValue ?? defaultValue },
@@ -63,6 +118,7 @@ extension Binding {
   }
   
     /// Creates a binding with a default value
+  @MainActor
   static func withDefault(_ defaultValue: Value) -> Binding<Value> {
     let _value = State(initialValue: defaultValue)
     
@@ -72,7 +128,7 @@ extension Binding {
     )
   }
   
-  
+  @MainActor
   func map<T>(_ transform: @escaping (Value) -> T) -> Binding<T> {
     Binding<T>(
       get: { transform(self.wrappedValue) },
@@ -96,6 +152,7 @@ extension Binding {
    }
    ```
    */
+  @MainActor
   static func equals<T: Equatable>(_ source: Binding<T>, eq equalTo: T) -> Binding<Bool> {
     Binding<Bool>(
       get: { source.wrappedValue == equalTo },
@@ -106,6 +163,7 @@ extension Binding {
   /**
    Returns a `Bool` binding from a `Optional<Bool>` binding that is false when the optional value is nil
    */
+  @MainActor
   static func notNil<T>(_ source: Binding<Optional<T>>) -> Binding<Bool> {
     Binding<Bool>(
       get: { source.wrappedValue != nil },
@@ -129,6 +187,7 @@ extension Binding {
     }
     ```
    */
+  @MainActor
   static func contains<T: Equatable>(_ source: Binding<[T]>, has item: T) -> Binding<Bool> {
     Binding<Bool>(
       get: { source.wrappedValue.contains(item) },
@@ -142,6 +201,7 @@ extension Binding {
     )
   }
   
+  @MainActor
   static func contains<T: Equatable>(_ source: Binding<Set<T>>, has item: T) -> Binding<Bool> {
     Binding<Bool>(
       get: { source.wrappedValue.contains(item) },
@@ -152,8 +212,9 @@ extension Binding {
   }
   
   /**
-   Aggregates multiple `Bool` bindings into a single `Bool` binding
+   * Aggregates multiple `Bool` bindings into a single `Bool` binding
    */
+  @MainActor
   static func any(_ sources: Binding<Bool>...) -> Binding<Bool> {
     Binding<Bool>(
       get: {
@@ -170,6 +231,7 @@ extension Binding where Value: SetAlgebra, Value.Element: Hashable {
   /**
    Returns a `Bool` binding that is true when the value is contained in the given array
    */
+  @MainActor
   func contains(_ item: Value.Element) -> Binding<Bool> {
     Binding<Bool>(
       get: { self.wrappedValue.contains(item) },
@@ -181,5 +243,16 @@ extension Binding where Value: SetAlgebra, Value.Element: Hashable {
         }
       }
     )
+  }
+}
+
+extension Binding where Value == Bool {
+  
+  var ok: Bool {
+    self.wrappedValue == true
+  }
+  
+  var not: Bool {
+    self.wrappedValue == false
   }
 }

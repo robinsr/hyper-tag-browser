@@ -12,15 +12,15 @@ extension Defaults {
     
     var label: String
     var key: Defaults.Key<URL>
-    var allowedTypes: AllowedFileTypes
+    var contentTypes: ContentTypeGroup
     
     @State var fileDialogShowing = false
     @State var value: URL?
     
-    init(label: String, key: Defaults.Key<URL>, allowedTypes: AllowedFileTypes = .all) {
+    init(label: String, key: Defaults.Key<URL>, allowedTypes: ContentTypeGroup = .all) {
       self.label = label
       self.key = key
-      self.allowedTypes = allowedTypes
+      self.contentTypes = allowedTypes
       self.value = Defaults[key]
     }
     
@@ -45,7 +45,7 @@ extension Defaults {
     }
     
     var body: some View {
-      FilePathInput(selected: $value, label: label, allowedTypes: allowedTypes)
+      FilePathInput(selected: $value, label: label, allowedTypes: contentTypes)
         .onAppear {
           Task {
             for await value in Defaults.updates(key) {

@@ -5,20 +5,28 @@ import SwiftUI
 struct SheetBottomFormModifier: ViewModifier {
   @Environment(\.sheetPadding) var sheetPadding
   
+  var insets: EdgeInsets? = nil
+  
+  var padding: EdgeInsets {
+    insets ?? sheetPadding
+  }
+  
   func body(content: Content) -> some View {
     content
-      .padding(sheetPadding)
+      .padding(padding)
       .background(Color(.controlBackgroundColor))
-      .padding(.leading, -sheetPadding.leading)
-      .padding(.trailing, -sheetPadding.trailing)
-      .padding(.bottom, -sheetPadding.bottom)
+      .padding(.leading, -padding.leading)
+      .padding(.trailing, -padding.trailing)
+      .padding(.bottom, -padding.bottom)
       .transition(
         .move(edge: .bottom)
-        .combined(with: .offset(x: 0, y: sheetPadding.top)))
+        .combined(with: .offset(x: 0, y: padding.top)))
   }
 }
+
+
 extension View {
-  func sheetBottomForm() -> some View {
-    modifier(SheetBottomFormModifier())
+  func sheetBottomForm(insets: EdgeInsets? = nil) -> some View {
+    modifier(SheetBottomFormModifier(insets: insets))
   }
 }

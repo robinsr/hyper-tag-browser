@@ -40,7 +40,7 @@ extension CGSize {
   }
 
   func aspectFit(to widthHeight: Double) -> Self {
-    aspectFit(to: Self(width: widthHeight, height: widthHeight))
+    aspectFit(to: CGSize(width: widthHeight, height: widthHeight))
   }
 
   func aspectFill(to boundingSize: CGSize) -> Self {

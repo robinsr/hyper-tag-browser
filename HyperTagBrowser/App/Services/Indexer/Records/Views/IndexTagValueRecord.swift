@@ -27,6 +27,22 @@ struct IndexTagValueRecord: Codable, Hashable, Identifiable, Filterable, TagAsso
   }
 }
 
+extension IndexTagValueRecord: DatabaseView {
+  static let cteExpression = """
+    SELECT
+      tagitem.id as id,
+      tagitem.tagId AS tagId,
+      tagitem.contentId AS contentId,
+      tag.filterValue AS value
+    FROM 
+      \(IndexTagRecord.databaseTableName) tagitem
+    JOIN 
+      \(TagRecord.databaseTableName) tag 
+    ON 
+      tagitem.tagId = tag.id
+    """
+}
+
 extension IndexTagValueRecord: TableRecord {
   static let databaseTableName = "app_content_tag_item_values"
 }
@@ -36,7 +52,7 @@ extension IndexTagValueRecord: FetchableRecord {
     case id, tagId, contentId, value
   }
 
-  enum Columns: String, ColumnExpression {
+  public enum Columns: String, ColumnExpression {
     case id, tagId, contentId, value
   }
 
@@ -102,22 +118,3 @@ extension DerivableRequest<IndexTagValueRecord> {
     }
   }
 }
-
-extension IndexTagValueRecord: DatabaseView {
-  static let cteExpression = """
-    SELECT
-      tagitem.id as id,
-      tagitem.tagId AS tagId,
-      tagitem.contentId AS contentId,
-      tag.filterValue AS value
-    FROM 
-      \(IndexTagRecord.databaseTableName) tagitem
-    JOIN 
-      \(TagRecord.databaseTableName) tag 
-    ON 
-      tagitem.tagId = tag.id
-    """
-}
-
-
-

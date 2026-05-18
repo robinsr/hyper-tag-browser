@@ -10,14 +10,15 @@ struct DatabaseContextPreviewMod: PreviewModifier {
   static func makeSharedContext() async throws -> Context {
     let logger = EnvContainer.shared.logger("DatabaseContextPreviewMod")
     let indexer = IndexerContainer.shared.indexService()
+    let dbContext = IndexerContainer.shared.dbContext()
     
     do {
       try indexer.runMigrations()
     } catch {
-      print("Error in DatabaseContextPreviewMod: \(error)")
+      logger.emit(.error, "Error in DatabaseContextPreviewMod: \(error)")
     }
     
-    return .readOnly { indexer.dbReader }
+    return dbContext
   }
 
   func body(content: Content, context: Context) -> some View {
@@ -28,4 +29,5 @@ struct DatabaseContextPreviewMod: PreviewModifier {
 
 extension PreviewTrait where T == Preview.ViewTraits {
   @MainActor static var databaseContext: Self = .modifier(DatabaseContextPreviewMod())
+  @MainActor static var dbCtx: Self = .modifier(DatabaseContextPreviewMod())
 }

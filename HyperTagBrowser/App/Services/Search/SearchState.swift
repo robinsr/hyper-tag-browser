@@ -3,10 +3,36 @@
 import CoreSpotlight
 
 
-enum SearchState: Equatable, Hashable, CustomStringConvertible {
+struct SpotlightResult: Sendable, Hashable, Identifiable {
+  let id: String
+  let domainIdentifier: String?
+  let title: String?
+  let contentDescription: String?
+
+  init(_ item: CSSearchableItem) {
+    id = item.uniqueIdentifier
+    domainIdentifier = item.domainIdentifier
+    title = item.attributeSet.title
+    contentDescription = item.attributeSet.contentDescription
+  }
+  
+  var contentId: ContentId {
+    ContentId(existing: self.id)
+  }
+}
+
+extension CSSearchableItem {
+  var asSpotlightResult: SpotlightResult {
+    SpotlightResult(self)
+  }
+}
+
+
+
+enum SearchState: Equatable, Hashable, CustomStringConvertible, Sendable {
   case ready
   case searching
-  case returned(results: [CSSearchableItem])
+  case returned(results: [SpotlightResult])
   case errorMessage(String)
   case errorCode(Int)
   

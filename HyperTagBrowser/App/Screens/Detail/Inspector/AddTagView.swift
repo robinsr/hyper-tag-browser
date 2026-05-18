@@ -2,11 +2,9 @@
 
 import SwiftUI
 import GRDBQuery
-import OSLog
 import Flow
 import Factory
 import Regex
-import IssueReporting
 
 
 @Observable
@@ -48,7 +46,7 @@ struct AddTagView: View {
   
   func submitNewTag() {
     if let (_, selectedTag) = suggestions[safe: suggestionsCursorIndex] {
-      dispatch(.associateTag(selectedTag.asFilter, to: .one(contentItem.pointer)))
+      dispatch(.associateTag(selectedTag.asFilter, to: .only(contentItem.id)))
       resetCursor()
       return
     }
@@ -58,7 +56,7 @@ struct AddTagView: View {
       
       // TODO: Why is this async?
       DispatchQueue.main.async {
-        dispatch(.associateTag(.tag(value), to: .one(contentItem.pointer)))
+        dispatch(.associateTag(.tag(value), to: .only(contentItem.id)))
       }
       
       resetCursor()
@@ -123,12 +121,9 @@ struct AddTagView: View {
         minTextNeeded: 0,
         searchDomains: [.attribution, .descriptive]
       ) { index, item in
-        TagButton(
-          for: item.asFilter,
-          config: tagButtonConfig(usageCount: item.count)
-        )
-        .activateTag(when: index == suggestionsCursorIndex)
-          //.longPressTagAction(.renameAll, referencing: item.asFilter)
+        TagButton(for: item, config: tagButtonConfig)
+          .activateTag(when: index == suggestionsCursorIndex)
+//          .longPressTagAction(.renameAll, referencing: item.asFilter)
       }
     }
     .padding(.top, 12)
@@ -144,20 +139,17 @@ struct AddTagView: View {
     }
   }
   
-  func tagButtonConfig(usageCount: Int?) -> TagButtonConfiguration {
+  var tagButtonConfig: TagButtonConfiguration {
     .init(
-      size: .small,
-      variant: .primary,
-      labelCount: usageCount,
-      contextMenuConfig: .whenSuggestedAsContentTag,
-      contextMenuDispatch: { action in
+      counts: .always,
+      menu: .tagMenu(when: .taggingContent),
+      onMenuItem: { action in
         dispatch(action)
         dispatch(.popRoute)
       },
       onTap: { tag in
-        dispatch(.associateTag(tag, to: .one(contentItem.pointer)))
-      },
-      longPressAction: .renameAll
+        dispatch(.associateTag(tag, to: .only(contentItem.id)))
+      }
     )
   }
 }

@@ -30,7 +30,7 @@ struct IndexInfoRecord: Identifiable, FetchableRecord, Codable {
     case index, tagValues, tagCount, queueItems
   }
   
-  enum Columns: String, ColumnExpression {
+  public enum Columns: String, ColumnExpression {
     case index, tagValues, tagCount, queueItems
   }
   
@@ -63,11 +63,11 @@ extension IndexInfoRecord {
   
   typealias InfoRequest = QueryInterfaceRequest<IndexInfoRecord>
   
-  static private let defaultIndexRecordCols: [any SQLSelectable] = [
+  static private var defaultIndexRecordCols: [any SQLSelectable] { [
     .allColumns, Indx.TableAliases.tagCount.forKey("tagCount")
-  ]
+  ] }
   
-  static func info(matching params: IndxRequestParams) -> InfoRequest {
+  static func fetchRecords(matching params: IndxRequestParams) -> InfoRequest {
     IndexRecord
       .all()
       .select(params.sqlSelections)
@@ -80,7 +80,7 @@ extension IndexInfoRecord {
       .asRequest(of: IndexInfoRecord.self)
   }
   
-  static func info(ids: [ContentId]) -> InfoRequest {
+  static func fetchRecords(ids: [ContentId]) -> InfoRequest {
     IndexRecord
       .all()
       .select(Self.defaultIndexRecordCols)
@@ -91,7 +91,7 @@ extension IndexInfoRecord {
       .asRequest(of: IndexInfoRecord.self)
   }
   
-  static func info(id: ContentId) -> InfoRequest {
+  static func fetch(withId id: ContentId) -> InfoRequest {
     IndexRecord
       .all()
       .select(Self.defaultIndexRecordCols)
@@ -101,19 +101,36 @@ extension IndexInfoRecord {
       .joiningQueueItems()
       .asRequest(of: IndexInfoRecord.self)
   }
+  
+  static func fetch(at path: FilePath) -> InfoRequest {
+    IndexRecord
+      .all()
+      .select(Self.defaultIndexRecordCols)
+      .withPath(path)
+      .joiningTagValues()
+      .joiningTagCount()
+      .joiningQueueItems()
+      .asRequest(of: IndexInfoRecord.self)
+  }
 }
 
 
-extension IndexInfoRecord: DisplayableContentItem {
+extension IndexInfoRecord: IdentifiableContentItem {
   var id: ContentId { index.contentId }
   var pointer: ContentPointer { index.pointer }
-  
+}
+
+extension IndexInfoRecord: FileSystemContentItem {
   var url: URL { index.url }
   var filepath: FilePath { index.filepath }
   var location: FilePath { index.location }
   var name: String { index.name}
-  
   var exists: Bool { index.fileExists ?? false }
+}
+
+extension IndexInfoRecord {
+  
+  
   var tags: [FilteringTag] { tagValues.map(\.asFilter) }
   var link: Route { index.link }
   
@@ -129,7 +146,7 @@ extension IndexInfoRecord: DisplayableContentItem {
   var searchableTags: [FilteringTag] {
     var searchtags = self.tags
     
-    searchtags.append(.created(.init(date: index.created, bounds: .on)))
+    searchtags.append(.created(.onDate(index.created)))
     
     for queue in queueItems {
       // TODO: This should be `.queue(queue.name)`, name is only available on QueueRecord, not QueueItemRecord
@@ -144,3 +161,6 @@ extension IndexInfoRecord: ThumbnailableContentItem {
   var fileURL: URL { index.url }
   var contentType: UTType { index.type }
 }
+
+
+extension IndexInfoRecord: Hashable {}

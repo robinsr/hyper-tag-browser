@@ -11,20 +11,27 @@ import SwiftUI
  */
 @Observable
 final class CursorState {
-  
   typealias Item = ContentItem
-    // Using ContentPointer for the selected items set because Set requires Hashable
-  //typealias ItemId = ContentPointer
   
-  @ObservationIgnored
-  private var metrics: AggregatingMeasurement
-  
+  public enum SelectionState: Equatable, Sendable {
+    case none
+    case one(Item)
+    case many([Item])
+    
+    var isEmpty: Bool {
+      switch self {
+      case .none: return true
+      case .one, .many: return false
+      }
+    }
+    
+    var notEmpty: Bool { !isEmpty }
+  }
+
   @ObservationIgnored
   private let logger = EnvContainer.shared.logger("CursorState")
   
-  
   init() {
-    metrics = Container.shared.metricsRecorder().createHistogram(named: "CursorState")
   }
   
   // Configurable
@@ -123,8 +130,6 @@ final class CursorState {
     self.contains(item.pointer)
   }
   
-  
-  
   public func contains(only item: Item) -> Bool {
     oneSelected && selectedIds.contains(item.pointer)
   }
@@ -154,11 +159,11 @@ final class CursorState {
   }
   
 
-  public func focusState(of pointer: ContentPointer) -> SelectionItem.State {
+  public func focusState(of pointer: ContentPointer) -> UISelectionState {
     FirstTrueBuilder.withDefault(.none) {
       (hoveredItems.contains(id: pointer.contentId), .hover)
       (self.oneSelected && self.contains(pointer), .active)
-      (self.manySelected && self.contains(pointer), .dimmed)
+      (self.manySelected && self.contains(pointer), .included)
     }
   }
   
@@ -208,7 +213,7 @@ final class CursorState {
     case enterKey(mods: EventModifiers)
     case escape(mods: EventModifiers)
     
-    var allowedOn: [Route.Page] {
+    var validSourcePages: [Route.Page] {
       switch self {
       case .selectCurrent(_): .browseOnly
       case .tap(_,_): .browseOnly
@@ -266,50 +271,51 @@ final class CursorState {
   @discardableResult
   func dispatch(_ action: CursorActions, from page: Route.Page) -> KeyPress.Result {
     
-    guard action.allowedOn.contains(page) else {
-      logger.emit(.debug, "Ignoring cursor action \(action.id) on page \(page)")
+    guard action.validSourcePages.contains(page) else {
+      logger.emit(.debug, "CursorAction \(action.id.quoted) disallowed on page \(page)")
       
       return .ignored
-    }
-    
-    if case .escape(_) = action {
-      if noneSelected {
-        logger.emit(.debug, "Nothing selected, Ignoring dismiss action")
-        
-        // If the cursor is already nil, ignore the escape action
-        return .ignored
-      }
     }
     
     switch action {
     case .selectCurrent(let mods):
       if let item = cursorItem {
         onTap(item, mods)
+        return .handled
       }
     
     case .tap(let item, let mods):
       onTap(item, mods)
+      return .handled
     
     case .enterKey(mods: let mods):
       onEnter(mods)
+      return .handled
     
     case .escape(_):
-      clearSelections()
+      if page == .folder && anySelected {
+        clearSelections()
+        return .handled
+      }
     
     case .leftArrow(mods: let mods):
       moveBinding(-1, mods, page)
+      return .handled
     
     case .rightArrow(mods: let mods):
       moveBinding(1, mods, page)
+      return .handled
     
     case .upArrow(mods: let mods):
       moveBinding(-verticalDistance, mods, page)
+      return .handled
     
     case .downArrow(mods: let mods):
       moveBinding(verticalDistance, mods, page)
+      return .handled
     }
     
-    return .handled
+    return .ignored
   }
   
     /// Resets the cursor to it's initial state, with no selections.
@@ -387,24 +393,21 @@ final class CursorState {
   private func singleMove(distance moveDistance: Int, _ page: Route.Page) {
     let direction: CursorDirection = .forDistance(moveDistance)
     let currentIndex = direction == .forward ? tail : head
-    let nextIndex = items.indices[circular: currentIndex + moveDistance]
+    let nextItem = items[wrapping: currentIndex + moveDistance]
     
-    guard let item = items[safe: nextIndex] else { return }
-    
-    if itemAllowed(item, onPage: page) {
-      onTap(item, [])
+    if itemAllowed(nextItem, onPage: page) {
+      onTap(nextItem, [])
       return
     }
     
     var skipCount = direction == .forward ? 1 : 0
     
     while skipCount < items.count {
-      let incIndex = items.indices[circular: currentIndex + moveDistance + skipCount]
+      let incIndex = currentIndex + moveDistance + skipCount
+      let nextItem = items[wrapping: incIndex]
       
-      guard let item = items[safe: incIndex] else { break }
-      
-      if itemAllowed(item, onPage: page) {
-        onTap(item, [])
+      if itemAllowed(nextItem, onPage: page) {
+        onTap(nextItem, [])
         return
       }
       

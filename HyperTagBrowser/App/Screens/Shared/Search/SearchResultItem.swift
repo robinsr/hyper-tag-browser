@@ -10,24 +10,55 @@ struct SearchResultItem: View {
   let TAG_LIMIT = 10
   let thumbnailSize = CGSize(widthHeight: 150)
   
+  @Environment(SearchModel.self) var model
+  
   @Environment(\.dispatcher) var dispatch
   @Environment(\.pushState) var navigate
   
-  @Injected(\IndexerContainer.indexService) var indexer
   @Injected(\Container.spotlightService) var spotlight
   
   var content: ContentItem
   
-  var searched: [String] = []
-  
-  var queryLocation: URL = Defaults[.profileOpenTo]
-  
-  var updateQuery: (SearchTerm) -> () = { _ in }
-  
   @State var showMetadataSheet = false
+  
+  func onTagMenuItem(_ action: ModelActions) {
+    switch action {
+    case .addFilter(_,_):
+      dispatch(action)
+      dispatch(.showSheet(.none))
+    case .searchForTerm(let term):
+      model.appendTerm(term)
+    case .searchForTag(let tag):
+      model.appendTerm(tag.asSearchTerm)
+    default:
+      dispatch(action)
+    }
+  }
+  
+  func onTagTap(_ tag: FilteringTag) {
+    if (tag.domain.oneOf(.descriptive, .attribution)) {
+      model.appendTerm(tag.asSearchTerm)
+    }
+  }
+  
+  var searched: [String] {
+    model.queryString.split()
+  }
+  
+  var queryLocation: URL {
+    model.queryLocation
+  }
   
   var tags: [FilteringTag] {
     content.tags.prefix(TAG_LIMIT).collect()
+  }
+  
+  var createdOnTag: FilteringTag {
+    .created(.onDate(content.index.created))
+  }
+  
+  var isHiddenItem: Binding<Bool> {
+    .constant(content.index.visibility == .hidden)
   }
   
   var body: some View {
@@ -35,10 +66,6 @@ struct SearchResultItem: View {
       ResultThumbnail
       ResultDetails
     }
-  }
-  
-  var isHiddenItem: Binding<Bool> {
-    .constant(content.index.visibility == .hidden)
   }
   
   var ResultThumbnail: some View {
@@ -67,55 +94,47 @@ struct SearchResultItem: View {
   
   var ResultDetails: some View {
     VStack(alignment: .leading, spacing: 12) {
-      Group {
-        NavigateToItemButton
-        NavigateToFolderButton(
-          location: content.location,
-          relativeTo: queryLocation.filepath.directory
-        )
-      }
-      .buttonStyle(.weblink)
+      ItemNameButton
+        .buttonStyle(.weblink)
+      
+      ItemFolderButton
+        .buttonStyle(.weblink)
+      
       ResultItemTags
     }
   }
   
+  var ResultItemCreatedOnTag: some View {
+    TagButton(for: createdOnTag) {
+      TagButtonConfiguration(
+        menu: .tagMenu(when: .refiningSearchQuery),
+        onMenuItem: onTagMenuItem,
+      )
+    }
+  }
+
   var ResultItemTags: some View {
     HorizontalFlowView(vAlign: .firstTextBaseline, itemSpacing: 3, rowSpacing: 8) {
-      TagButton(
-        for: .created(.init(date: content.index.created, bounds: .on)),
-        config: tagButtonConfig
-      )
+      ResultItemCreatedOnTag
       
       ForEach(tags, id: \.id) { tag in
-        TagButton(
-          for: tag,
-          config: .init(
-            variant: .primary,
-            contextMenuConfig: .sections([.refining, .searchable]),
-            contextMenuDispatch: { action in
-              switch action {
-              case .addFilter(_,_):
-                dispatch(action)
-                dispatch(.showSheet(.none))
-              case .searchForTerm(let term):
-                updateQuery(term)
-              case .searchForTag(let tag):
-                updateQuery(tag.asSearchTerm)
-              default:
-                dispatch(action)
-              }
-            },
-            onTap: { tag in
-              updateQuery(tag.asSearchTerm)
-            }
+        TagButton(for: tag) {
+          TagButtonConfiguration(
+            menu: .tagMenu(when: .refiningSearchQuery),
+            onMenuItem: onTagMenuItem,
+            onTap: onTagTap
           )
-        )
+        }
       }
       
       Text(verbatim: "and \(tags.count - TAG_LIMIT) more...")
         .font(.caption)
         .visible(tags.count - TAG_LIMIT > 0)
     }
+  }
+  
+  private var itemJSON: some Encodable {
+    content.asSearchableItem(in: "<none>")
   }
   
   var ResultsInfoOverlay: some View {
@@ -125,12 +144,17 @@ struct SearchResultItem: View {
       .onTapGesture {
         showMetadataSheet.toggle()
       }
-      .sheetView(isPresented: $showMetadataSheet, style: JSONView.presentation) {
-        JSONView(object: .constant(spotlight.prepareItemForIndex(content)))
+      .sheetView(isPresented: $showMetadataSheet, style: JsonSheetView.presentation) {
+        JsonSheetView(
+          object: .constant(itemJSON),
+          onCopy: {
+            dispatch(.copyToClipboard(value: $0))
+          }
+        )
       }
   }
   
-  var NavigateToItemButton: some View {
+  var ItemNameButton: some View {
     Button {
       dispatch(.showSheet(.none))
       navigate(.content(content.pointer))
@@ -143,23 +167,13 @@ struct SearchResultItem: View {
     }
   }
   
-  var tagButtonConfig: TagButtonConfiguration {
-    .init(
-      size: .small,
-      variant: .primary,
-      contextMenuConfig: .whenSuggestedDuringSearch,
-      contextMenuDispatch: { action in
-        switch action {
-        case .addFilter(_,_):
-          dispatch(action)
-          dispatch(.showSheet(.none))
-        case .searchForTerm(let term):
-          updateQuery(term)
-        case .searchForTag(let tag):
-          updateQuery(tag.asSearchTerm)
-        default:
-          dispatch(action)
-        }
-      })
+  var ItemFolderButton: some View {
+    NavigateToFolderButton(
+      location: content.location,
+      onTap: {
+        dispatch(.showSheet(.none))
+        navigate(.folder(content.location))
+      }
+    )
   }
 }

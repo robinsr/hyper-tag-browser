@@ -60,7 +60,7 @@ extension String {
     return [prefix, seed.base64Encoded ?? String(format: "%064x", seed)].joined()
   }
 
-  /// The type of characters to be used when randomizing a string using ``random(using:length:)-9nshh``.
+    /// The type of characters to be used when randomizing a string using ``random(using:length:)``.
   struct RandomizationType: OptionSet, Codable {
     /// Numbers.
     public static let numbers = RandomizationType(rawValue: 1 << 0)
@@ -71,9 +71,13 @@ extension String {
     /// Symbols.
     public static let symbols = RandomizationType(rawValue: 1 << 3)
     /// Lower- and uppercase letters.
-    public static var allLetters: RandomizationType = [.letters, .lettersUppercase]
+    public static var allLetters: RandomizationType {
+      [.letters, .lettersUppercase]
+    }
     /// Lower- and uppercase letters, numbers and symbols.
-    public static var all: RandomizationType = [.letters, .lettersUppercase, .numbers, .symbols]
+    public static var all: RandomizationType {
+      [.letters, .lettersUppercase, .numbers, .symbols]
+    }
 
     public let rawValue: Int
     public init(rawValue: Int) { self.rawValue = rawValue }
@@ -131,13 +135,13 @@ extension String {
     return components.joined(separator: " ")
   }
 
-  func appendingWord(_ word: String) -> String {
+  func appendingWord(_ word: String, separator: String = " ") -> String {
     let components = [
       self.trimmingTrailing(in: .whitespaces),
       word.trimmingCharacters(in: .whitespaces),
     ]
 
-    return components.joined(separator: " ")
+    return components.joined(separator: separator)
   }
 
   @available(*, deprecated, message: "Use `truncated(to:)` instead")

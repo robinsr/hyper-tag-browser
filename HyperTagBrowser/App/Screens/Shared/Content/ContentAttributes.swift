@@ -91,22 +91,30 @@ struct ContentAttributes: View {
 }
 
 #Preview("ContentAttributes", traits: .defaultViewModel, .fixedLayout(width: 400, height: 800)) {
-  @Previewable @State var contentItemIndex = 2
+  @Previewable @State var contentItem = TestData.testContentItems.first!
   
   VStack {
     HStack {
       Button("Prev") {
-        contentItemIndex = TestData.testContentItems[circular: contentItemIndex - 1]
+        if let current = TestData.testContentItems.firstIndex(of: contentItem) {
+          contentItem = TestData.testContentItems[wrapping: current - 1]
+        }
       }
+      
       Spacer()
+      
       Button("Next") {
-        contentItemIndex = TestData.testContentItems[circular: contentItemIndex + 1]
+        if let current = TestData.testContentItems.firstIndex(of: contentItem) {
+          contentItem = TestData.testContentItems[wrapping: current + 1]
+        }
       }
     }
-    ContentAttributes(contentItem: TestData.testContentItems[contentItemIndex])
+    
+    ContentAttributes(contentItem: contentItem)
       .fillFrame(.vertical)
+    
     DisclosureGroup("JSON View") {
-      JSONView(object: .constant(TestData.testContentItems[contentItemIndex]))
+      JsonCodeView(object: .constant(contentItem))
     }
   }
   .frame(width: 400, height: 800)

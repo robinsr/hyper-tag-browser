@@ -26,7 +26,7 @@ extension ColumnDefinition {
   @discardableResult
   func references(
     _ column: ColumnExpression,
-    in table: TableRecord.Type,
+    in table: any TableRecord.Type,
     onDelete delete: Database.ForeignKeyAction = .cascade,
     onUpdate update: Database.ForeignKeyAction = .cascade,
     isDeferred: Bool = true
@@ -52,7 +52,7 @@ extension ColumnDefinition {
   @discardableResult
   func references(
     _ column: String,
-    in table: TableRecord.Type,
+    in table: any TableRecord.Type,
     onDelete delete: Database.ForeignKeyAction = .cascade,
     onUpdate update: Database.ForeignKeyAction = .cascade,
     isDeferred: Bool = true

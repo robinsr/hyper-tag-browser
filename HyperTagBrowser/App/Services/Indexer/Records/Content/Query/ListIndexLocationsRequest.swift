@@ -7,7 +7,7 @@ import System
 
 
 struct ListIndexLocationsRequest: ValueObservationQueryable {
-  static let queryableOptions = GRDBIndexService.queryableOptions
+  static let queryableOptions = GRDBDatabaseOptions.queryableOptions
   
   static var defaultValue: [FilePath] { [] }
 

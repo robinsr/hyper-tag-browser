@@ -21,14 +21,23 @@ struct TagMenuSection: OptionSet, Hashable, CustomStringConvertible {
   static let empty = TagMenuSection(rawValue: 1 << 0)
   static let all = TagMenuSection(rawValue: 1 << 6)
   
-
-  static let buttonMapping: [TagMenuSection: [TagMenuAction]] = [
-    .refining: [.filterIncluding, .filterExcluding],
-    .broadening: [.filterOff],
-    .mutable: [.changeDate, .relabel(.whenAppliedAsQueryFilter), .invert],
-    .editable: [.renameAll, .removeAll, .relabel(.whenAppliedAsContentTag)],
-    .searchable: [.searchFor, .copyText]
-  ]
+  
+  var tagActions: [TagMenuAction] {
+    switch self {
+    case .refining: 
+      return [.filterIncluding, .filterExcluding]
+    case .broadening:
+      return [.filterOff]
+    case .mutable:
+      return [.changeDate, .relabel(.editingBrowseFilters), .invert]
+    case .editable:
+      return [.renameAll, .removeAll, .relabel(.noContext)]
+    case .searchable:
+      return [.searchFor, .copyText]
+    default:
+      return []
+    }
+  }
   
   
   /**
@@ -57,11 +66,13 @@ struct TagMenuSection: OptionSet, Hashable, CustomStringConvertible {
     return Self.ordered.reduce(into: [[]]) { sections, section in
       guard contains(section) else { return }
       
-      var buttons = Self.buttonMapping[section]!
+      var buttons = [TagMenuAction]()
       
-      if let label = section.title {
-        buttons.prepend(label)
+      if let sectionTitle = section.title {
+        buttons.append(sectionTitle)
       }
+      
+      buttons.append(contentsOf: section.tagActions)
       
       sections.append(buttons)
     }

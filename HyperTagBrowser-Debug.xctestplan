@@ -20,18 +20,18 @@
       }
     ],
     "targetForVariableExpansion" : {
-      "containerPath" : "container:TaggedFileBrowser.xcodeproj",
+      "containerPath" : "container:HyperTagBrowser.xcodeproj",
       "identifier" : "947341C12C7EADB70047C718",
-      "name" : "TaggedFileBrowser"
+      "name" : "HyperTagBrowser"
     },
     "uiTestingScreenshotsLifetime" : "keepNever"
   },
   "testTargets" : [
     {
       "target" : {
-        "containerPath" : "container:TaggedFileBrowser.xcodeproj",
+        "containerPath" : "container:HyperTagBrowser.xcodeproj",
         "identifier" : "947341DC2C7EADB80047C718",
-        "name" : "TaggedFileBrowserUITests"
+        "name" : "HyperTagBrowserUITests"
       }
     }
   ],

@@ -15,22 +15,23 @@ import Factory
  *
  * Just a DRY way to handle commands in a centralized way.
  */
+@MainActor
 struct CommandExecutor {
   
   @Injected(\Container.appViewModel) var appVM
   @Injected(\Container.detailViewModel) var detailEnv
-  @Injected(\Container.thumbnailStore) var thumbnailStore
+  @Injected(\ThumbnailContainer.store) var thumbnailStore
   @Injected(\Container.cursorState) var cursor
   
   
   /// Proxy to the app's dispatch function
   private var dispatch: DispatchFn {
-    appVM.dispatch
+    Container.shared.dispatcher().dispatch
   }
   
   /// Proxy to the app's navigation function
   private var navigate: PushNavigationFn {
-    appVM.navigate
+    Container.shared.dispatcher().navigate
   }
   
     // MARK: - Menu Items
@@ -41,7 +42,7 @@ struct CommandExecutor {
   
   func toggleSheetAction(_ sheet: AppSheet) -> (() -> Void) {
     return {
-      appVM.dispatch(.showSheet(sheet))
+      dispatch(.showSheet(sheet))
     }
   }
   
@@ -59,7 +60,7 @@ struct CommandExecutor {
     // MARK: - File Menu Items
   
   func file_IndexLocationButton() {
-    dispatch(.indexItems(inFolder: appVM.location))
+    dispatch(.indexItems(inFolder: appVM.currentURL))
   }
   
   func file_BackupDatabaseButton() {
@@ -73,7 +74,7 @@ struct CommandExecutor {
   }
 
   func navigate_UpDirButton() {
-    navigate(.folder(appVM.location.filepath.directory))
+    navigate(.folder(appVM.currentURL.filepath.directory))
   }
 
   func navigate_HomeButton() {
@@ -131,6 +132,4 @@ struct CommandExecutor {
       cursor.selectAll()
     }
   }
-  
-  
 }

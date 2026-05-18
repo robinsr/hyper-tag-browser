@@ -43,6 +43,8 @@ protocol FoldedPanelStyle: DynamicProperty {
 }
 
 extension FoldedPanelStyle {
+  
+  @MainActor
   func resolve(configuration: Configuration) -> some View {
     StyledFoldedPanelView(style: self, configuration: configuration)
   }
@@ -52,6 +54,7 @@ extension FoldedPanelStyle {
 /**
  Configuration object for FoldedPanelStyles
  */
+@MainActor
 struct FoldedPanelStyleConfiguration {
   struct Content: View {
     let body: AnyView
@@ -68,8 +71,8 @@ struct FoldedPanelStyleConfiguration {
 /**
  * A environment key containing the FoldedPanelStyle, accessible within the proxied View
  */
-struct FoldedPanelStyleEnvironmentKey: EnvironmentKey {
-  static var defaultValue: any FoldedPanelStyle = PlainFoldedPanelStyle()
+struct FoldedPanelStyleEnvironmentKey: @preconcurrency EnvironmentKey {
+  @MainActor static var defaultValue: any FoldedPanelStyle = PlainFoldedPanelStyle()
 }
 
 extension EnvironmentValues {

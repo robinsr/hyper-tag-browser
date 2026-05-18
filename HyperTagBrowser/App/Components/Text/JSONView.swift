@@ -1,49 +1,41 @@
 // created on 12/6/24 by robinsr
 
 import SwiftUI
-import GenericJSON
 import HighlightSwift
-
-
-typealias JSONViewEncodable = any Encodable
 
 
 /**
  * Displays a JSON representation of an Encodable object.
  */
-struct JSONView: View, SheetPresentable {
-  static let presentation: SheetPresentation = .code
+struct JsonCodeView: View {
   
-  @Binding var object: JSONViewEncodable
+  typealias JsonEncodable = any Encodable
+  
+  @Binding
+  var object: JsonEncodable
 
-  var json: String {
+  var jsonText: String {
     JSONEncoder.pretty(object)
   }
   
   var body: some View {
-    ScrollView([.vertical, .horizontal]) {
-      CodeText(json)
-        .codeTextLanguage(.json)
-        .multilineTextAlignment(.leading)
-        .styleClass(.code)
-        .selectable()
-        .fixedSize(horizontal: true, vertical: false)
-        .frame(
-          maxWidth: Self.presentation.expanded.maxWidth,
-          maxHeight: Self.presentation.expanded.maxHeight,
-          alignment: .top
-        )
-    }
+    CodeText(jsonText)
+      .codeTextLanguage(.json)
+      .multilineTextAlignment(.leading)
+      .styleClass(.code)
+      .selectable()
   }
 }
 
-#Preview("JSONView", traits: .defaultViewModel, .defaultLayout, .previewSize(.panel)) {
-  @Previewable @State var json: JSON = [
-    "key": "value",
-    "array": [1, 2, 3],
-    "nested": ["key": "value"]
-  ]
-  
-  JSONView(object: .constant(json))
-    .padding()
+
+#Preview(
+  "JsonCodeView",
+  traits: .app, .fixedLayout(width: 720, height: 440), .testBordersOff
+) {
+  VStack {
+    JsonCodeView(
+      object: .constant(TestData.testIndexRecords.first(6).asArray)
+    )
+  }
+  .preferredColorScheme(.dark)
 }

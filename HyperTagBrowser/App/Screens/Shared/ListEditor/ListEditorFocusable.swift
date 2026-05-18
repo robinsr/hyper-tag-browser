@@ -17,7 +17,14 @@ enum ListEditorFocusable: Equatable {
   }
   
   var isItem: Bool {
-    id.oneOf("scroll-to-none", "scroll-to-top-command") == false
+    switch self {
+    case .itemId(_): return true
+    default: return false
+    }
+  }
+  
+  var isNeutral: Bool {
+    self == .prefix
   }
   
   static func == (lhs: Self, rhs: Self) -> Bool {

@@ -8,31 +8,36 @@ import GRDBQuery
 struct ContentTagContextMenu : View {
   @Injected(\Container.clipboardService) var clippy
   
-  let tag: FilteringTag
+  let filter: AnyFilterable
   let actions: [TagMenuAction]
-  var onSelection: DispatchFn = {
-    Container.shared.appViewModel().dispatch($0)
+  
+  var onSelection: DispatchFn = { action in
+    Container.shared.dispatcher().dispatch(action)
   }
   
-  init(tag: FilteringTag, actions: [TagMenuAction], onSelection: @escaping DispatchFn) {
-    self.tag = tag
+  init(for filter: AnyFilterable, actions: [TagMenuAction], onSelection: @escaping DispatchFn) {
+    self.filter = filter
     self.actions = actions
     self.onSelection = onSelection
   }
   
-  init(tag: FilteringTag, groups: [[TagMenuAction]], onSelection: @escaping DispatchFn) {
+  init(for filter: AnyFilterable, groups: [[TagMenuAction]], onSelection: @escaping DispatchFn) {
     let buttons: [TagMenuAction] = groups.map { $0 + [.separator] }.flatMap { $0 }.dropLast()
     
-    self.init(tag: tag, actions: buttons, onSelection: onSelection)
+    self.init(for: filter, actions: buttons, onSelection: onSelection)
   }
   
-  init(tag: FilteringTag, sections: TagMenuSection, onSelection: @escaping DispatchFn) {
-    self.init(tag: tag, groups: sections.menuButtons, onSelection: onSelection)
+  init(for filter: AnyFilterable, sections: TagMenuSection, onSelection: @escaping DispatchFn) {
+    self.init(for: filter, groups: sections.menuButtons, onSelection: onSelection)
   }
   
-  init(tag: FilteringTag, buttons: [TagMenuAction]) {
-    self.tag = tag
+  init(for filter: AnyFilterable, buttons: [TagMenuAction]) {
+    self.filter = filter
     self.actions = buttons
+  }
+  
+  var tag: FilteringTag {
+    self.filter.asFilter
   }
   
   var tagLabelOptions: [SelectOption<FilteringTag.TagType>] {
@@ -72,9 +77,9 @@ struct ContentTagContextMenu : View {
           onSelection(.invertFilter(tag))
         }
         
-      case .removeFrom(let pointer):
+      case .removeFrom(let contentId):
         ContextMenuButton(action) {
-          onSelection(.dissociateTag(tag, from: .one(pointer)))
+          onSelection(.dissociateTag(tag, from: .only(contentId)))
         }
         
       case .renameAll:
@@ -109,7 +114,7 @@ struct ContentTagContextMenu : View {
         Divider()
           .id(String.randomIdentifier(12))
         
-      @unknown default:
+      default:
         EmptyView()
       }
     }
@@ -120,9 +125,9 @@ struct ContentTagContextMenu : View {
       ForEach(tagLabelOptions, id: \.id) { option in
         Button {
           switch context {
-          case .whenAppliedAsQueryFilter:
+          case .editingBrowseFilters:
             onSelection(.replaceFilter(tag, with: tag.relabel(using: option.value)))
-          case .whenAppliedAsContentTag:
+          case .taggedOn(_):
             onSelection(.relabelTag(tag, to: option.value, scope: .all))
           default:
             break;

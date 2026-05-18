@@ -11,6 +11,7 @@ enum DevFlags: String, Defaults.Serializable, CaseIterable {
   case enable_obscureContent
   case enable_dominantColor
   case enable_panAndZoom
+  case enable_cgImageThumbnail
   
   // Flags related to feature enablement
   case model_logActionDescription
@@ -66,6 +67,9 @@ enum DevFlags: String, Defaults.Serializable, CaseIterable {
   }
   
   
+  /**
+   * Used as label text in UI
+   */
   var description: String {
     switch self {
     case .enable_dominantColor:
@@ -74,6 +78,8 @@ enum DevFlags: String, Defaults.Serializable, CaseIterable {
       "Obscure image thumbnails"
     case .enable_panAndZoom:
       "Enable Pan and Zoom Image Controls"
+    case .enable_cgImageThumbnail:
+      "Enable CGImage Thumbnailing"
     case .indexer_debugParameters:
       "Debug Query Parameters"
     case .indexer_debugSqlResponses:
@@ -103,8 +109,13 @@ enum DevFlags: String, Defaults.Serializable, CaseIterable {
     }
   }
   
+  /**
+   * Used as help text in UI
+   */
   var debugDescription: String {
     switch self {
+    case .enable_cgImageThumbnail:
+      "Generate thumbnails from image file data instead of QuickLook"
     case .indexer_debugParameters:
       "Logs current query params to console; shows query hash value in UI"
     case .indexer_enableSqlTrace:
@@ -120,6 +131,7 @@ enum DevFlags: String, Defaults.Serializable, CaseIterable {
     }
   }
   
+  @available(*, deprecated, message: "Unused as of 2025-11-09")
   var command: some Commands {
     CommandGroup(replacing: .appInfo) {
       Button(self.description) {
@@ -131,7 +143,7 @@ enum DevFlags: String, Defaults.Serializable, CaseIterable {
   
   static func list(for stage: AppStage) -> [DevFlags] {
     switch stage {
-    case .test:
+    case .debug, ._preview:
       Self.allCases.sorted(by: \.category.presentationOrder)
     default:
       Self.allCases
@@ -166,6 +178,8 @@ enum QueryableDevFlags: String, Defaults.Serializable, CaseIterable, CustomStrin
   case ListQueueIndexesRequest
   
   case ListBookmarksRequest
+  
+  case GRDBIndexes
 
   
   init?(rawValue: String) {

@@ -10,19 +10,39 @@ struct NavigateToFolderButton: View {
   
   var location: FilePath
   var relativeTo: FilePath = UserLocation.homePath
+  var onTap: (() -> ())? = nil
   
-  var relativepath: String {
-    location.path(relativeTo: relativeTo).string
+  private func defaultTapHandler() {
+    navigate(.folder(location))
+  }
+  
+  private var isUbiquitousItem: Bool {
+    location.fileURL.isUbiquitousItem
+  }
+  
+  var relativePath: String {
+    location.relative(to: relativeTo).string
   }
   
   var labelText: String {
-    relativepath.isEmpty ? location.baseName : relativepath
+    if isUbiquitousItem {
+      return "\(homeURL: location.fileURL)"
+    }
+    
+    else if relativePath.notEmpty {
+      return relativePath
+    }
+    
+    return location.baseName
   }
   
   var body: some View {
     Button {
-      dispatch(.showSheet(.none))
-      navigate(.folder(location))
+      if let tapHandler = onTap {
+        tapHandler()
+      } else {
+        defaultTapHandler()
+      }
     } label: {
       Text(verbatim: labelText)
         .prefixWithFileIcon(.folder, size: 16)

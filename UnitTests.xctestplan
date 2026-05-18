@@ -19,9 +19,9 @@
     {
       "enabled" : false,
       "target" : {
-        "containerPath" : "container:TaggedFileBrowser.xcodeproj",
+        "containerPath" : "container:HyperTagBrowser.xcodeproj",
         "identifier" : "947341D22C7EADB80047C718",
-        "name" : "TaggedFileBrowserTests"
+        "name" : "HyperTagBrowserTests"
       }
     }
   ],

@@ -9,14 +9,6 @@ import Regex
 import System
 
 
-extension ContentId {
-  static let IDLength = 32
-  static let IDPattern = #"^(filename|content|random):[\w\d]{\#(IDLength)}$"#
-  static let IDRegex = try! Regex(string: IDPattern)
-}
-
-
-
 /**
  * A unique identifier used to identify content in the system.
  *
@@ -25,43 +17,17 @@ extension ContentId {
  * - `content` - based on the file content
  *
  */
-struct ContentId: Codable, Hashable, Equatable {
-  static private let logger = EnvContainer.shared.logger("ContentId")
+struct ContentId: Codable, Hashable, Equatable, Sendable {
+  private static let logger = EnvContainer.shared.logger("ContentId")
+  
+  private static let IDLength = 32
+  private static let IDPattern = #"^(filename|content|random):[\w\d]{\#(IDLength)}$"#
+  private static let IDRegex = try! Regex(string: IDPattern)
   
   /**
-   * Represents the different sources for generating new ContentIds
-   *
-   * - `attributes` - based on the file's absolute path at the time of indexing, and date created
-   * - `content` - based on the file content (and date created)
-   * - `random` - a random string identifier, used for files that are not yet indexed
+   * A static ContentId that represents various "empty" scenarios
    */
-  enum ContentIdType: String, CaseIterable {
-    case attributes, filename, folder
-    case content
-    case random
-    
-    var idPrefix: String {
-      switch self {
-      case .attributes, .filename, .folder: return "filename"
-      case .content: return "content"
-      case .random: return "random"
-      }
-    }
-    
-    var resolvedType: Self {
-      switch self {
-      case .attributes, .filename, .folder: return .attributes
-      case .content: return .content
-      case .random: return .random
-      }
-    }
-    
-    init(rawValue: String) {
-      let idType = ContentIdType.allCases.first { rawValue.starts(with: $0.rawValue) }
-      
-      self = idType?.resolvedType ?? .random
-    }
-  }
+  static let placeholder = ContentId(existing: Constants.noContentId)
 
   let value: String
   
@@ -124,27 +90,37 @@ struct ContentId: Codable, Hashable, Equatable {
   }
   
   /**
-   Creates a new ContentId not associated to a file URL using a random string identifier
+   * Creates a new ContentId not associated to a file URL using a random string identifier
    */
   static func newID() -> ContentId {
-    .newID(using: .random, forURL: nil)
+    let source: ContentIdType = .random
+    let ident: String = .randomIdentifier(Self.IDLength)
+    
+    return ContentId(string: "\(source.idPrefix):\(ident)")
   }
   
   /**
-   Manually specify the ID source for a new ContentId for the file at the given URL
-   
-   - If the source is `.filename` or `.folder`, the ID is based on the file or folder name.
-   - If the source is `.content`, a hash of the file content is used.
-   - If the source is `.random`, a random string identifier is used.
+   * Manually specify the ID source for a new ContentId for the file at the given URL
+   *
+   * - If the source is `.filename` or `.folder`, the ID is based on the file or folder name.
+   * - If the source is `.content`, a hash of the file content is used.
+   * - If the source is `.random`, a random string identifier is used.
+   *
+   * ## TODO: Support contents-based ID that accounts for duplicate files with different names !!!
+   *
+   * Currently, duplicating a file with a fileContents-based contentID will result in two content entries
+   * files with identical contentIds, confusing the content indexer.
+   *
+   * For now, we will use the filename-based ID for all files.
    */
-  static func newID(using source: ContentIdType, forURL url: URL?) -> ContentId {
+  static func newID(using source: ContentIdType = .attributes, filepath: FilePath) -> ContentId {
     var id: String
     
     switch source.resolvedType {
     case .attributes:
-      id = Self.createFileAttributeHash(for: url!)
+      id = md5HashString(idString(for: filepath))
     case .content:
-      id = Self.fileContentsBasedId(url!)
+      id = fileContentsBasedId(filepath: filepath)
     case .random:
       id = .randomIdentifier(Self.IDLength)
     default:
@@ -155,99 +131,101 @@ struct ContentId: Codable, Hashable, Equatable {
     
     return ContentId(string: "\(source.idPrefix):\(id)")
   }
-  
-  /**
-   Determines the method for ID generation based on the type of file at the given URL
-   
-   - If the URL is a file, a hash of the file content is used.
-   - If the URL is a directory, the ID is based on the directory name.
-   */
-  static func newID(forFile url: URL) -> ContentId {
-    // TODO: !!! Support contents-based ID that accounts for duplicate files with different names !!!
-    //
-    // Currently, duplicating a file, specifically a contents-based ID type file,  will result in two content entries
-    // files with identical contentIds, confusing the content indexer.
-    //
-    // For now, we will use the filename-based ID for all files.
-    
-    
-    // var idType = IdSource.filename
-    //
-    // if url.isDirectory {
-    //   idType = .folder
-    // }
-    //
-    // if url.fileSize < Constants.maxFileSizeForContentId {
-    //   idType = .content
-    // }
-    //
-    // return .newID(using: idType, forURL: url)
-    
-    .newID(using: .attributes, forURL: url)
-  }
-
-
-  /**
-   * Returns a string to use as input to the hash function for the file name
-   */
-  private static func fileAttributeHashInput(for url: URL) -> String {
-    let filePath = FilePath(url.absoluteURL.formatted(.url.scheme(.never)))
-    let fileDate = url.dateCreated.timeIntervalSince1970
-    
-    return "\(filePath):\(fileDate)"
-  }
 
   /**
    * Generates a content-based ID for the file at the given URL.
    */
-  private static func fileContentsBasedId(_ url: URL) -> String {
-    let failure = ModeledError.failed(to: "create ContentID from file contents file: '\(url)'", fallback: "attribute-based ID")
+  private static func fileContentsBasedId(filepath: FilePath) -> String {
+    let failure = ModeledError
+      .failed(to: "create ContentID from file contents file: '\(filepath.string)'", fallback: "attribute-based ID")
+    
+    let fallbackId = md5HashString(idString(for: filepath))
     
     do {
-      let file = try FileHandle(forReadingFrom: url)
+      let file = try FileHandle(forReadingFrom: filepath.fileURL)
       
       defer {
         file.closeFile()
       }
 
       let bufferSize: Int = 1024 * 1024
-      let data = file.readData(ofLength: bufferSize)
+      let fileData = file.readData(ofLength: bufferSize)
       
-      guard !data.isEmpty else {
+      guard !fileData.isEmpty else {
         logger.emit(.warning, .modeled(failure.with(reason: "file is empty")))
-        
-        return createFileAttributeHash(for: url)
+        return fallbackId
       }
       
-      var md5 = CryptoKit.Insecure.MD5()
-      
-      // Using the file name hash as a prefix to the content hash to handle file duplicates
-      md5.update(data: fileAttributeHashInput(for: url).data(using: .utf8)!)
-      md5.update(data: data)
-      
-      return md5.finalize().hexString
+      return md5HashString(idString(for: filepath).data(using: .utf8)!, fileData)
     } catch {
-      logger.emit(.warning, .modeled(failure.with(error: error)))
-      
-      return createFileAttributeHash(for: url)
+      logger.emit(.error, .modeled(failure.with(error: error)))
+      return fallbackId
     }
   }
 
-  /**
-   * Creates a ContentId based on the file path AND date created. This should account for
-   * cases of file duplicate that would otherwise result in identical content-based IDs
-   */
-  private static func createFileAttributeHash(for url: URL) -> String {
+  
+  private static func md5HashString(_ input: String) -> String {
     var md5 = Insecure.MD5()
-    md5.update(data: fileAttributeHashInput(for: url).data(using: .utf8)!)
+    md5.update(data: input.data(using: .utf8)!)
     return md5.finalize().hexString
   }
   
   
+  private static func md5HashString(_ inputs: Data...) -> String {
+    var md5 = Insecure.MD5()
+    
+    for data in inputs {
+      md5.update(data: data)
+    }
+
+    return md5.finalize().hexString
+  }
+  
   /**
-   A static ContentId that represents various "empty" scenarios
+   * Derives a new ID string for a `FilePath`, using the path string and date created
    */
-  static let placeholder = ContentId(existing: Constants.noContentId)
+  private static func idString(for filepath: FilePath) -> String {
+    let pathstring = filepath.string
+    let created = filepath.creationDate ?? Date.now
+    let fileTimeMilliseconds = Int64(created.timeIntervalSince1970 * 1000)
+    
+    return "\(pathstring):\(fileTimeMilliseconds)"
+  }
+  
+  
+  /**
+   * Represents the different sources for generating new ContentIds
+   *
+   * - `attributes` - based on the file's absolute path at the time of indexing, and date created
+   * - `content` - based on the file content (and date created)
+   * - `random` - a random string identifier, used for files that are not yet indexed
+   */
+  enum ContentIdType: String, CaseIterable, Sendable {
+    case attributes, filename, folder
+    case content
+    case random
+    
+    var idPrefix: String {
+      switch self {
+      case .attributes, .filename, .folder: return "filename"
+      case .content: return "content"
+      case .random: return "random"
+      }
+    }
+    
+    var resolvedType: Self {
+      switch self {
+      case .attributes, .filename, .folder: return .attributes
+      case .content: return .content
+      case .random: return .random
+      }
+    }
+    
+    init(rawValue: String) {
+      let idType = ContentIdType.allCases.first { rawValue.starts(with: $0.rawValue) }
+      self = idType?.resolvedType ?? .random
+    }
+  }
 }
 
 

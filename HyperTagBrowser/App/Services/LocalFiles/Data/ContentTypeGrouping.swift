@@ -2,9 +2,17 @@
 
 import UniformTypeIdentifiers
 
-
-//typealias ContentTypeGroup = AllowedFileType
-
+/**
+ * Defines logical groupings of `UTType` types, such as:
+ *
+ * - Grouped by similar content-types:
+ *     - `.images`: composed of  `UTType.image`, `.png`, `.jpg`, etc
+ * - Grouped by use-case:
+ *     - `.content`: types that can be indexed
+ * - Grouped by audience:
+ *     - `.user`: types the user can interact with
+ *     - `.nonUser`: types used by application code, but have no user interaction
+ */
 enum ContentTypeGroup: String, Codable, CaseIterable, Identifiable {
   case folders
   case images
@@ -29,7 +37,6 @@ enum ContentTypeGroup: String, Codable, CaseIterable, Identifiable {
   private static var compositeTypes: [ContentTypeGroup] {
     [ContentTypeGroup.nonUser, .user, .content, .all, .empty]
   }
-  
   
     /// Types cooresponding to ``/content``
   private static var contentSubsets: [ContentTypeGroup] {
@@ -67,6 +74,36 @@ enum ContentTypeGroup: String, Codable, CaseIterable, Identifiable {
   
   var isCompsiteType: Bool {
     Self.compositeTypes.contains(self)
+  }
+  
+  func contains(member other: Self) -> Bool {
+    self.subsets.contains(other)
+  }
+  
+  /// Returns true when a member `UTType` the supplied `UTType` `type`
+  func allows(filetype type: UTType) -> Bool {
+    self.filetypes.any { type.conforms(to: $0) }
+  }
+  
+  var filetypes: Set<UTType> {
+    switch self {
+    case .folders:
+      return [ UTType.folder ]
+    case .images:
+      return [ UTType.image, .jpeg, .png, .tiff, .webP, .gif, .tiff, .heic, .heif, .heics ]
+    case .video:
+      return [ UTType.video, .mpeg4Movie, .appleProtectedMPEG4Video, .wav, .avi ]
+    case .database:
+      return [ UTType.sqlite, .sqlite3 ]
+    case .empty:
+      return []
+    default:
+      return self.expandedTypes
+    }
+  }
+
+  var filetypeIdentifiers: [String] {
+    self.filetypes.map { $0.identifier }
   }
   
   
@@ -127,52 +164,13 @@ enum ContentTypeGroup: String, Codable, CaseIterable, Identifiable {
 }
 
 
-
-extension ContentTypeGroup: ContentTypeGrouping {
-  func contains(member other: Self) -> Bool {
-    self.subsets.contains(other)
-  }
-  
-  func allows(filetype type: UTType) -> Bool {
-    self.filetypes.any { type.conforms(to: $0) }
-  }
-  
-  var filetypes: Set<UTType> {
-    switch self {
-    case .folders:
-      return [ UTType.folder ]
-    case .images:
-      return [ UTType.image, .jpeg, .png, .tiff, .webP, .gif, .tiff, .heic, .heif, .heics ]
-    case .video:
-      return [ UTType.video, .mpeg4Movie, .appleProtectedMPEG4Video, .wav, .avi ]
-    case .database:
-      return [ UTType.sqlite, .sqlite3 ]
-    case .empty:
-      return []
-    default:
-      return self.expandedTypes
-    }
-  }
-
-  
-  var filetypeIdentifiers: [String] {
-    self.filetypes.map { $0.identifier }
-  }
-}
-
-
-
-
 extension ContentTypeGroup: Comparable {
   static func < (lhs: ContentTypeGroup, rhs: ContentTypeGroup) -> Bool {
     lhs.rawValue < rhs.rawValue
   }
 }
 
-
 extension ContentTypeGroup: CustomStringConvertible {
-  
-  
   var description: String {
     "\(self.id)[\(self.filetypeIdentifiers.joined(separator: ", "))]"
   }
@@ -192,8 +190,6 @@ extension ContentTypeGroup: CustomStringConvertible {
 }
 
 extension ContentTypeGroup: SelectableOptions {
-  
-  
   /**
    * Conforming to `SelectableOptions` as this allows this type to be used in pre-built UI components (see `SelectOption`. `MenuSelect`, etc).
    *
@@ -207,7 +203,6 @@ extension ContentTypeGroup: SelectableOptions {
 
 
 extension Sequence where Element == ContentTypeGroup {
-  
   var filetypes: Set<UTType> {
     self.map(\.filetypes).reduce(into: Set<UTType>()) { result, types in
       result.formUnion(types)

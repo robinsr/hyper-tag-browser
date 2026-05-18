@@ -7,7 +7,7 @@ import System
 /**
  * Joins ``BookmarkRecord`` with ``IndexRecord``
  */
-struct BookmarkInfoRecord: Codable, FetchableRecord {
+struct BookmarkInfoRecord: FetchableRecord, Equatable, Hashable, Codable {
   var bookmark: BookmarkRecord
   var content: IndexRecord
   
@@ -47,10 +47,7 @@ extension BookmarkInfoRecord {
     BookmarkRecord
       .all()
       .joiningContent()
-      .filter(IndexRecord.Selections.fileURL == path)
+      .filter(Books.Selections.contentPath == path)
       .asRequest(of: BookmarkInfoRecord.self)
   }
 }
-
-
-typealias BookmarkItem = BookmarkInfoRecord

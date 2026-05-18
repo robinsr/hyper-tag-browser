@@ -12,16 +12,16 @@ enum ContentScope: Equatable, Hashable, CustomStringConvertible {
   case global
   
     /// Applies to a single content item
-  case one(ContentPointer)
+  case only(ContentId)
   
     /// Applies to the specified items
-  case include([ContentPointer])
+  case include([ContentId])
   
     /// Applies to the specified items
-  case set(of: Set<ContentPointer>)
+  case set(of: Set<ContentId>)
   
     /// Applies to all but the specified items
-  case exclude([ContentPointer])
+  case exclude([ContentId])
   
     /// Applies to items matching parameters
   case matching(IndxRequestParams)
@@ -40,13 +40,14 @@ enum ContentScope: Equatable, Hashable, CustomStringConvertible {
   
   var ids: [ContentId] {
     switch self {
-    case .one(let item):
-      return [item.contentId]
-    case .include(let items), .exclude(let items):
-      return items.map(\.contentId)
+    case .only(let id):
+      return [id]
+    case .include(let ids), .exclude(let ids):
+      return ids
     case .set(let items):
-      return Array(items).map(\.contentId)
-    default: return []
+      return items.asArray
+    default:
+      return []
     }
   }
   
@@ -72,7 +73,7 @@ enum ContentScope: Equatable, Hashable, CustomStringConvertible {
   var caseType: Cases {
     switch self {
     case .global: return .global
-    case .one: return .one
+    case .only: return .only
     case .set: return .set
     case .include: return .include
     case .exclude: return .exclude
@@ -83,7 +84,7 @@ enum ContentScope: Equatable, Hashable, CustomStringConvertible {
   
   enum Cases: String, CaseIterable {
     case global
-    case one
+    case only
     case include
     case set
     case exclude

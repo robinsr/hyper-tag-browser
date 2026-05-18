@@ -2,19 +2,17 @@
 
 import SwiftUI
 
-
 struct AddToQueueMenu: View {
-  @Environment(AppViewModel.self) var appVM
+  @Environment(\.dbQueues) var queues
   
-  let queues: [QueueRecord]
   let items: [ContentItem]
   let onSelection: DispatchFn
   
   var body: some View {
     Menu("Add to Queue") {
-      ForEach(queues, id: \.id) { queue in
-        Button(queue.name) {
-          onSelection(.enqueueItems(items.pointers, into: queue.asFilter))
+      ForEach(queues, id: \.id) { item in
+        Button(item.queue.name) {
+          onSelection(.enqueueItems(items.pointers, into: item.asFilter))
         }
       }
     }

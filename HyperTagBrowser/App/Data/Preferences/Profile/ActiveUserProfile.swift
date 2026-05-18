@@ -30,6 +30,14 @@ struct ActiveUserProfile: UserProfile, Identifiable, Hashable, Encodable {
   init(suite: UserDefaults) {
     self.suite = suite
   }
+  
+  init(id: String) {
+    let bundle = EnvContainer.shared.bundleIdentider()
+    let stage = EnvContainer.shared.stageName()
+    let prefKey = DotPath(bundle, stage, id).string
+    
+    self.suite = UserDefaults(suiteName: prefKey)!
+  }
 
   var suiteName: String {
     suite.description
@@ -84,9 +92,11 @@ struct ActiveUserProfile: UserProfile, Identifiable, Hashable, Encodable {
     case photoGridItemLimit
     case preferredScheme
     case recursive
+    case seamlessGrid
     case searchMethod
     case searchPerPage
     case showTagCountOnTiles
+    case showTagUsageCounts
     case sidebarPosition
     case tableFlags
     case thumbnailQuality

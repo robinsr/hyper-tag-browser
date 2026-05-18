@@ -31,12 +31,11 @@ extension DbFuncDefinition {
       return value
     }
   }
-
-  var logger: Logger {
-    EnvContainer.shared.logger("dbFuncDefinition.\(#fileID):\(fnName)")
-  }
+  
 
   var funcDef: DatabaseFunction {
+    let logger = CustomLogger("dbFuncDefinition.\(#fileID):\(fnName)")
+    
     switch fnType {
       case .function:
         guard let fn = fnExec else {
@@ -174,6 +173,11 @@ enum DatabaseFunctions: String, CaseIterable {
   /// References the SQLite concat function (SQL `||` operator).
   static func concat(_ columns: ColumnExpression...) -> SQLExpression {
     columns.map(\.sqlExpression).joined(operator: .concat)
+  }
+  
+    /// References the SQLite concat function (SQL `||` operator).
+  static func concat(_ columns: SQLExpression...) -> SQLExpression {
+    columns.joined(operator: .concat)
   }
 
   static func not_null(_ column: ColumnExpression) -> SQLExpression {

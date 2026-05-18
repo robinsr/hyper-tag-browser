@@ -2,7 +2,7 @@
 
 import SwiftUI
 
-
+@MainActor
 public struct StyleClass: Equatable, Hashable {
   
   var font: Font = .body
@@ -38,6 +38,8 @@ public struct StyleClass: Equatable, Hashable {
 
 // TODO: Use these as style config for semantic items, eg "folderLink", "itemTitle", "thumbnailLabel", etc
 extension Text {
+  
+  @MainActor
   public func styleClass(_ style: StyleClass) -> some View {
     if style == .primaryButton {
       self.font(style.font).kerning(1.0)

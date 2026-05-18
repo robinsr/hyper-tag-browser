@@ -1,83 +1,81 @@
 // created on 10/14/24 by robinsr
 
-import Factory
+import Combine
 import Defaults
+import Factory
 import Foundation
 import GRDB
 import GRDBQuery
-import IssueReporting
 import Regex
-import Combine
+import System
 
 
-struct GRDBIndexService: IndexerConnection, IndexerService {
-  
-  typealias Errors = IndexerServiceError
-  
+struct GRDBDatabaseOptions: Sendable {
   public static let queryableOptions = [QueryableOptions.async, QueryableOptions.constantRegion]
+}
+
+
+actor GRDBIndexService: IndexerConnection, IndexerService {
   
-  internal static var logger = EnvContainer.shared.logger("GRDBIndexService")
-  internal let logger = EnvContainer.shared.logger("GRDBIndexService")
-  internal var fs = Container.shared.fileService()
-  internal var metadata = Container.shared.metadataService()
+  let logger = CustomLogger("GRDBIndexService", level: .warning)
+  let dbName: String
+  let dbReader: DatabaseReader
+  let dbWriter: DatabaseWriter
   
-  let indexInfoQueryCache = IndexerContainer.shared.indexerQueryCache()
+  private let dbPool: DatabasePool?
+  private let dbQueue: DatabaseQueue?
   
-  let timer = Container.shared.timer()
-  
-  var dbName: String
-  var cancellables: Set<AnyCancellable> = []
-  var error: IndexerServiceError?
-  var dbPool: DatabasePool? = nil
-  var dbQueue: DatabaseQueue? = nil
-  
-  var dbReader: DatabaseReader {
-    if let pool = dbPool { return pool }
-    if let queue = dbQueue { return queue }
+  /**
+   * Initializes GRDBIndexerService from a `FilePath` to a `.sqlite` file, creating
+   * a DatabasePool-based database connection
+   */
+  init(path databasePath: FilePath) throws {
+    self.dbName = databasePath.baseName
     
-    fatalError("No database reader available")
-  }
-  
-  var dbWriter: DatabaseWriter {
-    if let pool = dbPool { return pool }
-    if let queue = dbQueue { return queue }
-    
-    fatalError("No database writer available")
-  }
-  
-  let sqlLogger = SQLQueryFormatter(namespace: "\(#file):\(Self.self)")
-  private var thumbnailQueue = DispatchQueue(label: "thumbnailQueue")
-  
-  init(path dbURL: URL) throws {
-    self.dbName = dbURL.filenameWithoutExtension
-    
-    if !fs.exists(at: dbURL) {
-      logger.emit(.info, "Creating new database at \(dbURL.path)")
+    if !databasePath.exists {
+      logger.emit(.info, "Creating new database at \(databasePath.string)")
       
       do {
-        try fs.touch(dbURL)
+        try LocalFileService.init(monitoring: false).touch(databasePath.fileURL)
       } catch {
-        self.error = IndexerServiceError.InitializationError(error)
-        throw self.error!
+        throw IndexerServiceError.InitializationError(error)
       }
     }
     
     do {
-      self.dbPool = try DatabasePool(path: dbURL.path, configuration: Self.configure())
+      let database = try DatabasePool(path: databasePath.string, configuration: Self.configure())
+      self.dbReader = database
+      self.dbWriter = database
+      self.dbPool = database
+      self.dbQueue = nil
     } catch {
-      self.error = IndexerServiceError.InitializationError(error)
-      throw self.error!
+      throw IndexerServiceError.InitializationError(error)
     }
   }
   
+  /**
+   * Initializes GRDBIndexerService from a database name, creating a DatabaseQueue-based database connection
+   */
   init(named dbName: String) throws {
+    self.dbName = dbName
+    
     do {
-      self.dbName = dbName
-      self.dbQueue = try DatabaseQueue(named: dbName, configuration: Self.configure())
+      let database = try DatabaseQueue(named: dbName, configuration: Self.configure())
+      self.dbReader = database
+      self.dbWriter = database
+      self.dbQueue = database
+      self.dbPool = nil
     } catch {
-      self.error = IndexerServiceError.InitializationError(error)
-      throw self.error!
+      throw IndexerServiceError.InitializationError(error)
     }
+  }
+  
+  init(database: DatabaseQueue) {
+    self.dbName = FilePath(database.path).baseName
+    self.dbReader = database
+    self.dbWriter = database
+    self.dbQueue = database
+    self.dbPool = nil
   }
   
   func invalidate() {
@@ -87,7 +85,7 @@ struct GRDBIndexService: IndexerConnection, IndexerService {
   }
   
     // Set up the database connection
-  func runMigrations() throws {
+  nonisolated func runMigrations() throws {
     let migrator = createMigrator()
     var upToDate = false
     var completedMigrations: [String] = []
@@ -127,60 +125,13 @@ struct GRDBIndexService: IndexerConnection, IndexerService {
       }
     }
   }
-  
-    // Set up the database connection
-  func runAsyncMigrations() async throws -> Future<String, Error> {
-    
-    let migrator = createMigrator()
-    
-    
-    let (upToDate, completedMigrations) = try await dbReader.read { db in
-      (try migrator.hasCompletedMigrations(db), try migrator.completedMigrations(db))
-    }
-    
-    let latest = migrator.migrations.last
-    
-    return Future<String, Error> { promise in
 
-      completedMigrations.forEach {
-        logger.emit(.info, "Migrated to: \($0)")
-      }
-        
-      if upToDate {
-        logger.emit(.success, "Database \(dbName) is up to date")
-        
-        promise(.success(latest ?? "v0"))
-      }
-      
-      else if let latestDef = migrator.migrations.last {
-        logger.emit(.warning, "Migrating database \(dbName) up to \(latestDef)")
-        
-        migrator.asyncMigrate(dbWriter) { result in
-          logger.emit(.info, "Migration progress: \(result)")
-          
-          if case .failure(let error) = result {
-            promise(.failure(error))
-          } else {
-            promise(.success(latestDef))
-          }
-        }
-      }
-      
-      else {
-        logger.emit(.error, "No migrations found for database \(dbName)")
-        
-        promise(.success("v0"))
-      }
-    }
-  }
   
   static func configure() -> Configuration {
     var config = Configuration()
-    
     config.publicStatementArguments = Defaults[.devFlags].contains(.indexer_enableSqlTrace)
-    
     config.readonly = false
-    
+    config.maximumReaderCount = 4
     config.prepareDatabase { db in
       
       for fn in DatabaseFunctions.allCases {
@@ -199,18 +150,12 @@ struct GRDBIndexService: IndexerConnection, IndexerService {
           }
         }
       }
-        
-      if Defaults[.devFlags].contains(.indexer_enableSqlProfiling) {
-        db.trace(options: .profile) { evt in
-          logger.emit(.stats, "SQL Profile: \(evt.description)")
-        }
-      }
     }
     
     return config
   }
   
-  func createMigrator() -> DatabaseMigrator {
+  nonisolated func createMigrator() -> DatabaseMigrator {
       // TODO: Figureout database migrations
     var migrator = DatabaseMigrator()
     
@@ -239,10 +184,9 @@ struct GRDBIndexService: IndexerConnection, IndexerService {
         
         migrator.registerMigration(dbVersion) { (db: Database) in
           
-          logger.warning("""
-          Running Migration: '\(dbVersion)'
-            \(config.description)
-          """)
+          let logger = CustomLogger("GRDBIndexerService/Migration")
+          
+          logger.emit(.warning, "Running Migration: '\(dbVersion)' - \(config.description)")
           
           guard let status = try? config.checkFn(db) else {
             throw IndexerServiceError.OperationFailed("Migration '\(dbVersion)' failed to check status")
@@ -256,34 +200,6 @@ struct GRDBIndexService: IndexerConnection, IndexerService {
           if status == .unmigrated && config.state == .ready {
             try config.migrate(db)
           }
-          
-          if status == .unmigrated && config.state == .testing {
-            let dbFolder = URL(fileURLWithPath: self.dbWriter.path).deletingLastPathComponent()
-            let snapshotPath = config.snapshotPath(dir: dbFolder).path()
-            
-            try fs.touch(.init(fileURLWithPath: snapshotPath))
-            
-            logger.emit(.info, "Testing migration '\(dbVersion)'; saving snapshot to \(snapshotPath)")
-
-            try config.migrate(db)
-            
-            logger.emit(.info, "Testing migration '\(dbVersion)' complete, saving snapshot to \(snapshotPath)")
-
-            // try db.backup(to: DatabaseQueue(path: snapshotPath))
-            
-            
-            Task.detached(priority: .background) {
-              let destDbQueue = try DatabaseQueue(path: snapshotPath, configuration: Configuration())
-              
-              try destDbQueue.barrierWriteWithoutTransaction { destDb in
-                try db.backup(to: destDb)
-              }
-            }
-            
-            logger.emit(.info, "Testing migration '\(dbVersion)' snapshot saved, reverting")
-
-            try db.rollback()
-          }
         }
       }
 
@@ -292,14 +208,8 @@ struct GRDBIndexService: IndexerConnection, IndexerService {
   
   
   internal func opFailed(_ message: String, url: URL, err: Error? = nil) -> IndexerServiceError {
-    let attributes: [String: Any] = [
-      NSURLErrorKey: url,
-    ]
-    
-    let error = IndexerServiceError.OperationFailed(message, err: err, attributes: attributes)
-    
+    let error = IndexerServiceError.OperationFailed(message, err: err)
     logger.emit(.error, .raised(error.legibleDescription, error.originalError ?? error))
-    
     return error
   }
   
@@ -308,14 +218,8 @@ struct GRDBIndexService: IndexerConnection, IndexerService {
   }
   
   internal func dataIntegrityError(_ message: String, ids: [String]) -> IndexerServiceError {
-    let attributes: [String: Any] = [
-      "Related IDs": ids,
-    ]
-    
-    let error = IndexerServiceError.DataIntegrityError(message, attributes: attributes)
-    
+    let error = IndexerServiceError.DataIntegrityError(message)
     logger.emit(.error, .raised(error.legibleDescription, error.originalError ?? error))
-    
     return error
   }
 }

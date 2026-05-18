@@ -115,8 +115,7 @@ struct MenuSelect<V: Hashable, LabelContent: View> : View {
 }
 
 
-
-#Preview("MenuSelect", traits: .defaultViewModel, .previewSize(.sq340)) {
+#Preview("MenuSelect", traits: .defaultViewModel, .size(.sq340)) {
   @Previewable @State var selectedA: String?
   @Previewable @State var selectedB: String?
   
@@ -140,4 +139,3 @@ struct MenuSelect<V: Hashable, LabelContent: View> : View {
   }
   .frame(preset: .sq340)
 }
-

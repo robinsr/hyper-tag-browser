@@ -7,7 +7,8 @@ import AppKit
 
 
 final class ClickableViewConfiguration: ObservableObject {
-  enum ClickType {
+  
+  enum ClickType: String, Hashable {
     case left
     case right
     case other
@@ -51,16 +52,19 @@ class AnyClickableNSView: NSView {
     super.init(frame: NSRect())
   }
 
-  override func mouseDown(with theEvent: NSEvent) {
+  override func mouseDown(with nsEvent: NSEvent) {
     clickState = .left
+    super.mouseDown(with: nsEvent)
   }
     
-  override func rightMouseDown(with theEvent: NSEvent) {
+  override func rightMouseDown(with nsEvent: NSEvent) {
     clickState = .right
+    super.rightMouseDown(with: nsEvent)
   }
   
-  override func otherMouseDown(with theEvent: NSEvent) {
+  override func otherMouseDown(with nsEvent: NSEvent) {
     clickState = .other
+    super.otherMouseDown(with: nsEvent)
   }
 }
 #endif

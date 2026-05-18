@@ -3,112 +3,24 @@
 import SwiftUI
 
 
-extension EventModifiers {
-  var allCases: [EventModifiers] {
+extension EventModifiers: @retroactive CaseIterable {
+  public static var allCases: [EventModifiers] {
     return [.command, .control, .option, .shift, .capsLock]
   }
 }
 
 
-
-extension EventModifiers {
-  
-  static func fromSymbol(_ str: String) -> Self? {
-    switch str {
-    case "⌘": return .command
-    case "⌃": return .control
-    case "⌥": return .option
-    case "⇧": return .shift
-    default: return nil
-    }
-  }
-  
-  var symbolName: String {
-    switch self {
-    case .command: return "command"
-    case .control: return "control"
-    case .option: return "option"
-    case .shift: return "shift"
-    case .capsLock: return "capslock"
-    default: return "questionmark"
-    }
-  }
-  
-  var asCharacter: String {
-    switch self {
-    case .command: return "⌘"
-    case .control: return "⌃"
-    case .option: return "⌥"
-    case .shift: return "⇧"
-    case .capsLock: return "⇪"
-    default: return ""
-    }
-  }
-  
-  /**
-   * Returns a set of SF Symbol names representing the modifier keys contained in
-   * this option set
-   */
-  var symbolNames: [String] {
-    let allMods: [EventModifiers] = [.command, .control, .option, .shift]
-    
-    return allMods
-      .filter { self.contains($0) }
-      .map { $0.symbolName }
-  }
-  
-  /**
-   * Returns a set of single-character strings, each containing a unicode glpyh
-   * representing one of the modifier keys contained in this option set
-   */
-  var asCharacters: [String] {
-    let allMods: [EventModifiers] = [.command, .control, .option, .shift]
-    
-    return allMods
-      .filter { self.contains($0) }
-      .map { $0.asCharacter }
-  }
-  
-  var string: String {
-    self.asCharacters.joined(separator: "")
-  }
-  
-  var count: Int {
-    var included = 0
-    
-    for mod in allCases {
-      if self.contains(mod) {
-        included += 1
-      }
-    }
-    
-    return included
-  }
-  
-  var none: Bool {
-    count == 0
-  }
-  
-  func contains(only mods: EventModifiers) -> Bool {
-    if mods.count != 1 { return false }
-    
-    return self.contains(mods)
-  }
-  
-  func equivalent(to mods: EventModifiers) -> Bool {
-    let allMods: [EventModifiers] = [.command, .control, .option, .shift]
-    
-    for mod in allMods {
-      if self.contains(mod) != mods.contains(mod) {
-        return false
-      }
-    }
-    
-    return true
-  }
+protocol ModUtilities {
+  static func fromSymbol(_ symbol: String) -> Self
+  var symbolName: String { get }
+  var asCharacters: Character { get }
+  var count: Int { get }
 }
 
+
+
 extension EventModifiers {
+  
   init(modifierFlags: NSEvent.ModifierFlags) {
     var modifiers: EventModifiers = []
     
@@ -142,14 +54,136 @@ extension EventModifiers {
     
     self = modifiers
   }
+  
+  var modifierFlags: NSEvent.ModifierFlags {
+#if os(macOS)
+    var flags: NSEvent.ModifierFlags = []
+    if contains(.capsLock) { flags.insert(.capsLock) }
+    if contains(.control) { flags.insert(.control) }
+    if contains(.option) { flags.insert(.option) }
+    if contains(.command) { flags.insert(.command) }
+    if contains(.shift) { flags.insert(.shift) }
+    return flags
+#else
+    return []
+#endif
+  }
+  
+  static func fromSymbol(_ str: String) -> Self? {
+    switch str {
+    case "⌘": return .command
+    case "⌃": return .control
+    case "⌥": return .option
+    case "⇧": return .shift
+    default: return nil
+    }
+  }
+  
+  /**
+   * SF Symbol name representing corresponding to this ModifierFlags (if length of 1)
+   */
+  var sfSymbolName: String {
+    if self.count != 1 { return "questionmark" }
+    
+    switch self {
+    case .command: return "command"
+    case .control: return "control"
+    case .option: return "option"
+    case .shift: return "shift"
+    case .capsLock: return "capslock"
+    default: return "questionmark"
+    }
+  }
+  
+  /**
+   * Returns the modifier's unicode glyph equivalent as a single-entry string (eg, "⌘", "⌃", etc)
+   */
+  var asSymbol: String {
+    if self.count != 1 { return "?" }
+    
+    switch self {
+    case .command: return "⌘"
+    case .control: return "⌃"
+    case .option: return "⌥"
+    case .shift: return "⇧"
+    case .capsLock: return "⇪"
+    default: return ""
+    }
+  }
+  
+  /**
+   * Returns an array of SF Symbol names representing the modifier keys contained in
+   * this option set
+   */
+  var symbolNames: [String] {
+    Self.allCases.filter(self.contains).map(\.sfSymbolName)
+  }
+  
+  /**
+   * Returns an array of single-character strings, each containing a unicode glpyh
+   * representing one of the modifier keys contained in this option set
+   */
+  var asSymbols: [String] {
+    Self.allCases.filter(self.contains).map(\.asSymbol)
+  }
+  
+  var string: String {
+    self.asSymbols.joined(separator: "")
+  }
+  
+  var count: Int {
+    var included = 0
+    
+    for mod in Self.allCases {
+      if self.contains(mod) {
+        included += 1
+      }
+    }
+    
+    return included
+  }
+  
+  func contains(only mods: EventModifiers) -> Bool {
+    if mods.count != 1 { return false }
+    
+    return self.contains(mods)
+  }
+  
+  func equivalent(to mods: EventModifiers) -> Bool {
+    for mod in Self.allCases {
+      if self.contains(mod) != mods.contains(mod) {
+        return false
+      }
+    }
+    
+    return true
+  }
 }
 
-extension EventModifiers: KeyModifierList {
+
+extension EventModifiers: ModKeyStatusReportable {
+
+  func status(_ mod: NSEvent.ModifierFlags) -> KeyStatus {
+    .fromBool(isPressed(mod))
+  }
+
   func isPressed(_ mod: NSEvent.ModifierFlags) -> Bool {
-    contains(EventModifiers(modifierFlags: mod))
+    self.modifierFlags.isPressed(mod)
+  }
+  
+  func isPressed(_ mod: NSEvent.ModifierFlags, with keyset: KeyCombinations) -> Bool {
+    self.modifierFlags.isPressed(mod, with: keyset)
+  }
+  
+  func isPressed(_ keyset: KeyCombinations) -> Bool {
+    self.modifierFlags.isPressed(keyset)
+  }
+  
+  func exclusivePressed(_ mod: NSEvent.ModifierFlags) -> Bool {
+    self.modifierFlags.exclusivePressed(mod)
   }
   
   func notPressed(_ mod: NSEvent.ModifierFlags) -> Bool {
-    !isPressed(mod)
+    self.modifierFlags.notPressed(mod)
   }
 }

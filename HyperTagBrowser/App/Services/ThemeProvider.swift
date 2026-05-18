@@ -4,7 +4,7 @@ import SwiftUI
 
 
 struct ThemeProvider {
-  static var shared = ThemeProvider()
+  static let shared = ThemeProvider()
   
   // TODO: Make this a user setting somehow
   var current: ColorTheme { MarianaTheme() }

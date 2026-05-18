@@ -27,6 +27,7 @@ struct MigrationVersions {
     case jun_4_2025_reomve_indexrecord_thumbnail
     case jun_9_2025_add_bookmarkrecord_contentId
     case aug_2_2025_add_indexes_location_type_size_created_visibility
+    case aug_13_2025_add_indexes_on_common_joins
     case none
     
     static var allVersions: [Version] {
@@ -40,12 +41,12 @@ struct MigrationVersions {
     case skip
   }
   
-  struct Config {
+  struct Config: Sendable {
     var state: Readiness = .ready
     let version: MigrationVersions.Version
     let description: String
-    var checkFn: (Database) throws -> (EvaluationResult) = { _ in .unmigrated }
-    let migrateFn: (Database) throws -> ()
+    var checkFn: @Sendable (Database) throws -> (EvaluationResult) = { _ in .unmigrated }
+    let migrateFn: @Sendable (Database) throws -> ()
     
     func migrate(_ db: Database) throws {
       try self.migrateFn(db)
@@ -82,7 +83,7 @@ struct MigrationVersions {
           table.column("created",    .datetime).notNull()
           table.column("comment",    .text).notNull()
           table.column("modified",   .datetime).notNull().defaults(to: Date.now)
-          table.column("volume",     .text).notNull().defaults(to: "Macintosh HD")
+          table.column("volume",     .text).notNull().defaults(to: VolumeInfo.defaultVolumeName)
           table.column("visibility", .text).notNull().defaults(to: ContentItemVisibility.normal.rawValue)
         }
         
@@ -90,13 +91,15 @@ struct MigrationVersions {
         try db.create(table: TagRecord.databaseTableName) { table in
           table.id("id")
           
-          table.column("type",        .text).notNull().defaults(to: TagRecord.EntryType.normal.rawValue)
-          table.column("label",       .text).notNull().defaults(to: FilteringTag.TagType.tag.rawValue)
-          table.column("value",       .text).notNull()
+          table.column("tagType",     .text).notNull().defaults(to: FilteringTag.TagType.tag.rawValue)
+          table.column("tagValue",    .text).notNull()
+          table.column("entryType",   .text).notNull().defaults(to: TagRecord.EntryType.normal.rawValue)
+          
+            /// "filterValue" BROKEN as TagRecord.Selections.filterValuie = `textJoin('|', "tagValue", "tagType")`
           table.column("filterValue", .text).generatedAs(TagRecord.Selections.filterValue)
           table.column("relatedId",   .text).references(TagRecord.databaseTableName, column: "id", onDelete: .cascade)
           
-          table.uniqueKey(["label", "value"], onConflict: .ignore)
+          table.uniqueKey(["tagType", "tagValue"], onConflict: .ignore)
         }
         
         
@@ -136,7 +139,7 @@ struct MigrationVersions {
           table.column("queueId",   references: QueueRecord.Columns.id, in: QueueRecord.self).notNull()
           table.column("contentId", references: IndexRecord.Columns.id, in: IndexRecord.self).notNull()
           
-          table.uniqueKey(["tagId", "contentId"], onConflict: .ignore)
+          table.uniqueKey(["queueId", "contentId"], onConflict: .ignore)
         }
         
         try SavedQueryRecord.createTable(db)
@@ -168,7 +171,6 @@ struct MigrationVersions {
       migrateFn: { db in
         try db.dropView(IndexTagValueRecord.self);
         try db.dropView(TagstringRecord.self);
-          //try db.dropView(AppliedTagRecord.self);
         
         var tmp = try db.createTempTable(for: IndexTagRecord.self)
         
@@ -399,15 +401,29 @@ struct MigrationVersions {
       """,
       checkFn: { db in
         let tableCols = try db.columns(in: TagRecord.databaseTableName).map(\.name)
-        let renamed = ["tagValue", "tagType", "entryType"]
+        let oldColumns = ["value", "label", "type"]
         
-        return tableCols.contains(all: renamed) ? .migrated : .unmigrated
+        return tableCols.contains(any: oldColumns) ? .unmigrated : .migrated
       },
       migrateFn: { db in
-        try db.alter(table: TagRecord.databaseTableName) { table in
-          table.rename(column: "value", to: "tagValue")
-          table.rename(column: "label", to: "tagType")
-          table.rename(column: "type", to: "entryType")
+        let tableCols = try db.columns(in: TagRecord.databaseTableName).map(\.name)
+        
+        if tableCols.contains("value") {
+          try db.alter(table: TagRecord.databaseTableName) { table in
+            table.rename(column: "value", to: "tagValue")
+          }
+        }
+        
+        if tableCols.contains("label") {
+          try db.alter(table: TagRecord.databaseTableName) { table in
+            table.rename(column: "label", to: "tagType")
+          }
+        }
+        
+        if tableCols.contains("type") {
+          try db.alter(table: TagRecord.databaseTableName) { table in
+            table.rename(column: "type", to: "entryType")
+          }
         }
       }),
     
@@ -467,7 +483,28 @@ struct MigrationVersions {
             CREATE INDEX IF NOT EXISTS idx_app_content_indices_created ON app_content_indices(created);
             CREATE INDEX IF NOT EXISTS idx_app_content_indices_visibility ON app_content_indices(visibility);
         """)
+      }
+    ),
         
+    Config(
+      state: .pending,
+      version: .aug_13_2025_add_indexes_on_common_joins,
+      description: """
+        Adds indexes to `app_content_indices`:
+        - `name`
+        - `location`
+        - `type`
+        - `created`
+        - `modified`
+      """,
+      migrateFn: { db in
+        try db.execute(sql: """
+          CREATE INDEX IF NOT EXISTS idx_app_content_indices_name ON app_content_indices(name);
+          CREATE INDEX IF NOT EXISTS idx_app_content_indices_location ON app_content_indices(location);
+          CREATE INDEX IF NOT EXISTS idx_app_content_indices_type ON app_content_indices(type);
+          CREATE INDEX IF NOT EXISTS idx_app_content_indices_created ON app_content_indices(created);
+          CREATE INDEX IF NOT EXISTS idx_app_content_indices_modified ON app_content_indices(modified);
+        """)
       }
     )
   ]

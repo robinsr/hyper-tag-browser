@@ -14,7 +14,7 @@ struct ImageInspector: View {
   
   @Injected(\IndexerContainer.indexService) var indexer
   @Injected(\Container.spotlightService) var spotlight
-  @Injected(\Container.thumbnailStore) var thumbnailStore
+  @Injected(\ThumbnailContainer.store) var thumbnailStore
   
   @Default(.inspectorPanels) var panelState
   
@@ -122,8 +122,7 @@ struct ImageInspector: View {
   }
 }
 
-#Preview("Detail Screen - ImageInspector",
-         traits: .defaultViewModel, .detailScreen, .previewSize(.inspector)) {
+#Preview("Detail Screen - ImageInspector", traits: .app, .detailScreen, .size(.inspector)) {
   @Previewable @Environment(\.detailEnv) var detailEnv
   
   VStack {

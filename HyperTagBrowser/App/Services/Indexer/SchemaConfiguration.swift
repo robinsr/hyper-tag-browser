@@ -9,19 +9,21 @@ import GRDB
  * my sense is that these should be more visible and accessible, naming issues aside.
  */
 struct SchemaConfiguration {
-  static let tables: [TableRecord.Type] = [
+  static let tables: [any TableRecord.Type] = [
     BookmarkRecord.self,
     IndexRecord.self,
     IndexTagRecord.self,
     IndexTagValueRecord.self,
+    IndexTagCountRecord.self,
     QueueItemRecord.self,
     QueueRecord.self,
     TagRecord.self,
     TagstringRecord.self,
   ]
   
-  static let views: [DatabaseView.Type] = [
+  static let views: [any DatabaseView.Type] = [
     IndexTagValueRecord.self,
+    IndexTagCountRecord.self,
     TagstringRecord.self,
   ]
   

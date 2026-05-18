@@ -7,186 +7,110 @@ import Factory
 import CoreFoundation
 import CoreServices
 import Foundation
-import Observation
 import UniformTypeIdentifiers
 
 
-@Observable
-final class SpotlightService {
+actor SpotlightSearchService {
   
-  typealias Result = CSSearchableItem
+  public enum SearchError: Error, Sendable {
+    case failed(underlying: Error)
+    case unsupportedMethod(message: String)
+  }
   
-  @ObservationIgnored
-  private let logger = EnvContainer.shared.logger("SpotlightService")
-  @ObservationIgnored
-  private let quicklook = Container.shared.quicklookService()
-  @ObservationIgnored
-  private let indexName = Container.shared.spotlightServiceIndexName()
-  @ObservationIgnored
-  private let domainIdentifier = Container.shared.spotlightDomainIdentifier()
-  @ObservationIgnored
-  private let userProfileId = PreferencesContainer.shared.userProfileId()
+  private let logger = CustomLogger("SpotlightService", level: .off)
   
+  private let indexName: String
+  private let domainId: String
+  private let profileId: ActiveUserProfile.ID
   
-  @ObservationIgnored
-  lazy private var secureIndex: CSSearchableIndex = {
-    if indexName == "defaullt" {
+  /**
+   * STATE!!!
+   *
+   * Stateful `CSSearchQuery` is necessary for two reasons:
+   *
+   * 1. Cancellation: when a new search starts, need to cancel the old one.
+   * 2. Managing Lifetime: CSSearchQuery uses callbacks; must keep a reference and be able to stop it.
+   */
+  // private var currentQuery: CSSearchQuery?
+  
+  // Store only a cancellation hook inside the actor.
+  nonisolated(unsafe) private var cancelCurrentQuery: (() -> Void)?
+  
+  init(indexName: String, domainId: String, profileId: ActiveUserProfile.ID) {
+    self.indexName = indexName
+    self.domainId = domainId
+    self.profileId = profileId
+  }
+  
+  nonisolated private func getSecureIndex() -> CSSearchableIndex {
+    if self.indexName == "defaullt" {
       return CSSearchableIndex.default()
     } else {
-      return CSSearchableIndex(name: indexName, protectionClass: indexProtectionLevel)
-    }
-  }()
-  
-  var protectionClass: FileProtectionType {
-    if indexName == "default" {
-      return .none
-    } else {
-      return indexProtectionLevel
+      return CSSearchableIndex(name: self.indexName, protectionClass: FileProtectionType.none)
     }
   }
   
-  var searchState: SearchState = .ready
-  var queryBuilder: SearchQuery = SearchQuery()
-  var searchQuery: CSSearchQuery?
-  var resultItems: [CSSearchableItem] = []
-  var resultSuggestions: [CSSuggestion] = []
-  let indexProtectionLevel: FileProtectionType = .none
-  
-    /// A subject to emit search state updates.
-  let searchStateSubject = PassthroughSubject<SearchState, Never>()
-  
-  init() {
-//    CSUserQuery.prepare()
-//    CSUserQuery.prepareProtectionClasses([indexProtectionLevel])
+  public func cancel() {
+    cancelCurrentQuery?()
+    cancelCurrentQuery = nil
   }
   
-  func query(of searchMethod: SearchMethod, using query: SearchQuery) {
-    if case .databaseQuery = searchMethod {
-      return
-    }
+  nonisolated public func search(method: SearchMethod, query: SearchQuery) async throws -> [SpotlightResult] {
+    // Cancel any in-flight search
+    await self.cancel()
     
-    logger.emit(.info, "Querying index '\(indexName)' using \(searchMethod.debugDescription)")
-    logger.emit(.info, "Query string: \(query.queryString)")
-    
-    switch searchMethod {
+    let csQuery = switch method {
     case .searchQuery:
-      executeSearchQuery(query)
+      query.csSearchQuery
     case .userSearch:
-      executeTermSearch(query)
+      query.csUserQuery
     case .userQuery:
-      executeUserQuery(query)
-    default:
-      break;
+      query.csUserQuery
+    case .databaseQuery:
+      throw SearchError.unsupportedMethod(message: "Search method \(method) not compatible with spotlight search")
     }
-  }
-  
-  func awaitQueryResults(_ query: CSSearchQuery) {
-    searchState = .searching
-    searchQuery = query
-    
-    var results: [CSSearchableItem] = []
-    
-    Task {
-      defer {
-        self.logger.emit(.debug, "Query completed")
-        
-        DispatchQueue.main.sync {
-          self.resultItems.append(contentsOf: results)
-          
-          let result = SearchState.returned(results: results)
-          
-          self.searchState = result
-          self.searchStateSubject.send(result)
-        }
-      }
-      
-      do {
-        for try await result in query.results {
-          results.append(result.item)
-        }
-      } catch {
-        self.onError(error)
-      }
-    }
-  }
-  
-  private func onError(_ error: Error) {
-    logger.emit(.error, ErrorMsg("Error executing query: \(error.localizedDescription) (\(type(of: error)))", error))
-    searchState = .errorMessage(error.localizedDescription)
-    
-    if let code = error as? CSSearchQueryError {
-      logger.emit(.error, "Error code: \(code)")
-    }
-  }
-  
-  /**
-   * Executes a CSSearchQuery with `queryString` and `queryContext`.
-   * Invoked for type ``SearchMethod/searchQuery`` ("Search Query").
-   */
-  func executeSearchQuery(_ query: SearchQuery) {
-    let csSearchQuery = CSSearchQuery(
-      queryString: query.spotlightQuery,
-      queryContext: query.searchContext
-    )
-    
-    awaitQueryResults(csSearchQuery)
-  }
-  
-  /**
-   * Executes a CSUserQuery with `userQueryString` and `userQueryContext`.
-   * Invoked for type ``SearchMethod/userSearch`` ("User Search").
-   */
-  func executeTermSearch(_ query: SearchQuery) {
-    /// Creates a new user query that searches for the specified term.
-    let csUserQuery = CSUserQuery.init(
-      userQueryString: query.queryString,
-      userQueryContext: query.userContext
-    )
-    
-    csUserQuery.protectionClasses = [indexProtectionLevel]
-    
-    awaitQueryResults(csUserQuery)
-  }
-  
-  /**
-   * Executes a CSUserQuery with `queryString` and `queryContext`.
-   * Invoked for type ``SearchMethod/userQuery`` ("User Query").
-   */
-  func executeUserQuery(_ query: SearchQuery) {
 
-    let csUserQuery = CSUserQuery(
-      queryString: query.spotlightQuery,
-      queryContext: query.searchContext
-    )
-    
-    csUserQuery.protectionClasses = [indexProtectionLevel]
-    
-    awaitQueryResults(csUserQuery)
-  }
-  
-  func prepareItemForIndex(_ item: any IndexableItem) -> CSSearchableItem {
-    let itemAttributes = item.attributeSet
-    
-    if let debugJson = try? JSONEncoder().encode(itemAttributes) {
-      logger.emit(.debug, "Attribute set to index: \(debugJson)")
+    cancelCurrentQuery = { csQuery.cancel() }
+
+    var results: [SpotlightResult] = []
+    results.reserveCapacity(min(query.maxResults, 64))
+
+    // Bridge callback API to async/await
+    return try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { cont in
+        csQuery.foundItemsHandler = { items in
+          // Called repeatedly
+          for item in items {
+            results.append(SpotlightResult(item))
+            if results.count >= query.maxResults {
+              csQuery.cancel()
+              break
+            }
+          }
+        }
+
+        csQuery.completionHandler = { error in
+          // Ensure we're completing for the active query
+          Task { await self.cancel() }
+
+          if let error {
+            cont.resume(throwing: SearchError.failed(underlying: error))
+          } else {
+            cont.resume(returning: results)
+          }
+        }
+
+        csQuery.start()
+      }
+    } onCancel: {
+      Task { await self.cancel() }
     }
-    
-    
-    itemAttributes.domainIdentifier = domainIdentifier
-    
-    // TODO: Why? What does this do?
-    // itemAttributes.containerTitle = "TagProfile: \(userProfileId)"
-    // itemAttributes.containerIdentifier = userProfileId
-    
-    
-    return CSSearchableItem(
-      uniqueIdentifier: "\(item.id)", domainIdentifier: domainIdentifier, attributeSet: itemAttributes
-    )
   }
+
   
-  func indexItems(_ items: [any IndexableItem]) async throws {
-    let itemsToIndex = items.map(prepareItemForIndex)
-    
+  nonisolated func indexItems(_ items: [ContentItem]) async throws {
+    let itemsToIndex = items.map { $0.asSearchableItem(in: self.domainId) }
+    let itemIds = items.identifiers
     
     // Used for resuming from a crash; not currently used
     let clientData = Data()
@@ -196,69 +120,41 @@ final class SpotlightService {
       return
     }
     
-    secureIndex.beginBatch()
+    let secureIndex = getSecureIndex()
     
     do {
+      secureIndex.beginBatch()
       try await secureIndex.indexSearchableItems(itemsToIndex)
-      try await secureIndex.endBatch(withClientState: clientData);
+      try await secureIndex.endBatch(withClientState: clientData)
+      
+      logger.emit(
+        .info,
+        """
+        Updated index '\(self.indexName)' with items:
+        
+        \(itemIds.map(\.value).joined(separator: "\n"))
+        """)
     } catch {
-      let clientData = String(data: clientData, encoding: .utf8) ?? "nil"
+      let clientDataString = String(data: clientData, encoding: .utf8) ?? "nil"
       
       self.logger.emit(.error, ErrorMsg("Error indexing items", error))
-      self.logger.emit(.debug, "Client data: \(clientData)")
-      
-      return
+      self.logger.emit(.debug, "Client data: \(clientDataString)")
     }
-    
-    let itemsList = itemsToIndex.map(\.uniqueIdentifier).joined(separator: "\n")
-    
-    logger.emit(.info, "Updated index '\(indexName)' with items:\n \(itemsList)")
   }
   
-  func deleteItem(_ identifier: String) async throws {
-    try await secureIndex.deleteSearchableItems(withIdentifiers: [identifier])
+  nonisolated func deleteItem(_ identifier: String) async throws {
+    try await getSecureIndex().deleteSearchableItems(withIdentifiers: [identifier])
   }
   
   func deleteItems(_ contentIds: [ContentId]) async throws {
-    try await secureIndex.deleteSearchableItems(withIdentifiers: contentIds.map(\.value))
+    try await getSecureIndex().deleteSearchableItems(withIdentifiers: contentIds.map(\.value))
   }
   
   func deleteAllItems() async throws {
-    try await secureIndex.deleteAllSearchableItems()
+    try await getSecureIndex().deleteAllSearchableItems()
   }
 
   func deleteAllitems(inDomain domainIdentifier: String) async throws {
-    try await secureIndex.deleteSearchableItems(withDomainIdentifiers: [domainIdentifier])
-  }
-
-  // TODO: FIgure out later
-  func awaitQueryResponses(_ query: CSUserQuery) {
-    self.searchState = .searching
-    self.resultItems.removeAll()
-    self.resultSuggestions.removeAll()
-    
-    Task {
-      defer {
-        self.logger.emit(.debug, "Query completed")
-        self.searchState = .returned(results: self.resultItems)
-      }
-      
-      do {
-        for try await element in query.responses {
-          switch(element) {
-          case .item(let item):
-            self.resultItems.append(item.item)
-            break
-          case .suggestion(let suggestion):
-            self.resultSuggestions.append(suggestion.suggestion)
-            break
-          @unknown default:
-            break
-          }
-        }
-      } catch {
-        self.onError(error)
-      }
-    }
+    try await getSecureIndex().deleteSearchableItems(withDomainIdentifiers: [domainIdentifier])
   }
 }

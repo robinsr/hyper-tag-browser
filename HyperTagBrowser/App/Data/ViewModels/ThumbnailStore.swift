@@ -9,32 +9,17 @@ import System
 import UniformTypeIdentifiers
 
 
+@MainActor
 @Observable
 final class ThumbnailStore {
   private let logger = EnvContainer.shared.logger("ThumbnailStore")
 
-  private let quicklookService = Container.shared.quicklookService()
+  private let ql = Container.shared.quicklookService()
+  private let store = ThumbnailContainer.shared.cache()
 
-  static let diskCacheDirectory: FilePath = {
-    EnvContainer.shared.stagedPath().appending("thumbstore").filepath
-  }()
-
-  static let diskCacheExpiry: Expiry = .days(15)
-
-  private let diskCacheConfiguration: DiskConfig = {
-    DiskConfig(name: diskCacheDirectory.string, expiry: diskCacheExpiry)
-  }()
-
-  private let memoryCacheConfiguration: MemoryConfig = {
-    MemoryConfig(expiry: .minutes(30), countLimit: 10, totalCostLimit: 10)
-  }()
-
-  var thumbnailSize: CGSize {
+  private var thumbnailSize: CGSize {
     Defaults[.thumbnailQuality].size
   }
-
-  @ObservationIgnored
-  private let store: Storage<ContentId, Data>
 
   @ObservationIgnored
   private var token: ObservationToken?
@@ -48,14 +33,6 @@ final class ThumbnailStore {
 
   init() {
 
-    store = try! Storage<ContentId, Data>(
-      diskConfig: diskCacheConfiguration,
-      memoryConfig: memoryCacheConfiguration,
-      fileManager: FileManager.default,
-      transformer: TransformerFactory.forData()
-    )
-  
-
     fetchQueueCancellable = self.fetchQueue.$items
       .compactMap(\.first)
       .removeDuplicates()
@@ -67,7 +44,7 @@ final class ThumbnailStore {
           // Could return early if already cached, except for thumbnail update
           // guard self.cacheMiss(item.id) else { return }
 
-          let data = await self.requestThumbnail(task: item)
+          let data = await self.thumbnailData(for: item)
 
           Task {
             await MainActor.run {
@@ -94,46 +71,17 @@ final class ThumbnailStore {
       }
     }
   }
+  
 
-  /// Toggle to disable thumbnail caching for testing.
-  private let useQuicklookForImgThumbnails: Bool = true
-
-  private enum ThumbnailSource {
-    case quicklook
-    case cgImage
-  }
-
-  private func thumbnailingSource(for uttype: UTType) -> ThumbnailSource {
-    if uttype.conforms(to: .folder) {
-      return .quicklook
-    }
-
-    if uttype.conforms(to: .image) {
-      return useQuicklookForImgThumbnails ? .quicklook : .cgImage
-    }
-
-    return .quicklook
-  }
-
-  private func requestThumbnail(task: ThumbnailFetchTask) async -> Data {
-    let thumbnailSource = thumbnailingSource(for: task.contentType)
-
-    switch thumbnailSource {
+  private func thumbnailData(for task: ThumbnailFetchTask) async -> Data {
+    await Task.detached(priority: .userInitiated) {
+      switch task.source {
       case .quicklook:
-        return
-          await quicklookService
-          .bestRepresentation(for: task.contentURL, size: thumbnailSize)
-          .imageData
+        return await self.ql.bestRepresentation(for: task.contentURL, size: self.thumbnailSize).imageData
       case .cgImage:
-        return
-      await Task.detached(priority: .userInitiated) {
-            self.getContentImage(url: task.contentURL)
-          }.value
-    }
-  }
-
-  private func getContentImage(url contentURL: URL) -> Data {
-    return ImageDisplay.small(.squared).jpegData(url: contentURL) ?? Data()
+        return ImageDisplay.small(.squared).jpegData(url: task.contentURL) ?? Data()
+      }
+    }.value
   }
 
   private func setData(_ data: Data, forContent id: ContentId) throws {
@@ -191,16 +139,8 @@ final class ThumbnailStore {
     return exists
   }
 
-  private func cacheHit(_ item: AnyIdentifiableContentItem) -> Bool {
-    return cacheHit(item.id)
-  }
-
   private func cacheMiss(_ id: ContentId) -> Bool {
     !cacheHit(id)
-  }
-
-  private func cacheMiss(_ item: AnyIdentifiableContentItem) -> Bool {
-    !cacheHit(item.id)
   }
 }
 
@@ -209,7 +149,8 @@ extension ThumbnailStore {
   /**
    * Defines a task for fetching a thumbnail image.
    */
-  struct ThumbnailFetchTask: Hashable, Sendable {
+  struct ThumbnailFetchTask: Hashable, Sendable, Identifiable, Equatable {
+
     let id: ContentId
     let contentURL: URL
     let contentType: UTType
@@ -220,7 +161,22 @@ extension ThumbnailStore {
       self.contentType = content.contentType
     }
     
-    struct Complete: Hashable, Sendable {
+    var source: ThumbnailSource {
+      let flags = PreferencesContainer.shared.prefs().forKey(.devFlags)
+      
+      switch contentType {
+      case .image:
+        return flags.contains(.enable_cgImageThumbnail) ? .cgImage : .quicklook
+      default:
+        return .quicklook
+      }
+    }
+    
+    enum ThumbnailSource {
+      case quicklook, cgImage
+    }
+    
+    struct Result: Hashable, Sendable {
       let task: ThumbnailFetchTask
       let data: Data
 
@@ -228,6 +184,10 @@ extension ThumbnailStore {
         self.task = task
         self.data = data
       }
+    }
+    
+    static func == (lhs: ThumbnailFetchTask, rhs: ThumbnailFetchTask) -> Bool {
+      lhs.id == rhs.id
     }
   }
 
@@ -251,20 +211,5 @@ extension ThumbnailStore {
     func remove(_ item: ThumbnailFetchTask) {
       items.remove(item)
     }
-  }
-}
-
-extension Expiry {
-  
-  static func minutes(_ minutes: Int) -> Expiry {
-    return .seconds(TimeInterval(minutes * 60))
-  }
-  
-  static func hours(_ hours: Int) -> Expiry {
-    return .seconds(TimeInterval(hours * 60 * 60))
-  }
-  
-  static func days(_ days: Int) -> Expiry {
-    return .seconds(TimeInterval(days * 24 * 60 * 60))
   }
 }

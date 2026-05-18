@@ -7,7 +7,7 @@ import SwiftUI
 import System
 
 
-// @MainActor
+@MainActor
 @Observable
 final class DirTreeModel {
   
@@ -175,7 +175,7 @@ final class DirTreeModel {
 }
 
 
-extension DirTreeModel: CustomDebugStringConvertible {
+extension DirTreeModel: @preconcurrency CustomDebugStringConvertible {
   var debugDescription: String {
     """
     DirTreeModel(

@@ -7,62 +7,58 @@ import GRDB
 
 
 protocol IndexableItem: Identifiable {
-  typealias AttributeSet = CSSearchableItemAttributeSet
   typealias Metadata = [String: Any?]
   
-  var attributeSet: AttributeSet { get }
-
-  static func from(attributeSet: AttributeSet, metadata: Metadata) -> Self?
+  static func from(attributeSet: CSSearchableItemAttributeSet, metadata: Metadata) -> Self?
+  
+  func attributeSet(in domain: String) -> CSSearchableItemAttributeSet
+  func asSearchableItem(in domain: String) -> CSSearchableItem
 }
 
 
 extension IndexableItem {
   
-  var searchIndexName: String {
-    Container.shared.spotlightServiceIndexName()
-  }
-  
-  var domainIdentifier: String {
-    Container.shared.spotlightDomainIdentifier()
-  }
-  
-  var qlService: QuicklookService {
-    Container.shared.quicklookService()
-  }
-  
-  var descriptionSuffix: String {
-    let app = Constants.appname
-    let date = DateFormatter.medium.string(from: Date.now)
-    
-    return "indexed by \(app) on \(date) to index \(searchIndexName)"
+  var debugDescription: String {
+    let attrs = self.attributeSet(in: "DOMAIN")
+    if let jsonAttributes = try? JSONEncoder.tryPretty(attrs) {
+      return jsonAttributes
+    } else {
+      return """
+      IndexableItem(attributeSet: \(attrs))
+      """
+    }
   }
 }
-
+ 
 
 extension IndexInfoRecord: IndexableItem {
   
-  var attributeSet: CSSearchableItemAttributeSet {
-    let logger = EnvContainer.shared.logger("IndexInfoRecord/IndexableItem")
-    
-    let item = self.index
-    let id = self.id
+  func asSearchableItem(in domainId: String) -> CSSearchableItem {
+    return CSSearchableItem(
+      uniqueIdentifier: id.value,
+      domainIdentifier: domainId,
+      attributeSet: attributeSet(in: domainId)
+    )
+  }
+  
+  func attributeSet(in domainId: String) -> CSSearchableItemAttributeSet {
+    let indxRecord = self.index
     let tags = self.searchableTags
-    
     
     let attributeSet = CSSearchableItemAttributeSet(contentType: UTType.contentItem)
     
-    attributeSet.domainIdentifier = self.domainIdentifier
-    attributeSet.contentCreationDate = item.created
-    attributeSet.contentDescription = "\(item.type.localizedDescription ?? "File") \(self.descriptionSuffix)"
-    attributeSet.contentType = item.type.identifier
-    attributeSet.contentTypeTree = [item.type.identifier, UTType.contentItem.identifier]
-    attributeSet.displayName = item.name
-    attributeSet.title = item.name
-    attributeSet.identifier = id.value
+    attributeSet.domainIdentifier = domainId
+    attributeSet.contentCreationDate = indxRecord.created
+    attributeSet.contentDescription = "Indexed by \(Constants.appname)"
+    attributeSet.contentType = indxRecord.type.identifier
+    attributeSet.contentTypeTree = [indxRecord.type.identifier, UTType.contentItem.identifier]
+    attributeSet.displayName = indxRecord.name
+    attributeSet.title = indxRecord.name
+    attributeSet.identifier = indxRecord.id.value
     attributeSet.keywords = tags.map(\.rawValue)
     attributeSet.lastUsedDate = Date.now
-    attributeSet.contentURL = item.url.absoluteURL
-    attributeSet.url = item.url.absoluteURL
+    attributeSet.contentURL = indxRecord.url.absoluteURL
+    attributeSet.url = indxRecord.url.absoluteURL
     
     return attributeSet
   }

@@ -28,10 +28,7 @@ struct ThumbnailOverlayView: View {
 
 
 #Preview("ThumbnailOverlayView", traits:
-  .devFlags(.enable_obscureContent),
-  .defaultViewModel,
-  .fixedLayout(width: 600, height: 400),
-  .testBordersOn
+  .devFlags(.enable_obscureContent), .app, .fixedLayout(width: 600, height: 400), .testBordersOn
 ) {
   
   @Previewable @State var images: [NSImage] = TestData.testImages(

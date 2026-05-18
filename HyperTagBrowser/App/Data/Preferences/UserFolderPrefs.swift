@@ -5,7 +5,7 @@ import Defaults
 
 
 /**
- A `UserPrefSet` where the preference value is a filesystem URL
+ * A `UserPrefSet` where the preference value is a filesystem URL
  */
 enum UserFolderPrefs: String, Defaults.Serializable, CaseIterable, UserPrefSet {
   case startLocation
@@ -25,7 +25,7 @@ enum UserFolderPrefs: String, Defaults.Serializable, CaseIterable, UserPrefSet {
     }
   }
   
-  var allowedTypes: AllowedFileTypes {
+  var allowedTypes: ContentTypeGroup {
     switch self {
     case .startLocation: return .folders
     }

@@ -6,14 +6,22 @@ import SwiftUI
 
 
 struct ProfileListSheetView: View, SheetPresentable {
-  static var presentation: SheetPresentation = .modalSticky(controls: .all)
+//  static var presentation: SheetPresentation = .modalSticky(controls: .all)
+  
+  static var presentation = SheetPresentation(
+    idealSize: SheetSizingRange.modal.idealSize,
+    controls: .all,
+    horizontal: SheetSizingRange.modal.hzOtions(adding: [.sticky]),
+    vertical: SheetSizingRange.modal.vertOptions(adding: [.sticky]),
+    padding: .zero
+  )
   
   @Environment(\.dispatcher) var dispatch
   @Environment(\.sheetPadding) var sheetPadding
 
   @Injected(\PreferencesContainer.profileKeys) var profileKeys
   @Injected(\PreferencesContainer.externalProfiles) var externProfiles
-  @Injected(\PreferencesContainer.stagePrefsURL) var preferenceFileURL
+  @Injected(\PreferencesContainer.appPrefsFile) var prefsFile
   @Injected(\PreferencesContainer.userProfileId) var activeProfileId
   @Injected(\EnvContainer.stageName) var currentStage
   
@@ -28,38 +36,49 @@ struct ProfileListSheetView: View, SheetPresentable {
       .map { ($0, $1, KeyBinding.indexed($0 + 1)) }
   }
   
+  var bodyPadding: EdgeInsets {
+    .init(top: 16, leading: 16, bottom: 16, trailing: 16)
+  }
+  
+  func confirmProfileSwitch(to id: ExternalUserProfile.ID) {
+    switchToProfileSelection = id
+  }
+  
   var body: some View {
-    VStack {
-      Text(verbatim: "Profiles")
-        .modalContentTitle()
-      
+    NavigationStack {
       VStack {
-        ListItems
+        DefaultViewContent
       }
-      .modalContentMain()
-      .switchProfileConfirmationDialog(selection: $switchToProfileSelection)
-        
-      
-      SpacedHStack {
-        DebugProfileDataButton
-        CreateNewProfileButton
+      .padding(bodyPadding)
+      .overlay(alignment: .bottom) {
+        if showCreateForm {
+          NewProfileFormView(isPresented: $showCreateForm)
+            .padding(EdgeInsets(top: 16, leading: 16, bottom: 0, trailing: 16))
+            .sheetBottomForm(insets: bodyPadding)
+        }
       }
-      .modalContentFooter()
-    }
-    .modalContentBody()
-    .overlay(alignment: .bottom) {
-      if showCreateForm {
-        NewProfileFormView(isPresented: $showCreateForm)
-          .sheetBottomForm()
+      .navigationTitle("Profiles")
+      .navigationDestination(isPresented: $showProfileData) {
+        ProfileData
+          .modalContentMain(padding: bodyPadding)
+          .navigationTitle("Profile Data")
       }
     }
-    .sheetView(isPresented: $showProfileData, style: JSONView.presentation) {
-      VStack(alignment: .leading) {
-        JSONView(object: .constant(externProfiles))
-        DebugProfileDataSheet
-      }
-      .presentationBackground(.thickMaterial)
+  }
+  
+  @ViewBuilder
+  var DefaultViewContent: some View {
+    VStack {
+      ProfileItems
     }
+    .modalContentMain()
+    .switchProfileConfirmationDialog(selection: $switchToProfileSelection)
+    
+    SpacedHStack {
+      ShowProfileDataButton
+      CreateNewProfileButton
+    }
+    .modalContentFooter()
   }
   
   var CreateNewProfileButton: some View {
@@ -70,11 +89,7 @@ struct ProfileListSheetView: View, SheetPresentable {
     }
   }
   
-  func confirmProfileSwitch(to id: ExternalUserProfile.ID) {
-    switchToProfileSelection = id
-  }
-  
-  var ListItems: some View {
+  var ProfileItems: some View {
     ForEach(indexedProfileItems, id: \.0) { index, profile, keybinding in
       ProfileListItem(profile: profile, listPosittion: index)
         .contentShape(Rectangle())
@@ -90,7 +105,8 @@ struct ProfileListSheetView: View, SheetPresentable {
     }
   }
   
-  var DebugProfileDataButton: some View {
+  // Debug Only
+  var ShowProfileDataButton: some View {
     Button("Show Profile Data") {
       showProfileData.toggle()
     }
@@ -98,20 +114,41 @@ struct ProfileListSheetView: View, SheetPresentable {
     .controlSize(.mini)
   }
   
-  var DebugProfileDataSheet: some View {
-    HStack {
-      LabeledContent("Stage \(currentStage) preference file") {
-        Text(preferenceFileURL.filepath.string)
+  var ProfileData: some View {
+    GeometryReader { geo in
+      VStack(alignment: .leading) {
+        ScrollView(.vertical) {
+          JsonCodeView(object: .constant(externProfiles))
+            .frame(maxWidth: geo.size.width)
+        }
+        
+        ProfileDataButtons
+      }
+      .onChange(of: geo.size, initial: true) {
+        print("ProfileListSheetView/ProfileData Geometry size: \(geo.size.formatted)")
+      }
+    }
+  }
+  
+  var ProfileDataButtons: some View {
+    SpacedHStack {
+      LabeledContent {
+        Text(prefsFile.string)
           .monospaced()
+          .multilineTextAlignment(.leading)
+      } label: {
+        Text("Preference File")
+        Text("Stage \(currentStage)")
       }
       .font(.caption2)
       .opacity(0.7)
       
-      Button(preferenceFileURL, using: .finder) {
+      Button(prefsFile.fileURL, using: .finder) {
         Text("Show in Finder")
       }
       .buttonStyle(.link)
     }
+    .modalContentFooter()
   }
 }
 

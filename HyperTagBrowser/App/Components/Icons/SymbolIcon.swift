@@ -34,6 +34,7 @@ struct SymbolIcon: RawRepresentable, CaseIterable, Identifiable, Equatable, AppI
   static let confirm        = SymbolIcon("checkmark.circle.fill")
   static let copy           = SymbolIcon("doc.on.doc")
   static let database       = SymbolIcon("cylinder.split.1x2")
+  static let debug          = SymbolIcon("ladybug")
   static let delete         = SymbolIcon("minus.circle")
   static let editText       = SymbolIcon("rectangle.and.pencil.and.ellipsis")
   static let ellipsis       = SymbolIcon("ellipsis")
@@ -52,6 +53,7 @@ struct SymbolIcon: RawRepresentable, CaseIterable, Identifiable, Equatable, AppI
   static let gridLarge      = SymbolIcon("square.grid.2x2", "Increase tile size")
   static let gridSmall      = SymbolIcon("square.grid.4x3.fill", "Decrease tile size")
   static let home           = SymbolIcon("house")
+  static let icloud         = SymbolIcon("icloud")
   static let info           = SymbolIcon("info", "Show info")
   static let insertText     = SymbolIcon("text.insert")
   static let itemChecked    = SymbolIcon("checkmark.circle")
@@ -104,6 +106,7 @@ struct SymbolIcon: RawRepresentable, CaseIterable, Identifiable, Equatable, AppI
       .confirm,
       .copy,
       .database,
+      .debug,
       .delete,
       .editText,
       .ellipsis,

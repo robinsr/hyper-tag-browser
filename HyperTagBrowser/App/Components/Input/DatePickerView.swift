@@ -12,21 +12,17 @@ struct AdjustFilterDateView: View, SheetPresentable {
   var onCancel: () -> ()
   
   @State var date: Date = .now
-  @State var boundary: DateBoundary = .on
+  @State var comparison: DateFilter.Comparison = .onDate
   @State var tagDomain: TagDomain = .creation
   
   var validTagDomains: [TagDomain] = [.creation]
   
   private func onConfirm() {
-    let date = BoundedDate(date: date, bounds: boundary)
+    let filter: FilteringTag = .created(
+      DateFilter(date: date, comparison: comparison)
+    )
     
-    guard
-      let newFilter: FilteringTag = .timeBounded(date: date, domain: tagDomain)
-    else {
-      return
-    }
-    
-    onSelection(newFilter)
+    onSelection(filter)
   }
   
   var body: some View {
@@ -50,8 +46,8 @@ struct AdjustFilterDateView: View, SheetPresentable {
     }
     .modalContentBody()
     .onAppear {
-      date = tag.boundedDate?.date ?? .now
-      boundary = tag.boundedDate?.bounds ?? .on
+      date = tag.dateFilter?.date ?? .now
+      comparison = tag.dateFilter?.comparison ?? .onDate
       tagDomain = tag.domain
     }
   }
@@ -66,8 +62,8 @@ struct AdjustFilterDateView: View, SheetPresentable {
   }
   
   var OperationTypePicker: some View {
-    Picker("Date Range", selection: $boundary) {
-      ForEach(DateBoundary.allCases, id: \.self) { value in
+    Picker("Date Range", selection: $comparison) {
+      ForEach(DateFilter.Comparison.allCases, id: \.self) { value in
         Text(value.description.capitalized)
           .tag(value)
       }

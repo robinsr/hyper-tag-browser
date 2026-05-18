@@ -70,7 +70,7 @@ struct NavigationToolbarView: View {
   }
   
   var ToggleSidebarButton: some View {
-    Toggle(isOn: appVM.bindToPanel(.sidebar)) {
+    Toggle(isOn: .bindToPanel(appVM, .sidebar)) {
       Label(.sidebar)
     }
     .toggleStyle(.toolbar)

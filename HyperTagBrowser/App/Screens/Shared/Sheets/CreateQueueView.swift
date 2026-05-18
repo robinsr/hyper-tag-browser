@@ -55,7 +55,6 @@ struct CreateQueueView: View, SheetPresentable {
 }
 
 
-#Preview("", traits: .defaultViewModel, .previewSize(.dialog)) {
+#Preview("CreateQueueView", traits: .app, .size(.dialog)) {
   CreateQueueView()
 }
-

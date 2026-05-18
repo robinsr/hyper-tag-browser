@@ -15,11 +15,10 @@ struct FilterOnTagsMenu: View {
         ContextMenuTextItem("Item has no tags")
       } else {
         ForEach(tags, id: \.self) { tag in
-          Menu(tag.description) {
-            ContentTagContextMenu(
-              tag: tag,
-              buttons: [ .filterIncluding, .filterExcluding]
-            )
+          Menu(tag.displayString) {
+            ContentTagContextMenu(for: tag, buttons: [
+              .filterIncluding, .filterExcluding
+            ])
           }
         }
       }

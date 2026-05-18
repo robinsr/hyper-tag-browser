@@ -71,8 +71,8 @@
 		946FA33B2C800D7900B8044C /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 946FA33A2C800D7900B8044C /* Media.xcassets */; };
 		947341CA2C7EADB80047C718 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 947341C92C7EADB80047C718 /* Assets.xcassets */; };
 		947341CD2C7EADB80047C718 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 947341CC2C7EADB80047C718 /* Preview Assets.xcassets */; };
-		947341E22C7EADB80047C718 /* TaggedFileBrowserUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947341E12C7EADB80047C718 /* TaggedFileBrowserUITests.swift */; };
-		947341E42C7EADB80047C718 /* TaggedFileBrowserUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947341E32C7EADB80047C718 /* TaggedFileBrowserUITestsLaunchTests.swift */; };
+		947341E22C7EADB80047C718 /* HyperTagBrowserUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947341E12C7EADB80047C718 /* HyperTagBrowserUITests.swift */; };
+		947341E42C7EADB80047C718 /* HyperTagBrowserUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947341E32C7EADB80047C718 /* HyperTagBrowserUITestsLaunchTests.swift */; };
 		947966092D14C74300485E96 /* SwifterSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 947966082D14C74300485E96 /* SwifterSwift */; };
 		947F405B2C9B528F00EF0D12 /* CustomDump in Frameworks */ = {isa = PBXBuildFile; productRef = 947F405A2C9B528F00EF0D12 /* CustomDump */; };
 		947F40E02C9CC0BC00EF0D12 /* DominantColors in Frameworks */ = {isa = PBXBuildFile; productRef = 947F40DF2C9CC0BC00EF0D12 /* DominantColors */; };
@@ -118,14 +118,14 @@
 			containerPortal = 947341BA2C7EADB70047C718 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 947341C12C7EADB70047C718;
-			remoteInfo = TaggedFileBrowser;
+			remoteInfo = HyperTagBrowser;
 		};
 		947341DE2C7EADB80047C718 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 947341BA2C7EADB70047C718 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 947341C12C7EADB70047C718;
-			remoteInfo = TaggedFileBrowser;
+			remoteInfo = HyperTagBrowser;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -166,16 +166,16 @@
 /* Begin PBXFileReference section */
 		9404EB6B2DC31813009B0D3A /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		940FF1CD2D0B7BA3001435F0 /* UnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = UnitTests.xctestplan; sourceTree = "<group>"; };
-		943EB6E42D0BB28200FC8A52 /* TaggedFileBrowser-Debug.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "TaggedFileBrowser-Debug.xctestplan"; sourceTree = "<group>"; };
+		943EB6E42D0BB28200FC8A52 /* HyperTagBrowser-Debug.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "HyperTagBrowser-Debug.xctestplan"; sourceTree = "<group>"; };
 		946FA33A2C800D7900B8044C /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
-		947341C22C7EADB70047C718 /* TaggedFileBrowser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TaggedFileBrowser.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		947341C22C7EADB70047C718 /* HyperTagBrowser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HyperTagBrowser.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		947341C92C7EADB80047C718 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		947341CC2C7EADB80047C718 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		947341CE2C7EADB80047C718 /* TaggedFileBrowser.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TaggedFileBrowser.entitlements; sourceTree = "<group>"; };
-		947341D32C7EADB80047C718 /* TaggedFileBrowserTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TaggedFileBrowserTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		947341DD2C7EADB80047C718 /* TaggedFileBrowserUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TaggedFileBrowserUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		947341E12C7EADB80047C718 /* TaggedFileBrowserUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaggedFileBrowserUITests.swift; sourceTree = "<group>"; };
-		947341E32C7EADB80047C718 /* TaggedFileBrowserUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaggedFileBrowserUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		947341CE2C7EADB80047C718 /* HyperTagBrowser.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HyperTagBrowser.entitlements; sourceTree = "<group>"; };
+		947341D32C7EADB80047C718 /* HyperTagBrowserTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HyperTagBrowserTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		947341DD2C7EADB80047C718 /* HyperTagBrowserUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HyperTagBrowserUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		947341E12C7EADB80047C718 /* HyperTagBrowserUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HyperTagBrowserUITests.swift; sourceTree = "<group>"; };
+		947341E32C7EADB80047C718 /* HyperTagBrowserUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HyperTagBrowserUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		94AB87F72CEB2AE600413C2C /* BrowseScreenUITest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseScreenUITest.swift; sourceTree = "<group>"; };
 		94C1237B2D1218650069304C /* versioning.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = versioning.xcconfig; sourceTree = "<group>"; };
 		94C1237C2D121A690069304C /* versioning.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = versioning.sh; sourceTree = "<group>"; };
@@ -184,7 +184,7 @@
 		94DF6D492CB9229A008721B4 /* fileid_scripts.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = fileid_scripts.sh; sourceTree = "<group>"; };
 		94EBA53E2C865BE700CA40A0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		94F14E052C81874800FBCD0B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
-		94F2F3E92D55EBCC00E5B626 /* TaggedFileBrowser.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = TaggedFileBrowser.xcodeproj; sourceTree = SOURCE_ROOT; };
+		94F2F3E92D55EBCC00E5B626 /* HyperTagBrowser.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = HyperTagBrowser.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -193,14 +193,14 @@
 			membershipExceptions = (
 				Untitled.swift,
 			);
-			target = 947341C12C7EADB70047C718 /* TaggedFileBrowser */;
+			target = 947341C12C7EADB70047C718 /* HyperTagBrowser */;
 		};
 		94EEC0672C9D392F004E3AF7 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Utilities/Watchdog.swift,
 			);
-			target = 947341C12C7EADB70047C718 /* TaggedFileBrowser */;
+			target = 947341C12C7EADB70047C718 /* HyperTagBrowser */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -337,19 +337,19 @@
 		947341B92C7EADB70047C718 = {
 			isa = PBXGroup;
 			children = (
-				94F2F3E92D55EBCC00E5B626 /* TaggedFileBrowser.xcodeproj */,
+				94F2F3E92D55EBCC00E5B626 /* HyperTagBrowser.xcodeproj */,
 				94C1237C2D121A690069304C /* versioning.sh */,
 				94C1237B2D1218650069304C /* versioning.xcconfig */,
-				943EB6E42D0BB28200FC8A52 /* TaggedFileBrowser-Debug.xctestplan */,
+				943EB6E42D0BB28200FC8A52 /* HyperTagBrowser-Debug.xctestplan */,
 				940FF1CD2D0B7BA3001435F0 /* UnitTests.xctestplan */,
 				94DF6D492CB9229A008721B4 /* fileid_scripts.sh */,
 				94DC2A1A2D82307C0007A356 /* identifiers.plist */,
 				94EBA53E2C865BE700CA40A0 /* .gitignore */,
 				947341C32C7EADB70047C718 /* Products */,
 				94F14E052C81874800FBCD0B /* README.md */,
-				947341C42C7EADB70047C718 /* TaggedFileBrowser */,
-				947341D62C7EADB80047C718 /* TaggedFileBrowserTests */,
-				947341E02C7EADB80047C718 /* TaggedFileBrowserUITests */,
+				947341C42C7EADB70047C718 /* HyperTagBrowser */,
+				947341D62C7EADB80047C718 /* HyperTagBrowserTests */,
+				947341E02C7EADB80047C718 /* HyperTagBrowserUITests */,
 				94AB88082CEB2BF000413C2C /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -357,14 +357,14 @@
 		947341C32C7EADB70047C718 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				947341C22C7EADB70047C718 /* TaggedFileBrowser.app */,
-				947341D32C7EADB80047C718 /* TaggedFileBrowserTests.xctest */,
-				947341DD2C7EADB80047C718 /* TaggedFileBrowserUITests.xctest */,
+				947341C22C7EADB70047C718 /* HyperTagBrowser.app */,
+				947341D32C7EADB80047C718 /* HyperTagBrowserTests.xctest */,
+				947341DD2C7EADB80047C718 /* HyperTagBrowserUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		947341C42C7EADB70047C718 /* TaggedFileBrowser */ = {
+		947341C42C7EADB70047C718 /* HyperTagBrowser */ = {
 			isa = PBXGroup;
 			children = (
 				941C17A82D4407C9002C15D5 /* Resources */,
@@ -372,10 +372,10 @@
 				9471A2812C993CE30005FC58 /* App */,
 				947341C92C7EADB80047C718 /* Assets.xcassets */,
 				946FA33A2C800D7900B8044C /* Media.xcassets */,
-				947341CE2C7EADB80047C718 /* TaggedFileBrowser.entitlements */,
+				947341CE2C7EADB80047C718 /* HyperTagBrowser.entitlements */,
 				947341CB2C7EADB80047C718 /* Preview Content */,
 			);
-			path = TaggedFileBrowser;
+			path = HyperTagBrowser;
 			sourceTree = "<group>";
 		};
 		947341CB2C7EADB80047C718 /* Preview Content */ = {
@@ -386,17 +386,17 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		947341D62C7EADB80047C718 /* TaggedFileBrowserTests */ = {
+		947341D62C7EADB80047C718 /* HyperTagBrowserTests */ = {
 			isa = PBXGroup;
 			children = (
 				948399062D0E96D200A2A091 /* TestSupport */,
 				946094642CD0235D00CFA9A1 /* App */,
 				94CF1CB52DC064E6006B34BD /* Extensions */,
 			);
-			path = TaggedFileBrowserTests;
+			path = HyperTagBrowserTests;
 			sourceTree = "<group>";
 		};
-		947341E02C7EADB80047C718 /* TaggedFileBrowserUITests */ = {
+		947341E02C7EADB80047C718 /* HyperTagBrowserUITests */ = {
 			isa = PBXGroup;
 			children = (
 				94AB87F42CEB2AE600413C2C /* Components */,
@@ -407,10 +407,10 @@
 				94AB87FF2CEB2AE600413C2C /* Themes */,
 				94AB88002CEB2AE600413C2C /* Utilities */,
 				94AB88012CEB2AE600413C2C /* ViewModifiers */,
-				947341E12C7EADB80047C718 /* TaggedFileBrowserUITests.swift */,
-				947341E32C7EADB80047C718 /* TaggedFileBrowserUITestsLaunchTests.swift */,
+				947341E12C7EADB80047C718 /* HyperTagBrowserUITests.swift */,
+				947341E32C7EADB80047C718 /* HyperTagBrowserUITestsLaunchTests.swift */,
 			);
-			path = TaggedFileBrowserUITests;
+			path = HyperTagBrowserUITests;
 			sourceTree = "<group>";
 		};
 		94AB87F42CEB2AE600413C2C /* Components */ = {
@@ -527,9 +527,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		947341C12C7EADB70047C718 /* TaggedFileBrowser */ = {
+		947341C12C7EADB70047C718 /* HyperTagBrowser */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 947341E72C7EADB80047C718 /* Build configuration list for PBXNativeTarget "TaggedFileBrowser" */;
+			buildConfigurationList = 947341E72C7EADB80047C718 /* Build configuration list for PBXNativeTarget "HyperTagBrowser" */;
 			buildPhases = (
 				947341BE2C7EADB70047C718 /* Sources */,
 				947341BF2C7EADB70047C718 /* Frameworks */,
@@ -546,7 +546,7 @@
 				9471A2812C993CE30005FC58 /* App */,
 				9471A2B12C993CE60005FC58 /* Extensions */,
 			);
-			name = TaggedFileBrowser;
+			name = HyperTagBrowser;
 			packageProductDependencies = (
 				943345E22C858BB900E1EC81 /* OrderedCollections */,
 				94EBA53A2C8657D100CA40A0 /* Factory */,
@@ -593,13 +593,13 @@
 				948B79012DE657B100B095EF /* SignPostIntegration */,
 				94998BC32DF0F96D00C0E6D6 /* EnumOptionSet */,
 			);
-			productName = TaggedFileBrowser;
-			productReference = 947341C22C7EADB70047C718 /* TaggedFileBrowser.app */;
+			productName = HyperTagBrowser;
+			productReference = 947341C22C7EADB70047C718 /* HyperTagBrowser.app */;
 			productType = "com.apple.product-type.application";
 		};
-		947341D22C7EADB80047C718 /* TaggedFileBrowserTests */ = {
+		947341D22C7EADB80047C718 /* HyperTagBrowserTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 947341EA2C7EADB80047C718 /* Build configuration list for PBXNativeTarget "TaggedFileBrowserTests" */;
+			buildConfigurationList = 947341EA2C7EADB80047C718 /* Build configuration list for PBXNativeTarget "HyperTagBrowserTests" */;
 			buildPhases = (
 				947341CF2C7EADB80047C718 /* Sources */,
 				947341D02C7EADB80047C718 /* Frameworks */,
@@ -616,14 +616,14 @@
 				948399062D0E96D200A2A091 /* TestSupport */,
 				94CF1CB52DC064E6006B34BD /* Extensions */,
 			);
-			name = TaggedFileBrowserTests;
-			productName = TaggedFileBrowserTests;
-			productReference = 947341D32C7EADB80047C718 /* TaggedFileBrowserTests.xctest */;
+			name = HyperTagBrowserTests;
+			productName = HyperTagBrowserTests;
+			productReference = 947341D32C7EADB80047C718 /* HyperTagBrowserTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		947341DC2C7EADB80047C718 /* TaggedFileBrowserUITests */ = {
+		947341DC2C7EADB80047C718 /* HyperTagBrowserUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 947341ED2C7EADB80047C718 /* Build configuration list for PBXNativeTarget "TaggedFileBrowserUITests" */;
+			buildConfigurationList = 947341ED2C7EADB80047C718 /* Build configuration list for PBXNativeTarget "HyperTagBrowserUITests" */;
 			buildPhases = (
 				947341D92C7EADB80047C718 /* Sources */,
 				947341DA2C7EADB80047C718 /* Frameworks */,
@@ -634,9 +634,9 @@
 			dependencies = (
 				947341DF2C7EADB80047C718 /* PBXTargetDependency */,
 			);
-			name = TaggedFileBrowserUITests;
-			productName = TaggedFileBrowserUITests;
-			productReference = 947341DD2C7EADB80047C718 /* TaggedFileBrowserUITests.xctest */;
+			name = HyperTagBrowserUITests;
+			productName = HyperTagBrowserUITests;
+			productReference = 947341DD2C7EADB80047C718 /* HyperTagBrowserUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -665,7 +665,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 947341BD2C7EADB70047C718 /* Build configuration list for PBXProject "TaggedFileBrowser" */;
+			buildConfigurationList = 947341BD2C7EADB70047C718 /* Build configuration list for PBXProject "HyperTagBrowser" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -719,14 +719,14 @@
 			projectReferences = (
 				{
 					ProductGroup = 94B359062D5678DF003E27CE /* Products */;
-					ProjectRef = 94F2F3E92D55EBCC00E5B626 /* TaggedFileBrowser.xcodeproj */;
+					ProjectRef = 94F2F3E92D55EBCC00E5B626 /* HyperTagBrowser.xcodeproj */;
 				},
 			);
 			projectRoot = "";
 			targets = (
-				947341C12C7EADB70047C718 /* TaggedFileBrowser */,
-				947341D22C7EADB80047C718 /* TaggedFileBrowserTests */,
-				947341DC2C7EADB80047C718 /* TaggedFileBrowserUITests */,
+				947341C12C7EADB70047C718 /* HyperTagBrowser */,
+				947341D22C7EADB80047C718 /* HyperTagBrowserTests */,
+				947341DC2C7EADB80047C718 /* HyperTagBrowserUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -777,8 +777,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				947341E22C7EADB80047C718 /* TaggedFileBrowserUITests.swift in Sources */,
-				947341E42C7EADB80047C718 /* TaggedFileBrowserUITestsLaunchTests.swift in Sources */,
+				947341E22C7EADB80047C718 /* HyperTagBrowserUITests.swift in Sources */,
+				947341E42C7EADB80047C718 /* HyperTagBrowserUITestsLaunchTests.swift in Sources */,
 				94AB88022CEB2AE600413C2C /* BrowseScreenUITest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -788,12 +788,12 @@
 /* Begin PBXTargetDependency section */
 		947341D52C7EADB80047C718 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 947341C12C7EADB70047C718 /* TaggedFileBrowser */;
+			target = 947341C12C7EADB70047C718 /* HyperTagBrowser */;
 			targetProxy = 947341D42C7EADB80047C718 /* PBXContainerItemProxy */;
 		};
 		947341DF2C7EADB80047C718 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 947341C12C7EADB70047C718 /* TaggedFileBrowser */;
+			target = 947341C12C7EADB70047C718 /* HyperTagBrowser */;
 			targetProxy = 947341DE2C7EADB80047C718 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -877,22 +877,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = TaggedFileBrowser/TaggedFileBrowser.entitlements;
+				CODE_SIGN_ENTITLEMENTS = HyperTagBrowser/HyperTagBrowser.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = "$(BUILD_NUMBER)";
 				DEAD_CODE_STRIPPING = YES;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_ASSET_PATHS = "\"TaggedFileBrowser/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"HyperTagBrowser/Preview Content\"";
 				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_MODULE_VERIFIER = YES;
 				ENABLE_ON_DEMAND_RESOURCES = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = TaggedFileBrowser/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = TaggedFileBrowserBeta;
+				INFOPLIST_FILE = HyperTagBrowser/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HyperTagBrowserBeta;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -902,7 +902,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = "$(VERSION)";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = com.robinsr.TaggedFileBrowser;
+				PRODUCT_BUNDLE_IDENTIFIER = com.robinsr.HyperTagBrowser;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "TEST $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -921,11 +921,11 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = org.github.robinsr.TaggedFileBrowserTests;
+				PRODUCT_BUNDLE_IDENTIFIER = org.github.robinsr.HyperTagBrowserTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TaggedFileBrowser.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TaggedFileBrowser";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HyperTagBrowser.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HyperTagBrowser";
 			};
 			name = Beta;
 		};
@@ -939,12 +939,12 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = org.github.robinsr.TaggedFileBrowserUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = org.github.robinsr.HyperTagBrowserUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_INCLUDE_PATHS = "$(inherited)";
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = TaggedFileBrowser;
+				TEST_TARGET_NAME = HyperTagBrowser;
 			};
 			name = Beta;
 		};
@@ -1089,22 +1089,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = TaggedFileBrowser/TaggedFileBrowser.entitlements;
+				CODE_SIGN_ENTITLEMENTS = HyperTagBrowser/HyperTagBrowser.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = "$(BUILD_NUMBER)";
 				DEAD_CODE_STRIPPING = YES;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_ASSET_PATHS = "\"TaggedFileBrowser/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"HyperTagBrowser/Preview Content\"";
 				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_MODULE_VERIFIER = YES;
 				ENABLE_ON_DEMAND_RESOURCES = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = TaggedFileBrowser/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = TaggedFileBrowserAlpha;
+				INFOPLIST_FILE = HyperTagBrowser/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HyperTagBrowserAlpha;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1114,7 +1114,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = "$(VERSION)";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = com.robinsr.TaggedFileBrowser;
+				PRODUCT_BUNDLE_IDENTIFIER = com.robinsr.HyperTagBrowser;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1129,22 +1129,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = TaggedFileBrowser/TaggedFileBrowser.entitlements;
+				CODE_SIGN_ENTITLEMENTS = HyperTagBrowser/HyperTagBrowser.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = "$(BUILD_NUMBER)";
 				DEAD_CODE_STRIPPING = YES;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_ASSET_PATHS = "\"TaggedFileBrowser/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"HyperTagBrowser/Preview Content\"";
 				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_MODULE_VERIFIER = YES;
 				ENABLE_ON_DEMAND_RESOURCES = NO;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = TaggedFileBrowser/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = TaggedFileBrowser;
+				INFOPLIST_FILE = HyperTagBrowser/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = HyperTagBrowser;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1154,7 +1154,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = "$(VERSION)";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = com.robinsr.TaggedFileBrowser;
+				PRODUCT_BUNDLE_IDENTIFIER = com.robinsr.HyperTagBrowser;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1173,11 +1173,11 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = org.github.robinsr.TaggedFileBrowserTests;
+				PRODUCT_BUNDLE_IDENTIFIER = org.github.robinsr.HyperTagBrowserTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TaggedFileBrowser.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TaggedFileBrowser";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HyperTagBrowser.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HyperTagBrowser";
 			};
 			name = Alpha;
 		};
@@ -1191,11 +1191,11 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = org.github.robinsr.TaggedFileBrowserTests;
+				PRODUCT_BUNDLE_IDENTIFIER = org.github.robinsr.HyperTagBrowserTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TaggedFileBrowser.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TaggedFileBrowser";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HyperTagBrowser.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HyperTagBrowser";
 			};
 			name = Release;
 		};
@@ -1209,12 +1209,12 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = org.github.robinsr.TaggedFileBrowserUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = org.github.robinsr.HyperTagBrowserUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_INCLUDE_PATHS = "$(inherited)";
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = TaggedFileBrowser;
+				TEST_TARGET_NAME = HyperTagBrowser;
 			};
 			name = Alpha;
 		};
@@ -1228,19 +1228,19 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = org.github.robinsr.TaggedFileBrowserUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = org.github.robinsr.HyperTagBrowserUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_INCLUDE_PATHS = "$(inherited)";
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = TaggedFileBrowser;
+				TEST_TARGET_NAME = HyperTagBrowser;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		947341BD2C7EADB70047C718 /* Build configuration list for PBXProject "TaggedFileBrowser" */ = {
+		947341BD2C7EADB70047C718 /* Build configuration list for PBXProject "HyperTagBrowser" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				947341E52C7EADB80047C718 /* Alpha */,
@@ -1250,7 +1250,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		947341E72C7EADB80047C718 /* Build configuration list for PBXNativeTarget "TaggedFileBrowser" */ = {
+		947341E72C7EADB80047C718 /* Build configuration list for PBXNativeTarget "HyperTagBrowser" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				947341E82C7EADB80047C718 /* Alpha */,
@@ -1260,7 +1260,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		947341EA2C7EADB80047C718 /* Build configuration list for PBXNativeTarget "TaggedFileBrowserTests" */ = {
+		947341EA2C7EADB80047C718 /* Build configuration list for PBXNativeTarget "HyperTagBrowserTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				947341EB2C7EADB80047C718 /* Alpha */,
@@ -1270,7 +1270,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		947341ED2C7EADB80047C718 /* Build configuration list for PBXNativeTarget "TaggedFileBrowserUITests" */ = {
+		947341ED2C7EADB80047C718 /* Build configuration list for PBXNativeTarget "HyperTagBrowserUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				947341EE2C7EADB80047C718 /* Alpha */,

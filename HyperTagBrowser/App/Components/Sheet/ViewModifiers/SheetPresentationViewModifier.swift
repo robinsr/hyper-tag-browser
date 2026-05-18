@@ -28,13 +28,14 @@ struct SheetPresentationViewModifier: ViewModifier {
       }
       .modify(when: style.isFitted) { $0
         .presentationSizing(
-          .form.fitted(horizontal: style.fitHz, vertical: style.fitVt)
+          style.fitted(horizontal: style.fitHz, vertical: style.fitVt)
+          // .form.fitted(horizontal: style.fitHz, vertical: style.fitVt)
         )
       }
       .modify(when: style.isSticky) { $0
         .presentationSizing(
-          .form
-            .sticky(horizontal: style.stickyHz, vertical: style.stickyVt)
+          style.sticky(horizontal: style.stickyHz, vertical: style.stickyVt)
+          //.form.sticky(horizontal: style.stickyHz, vertical: style.stickyVt)
         )
       }
       .modify(when: devFlags.contains(.views_debug)) { $0
@@ -45,7 +46,9 @@ struct SheetPresentationViewModifier: ViewModifier {
           print("DebugViews — \(style.debugDescription)")
         }
       }
-      .presentationDragIndicator(.visible)
-      .presentationBackground(Color.clear)
+      // .presentationDragIndicator(.visible)
+      // .presentationBackground(Color.clear)
+      .presentationBackgroundInteraction(.disabled)
+      
   }
 }

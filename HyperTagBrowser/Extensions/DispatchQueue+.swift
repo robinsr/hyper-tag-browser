@@ -3,10 +3,13 @@
 import Foundation
 
 extension DispatchQueue {
-  func asyncAfter(_ duration: Duration, execute: @escaping () -> Void) {
+  
+  @MainActor
+  func asyncAfter(_ duration: Duration, execute: @escaping @Sendable () -> Void) {
     asyncAfter(deadline: .now() + duration.toTimeInterval, execute: execute)
   }
 
+  @MainActor
   func asyncAfter(_ duration: Duration, execute: DispatchWorkItem) {
     asyncAfter(deadline: .now() + duration.toTimeInterval, execute: execute)
   }
@@ -16,20 +19,35 @@ extension DispatchQueue {
 extension DispatchWorkItem {
 
   /**
-   * Calls ``DispatchWorkItem/notify`` to schedule the execution of the specified work item,
+   * Calls ``Dispatch/DispatchWorkItem/notify(queue:execute:)`` to schedule the execution of the specified work item,
    * with the specified quality-of-service, flags, and `DispatchQueue`, after the completion
-   * of the current work item. Returns the work item for further chaining
+   * of the current work item. Returns the **new** `DispatchWorkItem` for further chaining
    */
   func chainTask(
-    _ nextWorkItem: DispatchWorkItem,
+    dispatchOn queue: DispatchQueue = .main,
     qos: DispatchQoS = .userInitiated,
     flags: DispatchWorkItemFlags = [],
-    usingQueue queue: DispatchQueue = .main
+    _ work: @escaping () -> Void
   ) -> DispatchWorkItem {
+    let workItem = DispatchWorkItem(qos: qos, flags: flags, block: work)
+  
     self.notify(qos: qos, flags: flags, queue: queue) {
-      nextWorkItem.perform()
+      workItem.perform()
     }
 
-    return nextWorkItem
+    return workItem
+  }
+  
+  func chainTask(
+    dispatchOn queue: DispatchQueue = .main,
+    qos: DispatchQoS = .userInitiated,
+    flags: DispatchWorkItemFlags = [],
+    _ workItem: DispatchWorkItem
+  ) -> Self {
+    self.notify(qos: qos, flags: flags, queue: queue) {
+      workItem.perform()
+    }
+
+    return self
   }
 }

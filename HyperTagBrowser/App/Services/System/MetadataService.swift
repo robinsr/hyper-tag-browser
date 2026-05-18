@@ -8,13 +8,13 @@ import XAttr
 
 
 struct MetadataService {
-  static var shared = MetadataService()
+  static let shared = MetadataService()
   
   private let log = EnvContainer.shared.logger("MetadataService")
   
 
   func assignNewXID(to url: URL) throws -> ContentId {
-    let id = ContentId.newID(forFile: url)
+    let id = ContentId.newID(filepath: url.filepath)
     
     guard let idData = id.value.data(using: .utf8) else {
       throw MetadataError.createIdFailed(url)
@@ -66,7 +66,7 @@ struct MetadataService {
   }
 }
 
-enum MetadataError: Error, CustomStringConvertible {
+enum MetadataError: Error, CustomStringConvertible, LocalizedError, CustomNSError {
   case attributeReadError(Error)
   case attributeWriteError(Error)
   case attributeDecodingError(Error)
@@ -87,4 +87,14 @@ enum MetadataError: Error, CustomStringConvertible {
       return "Failed to create ID for URL: \(url)"
     }
   }
+  
+  public var errorDescription: String? {
+    return self.description
+  }
+
+  public var failureReason: String? {
+    return self.description
+  }
+  
+  
 }

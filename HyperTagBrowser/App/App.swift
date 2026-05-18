@@ -16,23 +16,23 @@ struct TaggedFileBrowserApp: App {
   
   @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
   
-  //@Injected(\IndexerContainer.indexService) var indexer
   @Injected(\IndexerContainer.dbReader) var dbReader
   @Injected(\IndexerContainer.dbWriter) var dbWriter
-  @Injected(\IndexerContainer.databaseObserver) var dbObserver
+  @Injected(\IndexerContainer.dbContext) var dbContext
   @Injected(\Container.appViewModel) var appVM
+  @Injected(\Container.searchModel) var searchVM
+  @Injected(\Container.messagesModel) var messages
+  @Injected(\Container.dispatcher) var dispatcher
   @Injected(\Container.directoryTree) var dirTreeState
   @Injected(\Container.cursorState) var cursorState
   @Injected(\Container.detailViewModel) var detailState
   @Injected(\Container.colorModel) var colorModel
   
-  @Injected(\PreferencesContainer.userPreferences) var userPrefs
+  @Injected(\PreferencesContainer.prefs) var userPrefs
   
   @Default(.devFlags) var devFlags: Set<DevFlags>
   
-  
-  init() {
-  }
+  init() {}
   
   func onDownloadsChanged(at url: URL) {
     logger.emit(.info, "Downloads folder changed")
@@ -61,35 +61,38 @@ struct TaggedFileBrowserApp: App {
       CommandsView()
     }
     .environment(appVM)
+    .environment(searchVM)
     .environment(\.cursorState, cursorState)
     .environment(\.detailEnv, detailState)
     .environment(\.directoryTree, dirTreeState)
     .environment(\.enabledFlags, devFlags)
-    .environment(\.location, appVM.location)
+    .environment(\.location, appVM.currentURL)
     .environment(\.route, appVM.currentRoute)
+    .environment(\.messages, messages.messageQueue)
     .environment(\.dispatcher) { action in
-      appVM.dispatch(action)
+      dispatcher.dispatch(action)
     }
     .environment(\.pushState, { route in
-      appVM.dispatch(.navigate(to: route, .push))
+      dispatcher.dispatch(.navigate(to: route, .push))
     })
     .environment(\.replaceState, { route in
-      appVM.dispatch(.navigate(to: route, .replace))
+      dispatcher.dispatch(.navigate(to: route, .replace))
     })
     .environment(\.popState, {
-      appVM.dispatch(.popRoute)
+      dispatcher.dispatch(.popRoute)
     })
     .environment(\.notify, { msg in
-      appVM.send(msg)
+      messages.send(msg)
     })
-    .databaseContext(appVM.databaseContext)
+    .databaseContext(dbContext)
     
-    HelpScreen()
+    KeyBindingsScreen()
+      .environment(\.enabledFlags, devFlags)
     
     SettingsScreen()
       .environment(appVM)
       .environment(\.colorModel, colorModel)
-      .environment(\.location, appVM.location)
+      .environment(\.location, appVM.currentURL)
       .defaultSize(width: 480, height: 600)
   }
 }

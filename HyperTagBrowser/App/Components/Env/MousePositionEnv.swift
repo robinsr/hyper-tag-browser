@@ -3,8 +3,8 @@
 import SwiftUI
 import Combine
 
-struct MousePositionEnvKey: EnvironmentKey {
-  static let defaultValue = MousePositionObserver()
+struct MousePositionEnvKey: @preconcurrency EnvironmentKey {
+  @MainActor static let defaultValue = MousePositionObserver()
 }
 
 extension EnvironmentValues {

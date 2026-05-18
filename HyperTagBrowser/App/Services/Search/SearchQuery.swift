@@ -8,6 +8,8 @@ import System
 struct SearchQuery: CustomStringConvertible {
   
   typealias ComparisonOperator = NSComparisonPredicate.Operator
+  typealias Statement = any SearchQueryFragment
+  typealias Statements = [any SearchQueryFragment]
   
   private let logger = EnvContainer.shared.logger("SearchQuery")
   private let indexName = Container.shared.spotlightServiceIndexName()
@@ -43,8 +45,43 @@ struct SearchQuery: CustomStringConvertible {
       }
   }
   
+  var maxResults: Int {
+    for option in searchOptions {
+      if case .maxResults(let count) = option {
+        return count
+      }
+    }
+    
+    return 100
+  }
   
-  let defaultFetchAttributes = [
+  /// Creates a new user query that searches for the specified term.
+  var csUserTermsQuery: CSUserQuery {
+    let query = CSUserQuery(userQueryString: self.queryString,
+                            userQueryContext: self.userContext)
+    
+    query.protectionClasses = [.none]
+
+    return query
+  }
+  
+  var csUserQuery: CSUserQuery {
+    let query = CSUserQuery(queryString: self.spotlightQuery,
+                            queryContext: self.searchContext)
+    
+    query.protectionClasses = [.none]
+
+    return query
+  }
+  
+  var csSearchQuery: CSSearchQuery {
+    return CSSearchQuery(
+      queryString: self.spotlightQuery,
+      queryContext: self.searchContext
+    )
+  }
+  
+  private let defaultFetchAttributes = [
     "contentCreationDate",
     "contentModificationDate",
     "contentType",
@@ -59,16 +96,31 @@ struct SearchQuery: CustomStringConvertible {
     "title",
   ]
   
-  var queryDomain: SearchQueryFragment {
-    SearchQuery.Predicate(lhs: "domainIdentifier", rhs: domainId, compare: .equalTo)
-  }
-  
-  var termPredicates: SearchQueryFragment {
-    SearchQuery.Compound(opr: searchTermOperator, statements: searchTerms.map(\.searchPredicate))
-  }
+//  var queryDomain: SearchQueryFragment {
+//    SearchQuery.Predicate(lhs: "domainIdentifier", rhs: domainId, compare: .equalTo)
+//  }
+//  
+//  var termPredicates: SearchQueryFragment {
+//    SearchQuery.Compound(opr: searchTermOperator, statements: searchTerms.map(\.searchPredicate))
+//  }
   
   var spotlightQuery: String {
-    SearchQuery.Compound(opr: .and, statements: [queryDomain, termPredicates]).queryString
+    let domainTest = SearchQuery.Predicate(
+      lhs: "domainIdentifier",
+      rhs: domainId,
+      compare: .equalTo
+    )
+    
+    let termTests = SearchQuery.Compound(
+      opr: searchTermOperator,
+      statements: searchTerms.map(\.searchPredicate)
+    )
+    
+    let query = SearchQuery.and([domainTest, termTests]).queryString
+    
+    logger.emit(.debug, "Spotlight Query: \(query)")
+    
+    return query
   }
   
   var searchContext: CSSearchQueryContext {
@@ -106,7 +158,8 @@ struct SearchQuery: CustomStringConvertible {
     """
     SearchQuery(
       queryString: \(queryString),
-      searchTerms: \(searchTerms.map(\.queryString).joined(separator: ", ")),
+      searchTerms: 
+        \(searchTerms.map(\.description).joined(separator: ", ")),
       searchOptions: \(searchOptions.map(\.description)),
       searchRoot: \(searchRoot.string),
       searchSorting: \(searchSorting.description),
@@ -118,7 +171,7 @@ struct SearchQuery: CustomStringConvertible {
   }
   
   
-  public enum UserSearchOption: CustomStringConvertible, Codable, Hashable {
+  public enum UserSearchOption: Identifiable, CustomStringConvertible, Codable, Hashable, Sendable {
     case rankedResults
     case semanticSearch
     case maxResults(Int)
@@ -134,6 +187,15 @@ struct SearchQuery: CustomStringConvertible {
       case .semanticSearch: "semanticSearch"
       case .maxResults(let int): "maxResults(\(int))"
       case .maxRanked(let int): "maxRanked(\(int))"
+      }
+    }
+    
+    var id: String {
+      switch self {
+      case .maxResults(_): return "maxResults"
+      case .maxRanked(_): return "maxRanked"
+      case .rankedResults: return "rankedResults"
+      case .semanticSearch: return "semanticSearch"
       }
     }
   }
@@ -156,7 +218,7 @@ struct SearchQuery: CustomStringConvertible {
     }
     
     static var defaultPageSize: Int {
-      PreferencesContainer.shared.userPreferences().forKey(.searchPerPageLimit)
+      PreferencesContainer.shared.prefs().forKey(.searchPerPageLimit)
     }
     
     static var test: Int {

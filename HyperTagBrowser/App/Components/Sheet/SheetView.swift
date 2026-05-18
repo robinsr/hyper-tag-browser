@@ -17,7 +17,7 @@ struct SheetView<Content: View> : View {
     self.style = style
     self.content = content
     // Default to expanded if the style is not set to condensed
-    _isExpanded = State(initialValue: style.behavior == .expanded)
+    _isExpanded = State(initialValue: style.state == .expanded)
     _useStyle = State(initialValue: style)
   }
   
@@ -31,7 +31,7 @@ struct SheetView<Content: View> : View {
     self.isPresented = isPresented
     
     // Default to expanded if the style is not set to condensed
-    _isExpanded = State(initialValue: style.behavior == .expanded)
+    _isExpanded = State(initialValue: style.state == .expanded)
     _useStyle = State(initialValue: style)
   }
   
@@ -50,15 +50,15 @@ struct SheetView<Content: View> : View {
     ZStack {
       content()
         .preferredColorScheme(.dark)
-        .padding(.vertical, style.paddingVt)
-        .padding(.horizontal, style.paddingHz)
+        .padding(style.padding)
         .environment(\.sheetPresentation, useStyle)
         .environment(\.sheetControls, style.controls)
         .environment(\.sheetPadding, style.padding)
+        .environment(\.expandSheet, $isExpanded)
     }
     .overlay(alignment: .topTrailing) {
       SheetViewControls
-        .withTestBorder(.yellow)
+        .withTestBorder(.yellow, "SheetView/Controls")
     }
     .modifier(SheetPresentationViewModifier(
       style: $useStyle

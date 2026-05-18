@@ -3,7 +3,7 @@
 import SwiftUI
 
 
-struct ContextualTextFieldStyle: TextFieldStyle {
+struct ContextualTextFieldStyle: @preconcurrency TextFieldStyle {
   
   /**
    * Specifies the context in which the TextField to be styled is being used
@@ -15,6 +15,7 @@ struct ContextualTextFieldStyle: TextFieldStyle {
    * - `sidebar`: Is used in a sidebar
    * - `form`: Is used in a form
    */
+  @MainActor
   enum ViewContext {
     case primaryField
     case inlineField
@@ -79,7 +80,7 @@ struct ContextualTextFieldStyle: TextFieldStyle {
     }
   }
   
-  func _body(configuration: TextField<Self._Label>) -> some View {
+  @MainActor func _body(configuration: TextField<Self._Label>) -> some View {
     StackView(axis: .horizontal, direction: hzDirection, align: .center, spacing: 4) {
 
       Image(icon)

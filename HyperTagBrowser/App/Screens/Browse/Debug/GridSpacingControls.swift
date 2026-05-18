@@ -8,7 +8,6 @@ struct GridSpacingControls: View, SheetPresentable {
   static let presentation: SheetPresentation = .infoSticky(controls: .close)
   
   @Default(.gridTileSize) var gridTileMinSize
-  @Default(.photoGridItemInset) var gridTileInset
   @Default(.photoGridHSpace) var gridItemSpacing
   @Default(.photoGridVSpace) var gridRowSpacing
   
@@ -22,12 +21,6 @@ struct GridSpacingControls: View, SheetPresentable {
           Text("Grid Tile Min Size")
           Slider(value: $gridTileMinSize, in: Constants.minTileSize...Constants.maxTileSize)
           Text("\(gridTileMinSize, specifier: "%.1f")")
-            .monospaced()
-        }
-        GridRow {
-          Text("Grid Tile Inset")
-          Slider(value: $gridTileInset, in: 0...30)
-          Text("\(gridTileInset, specifier: "%.1f")")
             .monospaced()
         }
         GridRow {

@@ -2,7 +2,6 @@
 
 import Factory
 import Files
-import OrderedCollections
 import OSLog
 import Regex
 import System
@@ -72,7 +71,7 @@ final class LocalFileService {
       do {
         try rename(task.previous, to: task.updated)
       } catch {
-        logger.error("Error renaming file: \(error.localizedDescription)")
+        logger.emit(.error, "Error renaming file: \(error.localizedDescription)")
       }
     }
   }
@@ -167,7 +166,7 @@ final class LocalFileService {
    * in the path from `root` to `dest`. The leaf node is the `dest` itself.
    */
   func branch(from root: FilePath, to dest: FilePath) -> FileTreeNode {
-    let steps = dest.path(relativeTo: root).components.collect()
+    let steps = dest.relative(to: root).components.collect()
     
     let paths = steps.indexed.map { index, step in
       
@@ -300,7 +299,7 @@ final class LocalFileService {
       
       guard let contentId = try? metadata.retrieveXID(for: fileURL) else { continue }
       
-      let contentPointer = ContentPointer(id: contentId, filePath: fileURL.filepath)
+      let contentPointer = ContentPointer(id: contentId, filepath: fileURL.filepath)
 
       files.insert(contentPointer, at: fileURL)
 
@@ -344,7 +343,7 @@ final class LocalFileService {
       
       do {
         if let contentId = try metadata.retrieveXID(for: fileURL) {
-          files.append(ContentPointer(id: contentId, filePath: fileURL.filepath))
+          files.append(ContentPointer(id: contentId, filepath: fileURL.filepath))
           continue
         }
       } catch {
@@ -353,7 +352,7 @@ final class LocalFileService {
       
       do {
         let contentId = try metadata.assignNewXID(to: fileURL)
-        files.append(ContentPointer(id: contentId, filePath: fileURL.filepath))
+        files.append(ContentPointer(id: contentId, filepath: fileURL.filepath))
       } catch {
         logger.emit(.error, ErrorMsg("Error assigning new XID to \(fileURL.filepath)", error))
       }
@@ -431,19 +430,19 @@ final class LocalFileService {
       return
     }
     
-    guard src.exists() else {
+    guard src.exists else {
       throw .sourceFileNoExist(src)
     }
     
-    guard !dest.exists() else {
+    guard !dest.exists else {
       throw .targetFileAlreadyExists(dest)
     }
     
-    guard dest.directory.exists() else {
+    guard dest.directory.exists else {
       throw .targetDirNoExist(dest.directory)
     }
     
-    guard dest.directory.isBrowsable() else {
+    guard dest.directory.isBrowsable else {
       throw .targetDirInvalid(dest.directory, "Volume not found")
     }
     
@@ -512,7 +511,7 @@ final class LocalFileService {
    */
   @discardableResult
   func touch(_ filepath: FilePath) throws -> Bool {
-    if filepath.exists() {
+    if filepath.exists {
       return true
     }
     
@@ -578,22 +577,5 @@ final class LocalFileService {
     guard created else {
       throw LocalFileServiceError.zipCreationFailed(archivePath)
     }
-  }
-}
-
-
-
-extension FileManager {
-  func directoryExists(at url: URL) -> Bool {
-    directoryExists(atPath: url.path)
-  }
-  
-  func directoryExists(atPath path: String) -> Bool {
-    var isDir: ObjCBool = true
-    return fileExists(atPath: path, isDirectory: &isDir)
-  }
-  
-  func fileExists(at url: URL) -> Bool {
-    fileExists(atPath: url.path)
   }
 }

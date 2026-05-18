@@ -23,11 +23,19 @@ extension BookmarkRecord: FetchableRecord, PersistableRecord {
     case id, created, contentId
   }
   
-  enum Columns: String, ColumnExpression {
+  public enum Columns: String, ColumnExpression {
     case id, created, contentId
   }
   
   static let content = belongsTo(IndexRecord.self)
+  
+  struct Selections {
+    typealias IndxCols = IndexRecord.Columns
+    
+    static var contentPath: SQLExpression {
+      DatabaseFunctions.concat(IndxCols.location.detached, IndxCols.name.detached)
+    }
+  }
 }
 
 extension DerivableRequest<BookmarkRecord> {

@@ -16,8 +16,6 @@ import SwiftUI
 extension Defaults.Keys {
   static let profileKeys            = prefKey("profileKeys", Set<String>([DefaultUserProfile.id]))
   static let activeProfile          = prefKey("activeProfile", DefaultUserProfile.id)
-  @available(*, deprecated, message: "not used (except for debug purposes) as of 2025-05-27")
-  static let photoGridItemInset     = prefKey("photoGridTileInset", Constants.defaultTileInset)
   static let photoGridHSpace        = prefKey("photoGridHSpace", Constants.defaultTileSpacing)
   static let photoGridVSpace        = prefKey("photoGridVSpace", Constants.defaultTileSpacing)
   static let inspectorPanels        = prefKey("openInspectorPanels", InspectorPanelState.defaults)
@@ -45,8 +43,9 @@ extension Defaults.Keys {
   static let persistLocation       = UserToggles.persistLocation.defaultsKey
   static let persistInspectorState = UserToggles.persistInspectorState.defaultsKey
   static let showTagCountOnTiles   = UserToggles.showTagCountOnTiles.defaultsKey
+  static let showTagUsageCount     = UserToggles.showTagUsageCounts.defaultsKey
+  static let seamlessGrid          = UserToggles.seamlessGrid.defaultsKey
   static let thumbnailQuality      = UserSelectPrefs<ThumbnailQuality>.thumbnailQuality.defaultsKey
-  //static let imageBuffFactor       = UserSelectPrefs<ImageBuffingFactor>.imageBuffFactor.defaultValue
   static let imageBuffFactor       = userPref(.imageBuffFactor, ImageBuffingFactor.defaultValue)
   static let sidebarPosition       = UserSelectPrefs<SidebarChirality>.sidebarPosition.defaultsKey
   static let listEditorSuggestions = UserSelectPrefs<Int>.listEditorSuggestions.defaultsKey
@@ -65,34 +64,34 @@ extension UserDefaults : @unchecked @retroactive Sendable {}
 
 
 extension Defaults.Keys {
-  static let userSuite: UserDefaults = resolve(\PreferencesContainer.userSuite)
-  static let stageSuite: UserDefaults = resolve(\PreferencesContainer.stageSuite)
+  static let userPreferences: UserDefaults = resolve(\PreferencesContainer.userPreferences)
+  static let appPreferences: UserDefaults = resolve(\PreferencesContainer.appPreferences)
   
   /**
    * Returns a Defaults.Key for a preference modeled in `UserProfile`
    */
   static func userPref<T>(_ key: ActiveUserProfile.CodingKeys, _ value: T) -> Defaults.Key<T> {
-    Defaults.Key<T>(key.rawValue, default: value, suite: userSuite)
+    Defaults.Key<T>(key.rawValue, default: value, suite: userPreferences)
   }
   
   /**
    * Returns a Defaults.Key for a preference modeled in `UserProfile`
    */
   static func userPref<T>(_ key: ActiveUserProfile.CodingKeys, _ getter: () -> T) -> Defaults.Key<T> {
-    Defaults.Key<T>(key.rawValue, default: getter(), suite: userSuite)
+    Defaults.Key<T>(key.rawValue, default: getter(), suite: userPreferences)
   }
   
   /**
    * Returns a Defaults.Key with the given key and defaulting value
    */
   static func prefKey<T>(_ key: String, _ value: T) -> Defaults.Key<T> {
-    Defaults.Key<T>("tfb-\(key)", default: value, suite: stageSuite)
+    Defaults.Key<T>("tfb-\(key)", default: value, suite: appPreferences)
   }
   
   /**
    * Returns a Defaults.Key with the given key and defaulting value
    */
   static func prefKey<T>(_ key: String, _ getter: () -> T) -> Defaults.Key<T> {
-    Defaults.Key<T>("tfb-\(key)", default: getter(), suite: stageSuite)
+    Defaults.Key<T>("tfb-\(key)", default: getter(), suite: appPreferences)
   }
 }

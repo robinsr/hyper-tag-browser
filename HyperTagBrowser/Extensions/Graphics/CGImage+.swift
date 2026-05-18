@@ -243,8 +243,6 @@ extension CGImage {
         kCGImagePropertyPNGComment: "TaggedFileBrowser PNG Image" as NSString,
       ]
 
-      let imgType = UTType.png.identifier as CFString
-
       let imageDestinationRef = CGImageDestinationCreateWithData(
         data as CFMutableData, UTType.png.cfString, 1, nil)!
 

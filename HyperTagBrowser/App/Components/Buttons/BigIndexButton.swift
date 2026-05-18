@@ -14,7 +14,7 @@ struct KeyBindingIconLabel: View {
       
       if let shortcut {
         HStack(alignment: .bottom, spacing: 0) {
-          Text(shortcut.mods.asCharacters.joined(separator: " "))
+          Text(shortcut.mods.asSymbols.joined(separator: " "))
           
           Text(String(shortcut.key.character))
             .font(.system(size: 16, weight: .semibold))

@@ -23,7 +23,7 @@ struct ListIndexesRequest: ValueObservationQueryable {
       return []
     }
     
-    let request = IndexInfoRecord.info(ids: contentIds)
+    let request = IndexInfoRecord.fetchRecords(ids: contentIds)
     
     return try timeRequest {
       try prepare(db, request) { req in

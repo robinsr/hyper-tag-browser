@@ -88,11 +88,11 @@ extension ColumnExpression {
       .joined(operator: .and)
   }
   
-  func within(_ date: BoundedDate) -> SQLExpression {
+  func within(_ date: DateFilter) -> SQLExpression {
     date.range.contains(GRDB.dateTime(self, .localTime))
   }
   
-  func boundedBy(allOf bounds: [BoundedDate]) -> SQLExpression {
+  func boundedBy(allOf bounds: [DateFilter]) -> SQLExpression {
     if bounds.isEmpty {
       return .allowAll
     }
@@ -102,7 +102,7 @@ extension ColumnExpression {
       .joined(operator: .and)
   }
   
-  func boundedBy(anyOf bounds: [BoundedDate]) -> SQLExpression {
+  func boundedBy(anyOf bounds: [DateFilter]) -> SQLExpression {
     if bounds.isEmpty {
       return .allowAll
     }

@@ -14,10 +14,10 @@ struct MultiSelectContextMenu: View {
   @Environment(AppViewModel.self) var appVM
   @Environment(\.cursorState) var cursorState
   
-  @Query(ListQueuesRequest()) var queues: [QueueRecord]
   
-  
-  let onSelection: DispatchFn
+  var onSelection: DispatchFn = { action in
+    Container.shared.dispatcher().dispatch(action)
+  }
   
   var contentItems: [ContentItem] {
     cursorState.selection
@@ -54,7 +54,7 @@ struct MultiSelectContextMenu: View {
   }
   
   func modelAction(forSelected menuAction: ContentItemMenuAction) -> ModelActions {
-    let itemScope: ContentScope = .include(contentItems.pointers)
+    let itemScope: ContentScope = .include(contentItems.ids)
     
     switch menuAction {
       
@@ -84,11 +84,11 @@ struct MultiSelectContextMenu: View {
     
     case .changeVisibility(let vis, _):
       if case .hidden = vis, !visibleItems.isEmpty {
-        return .updateIndex(.visibility(of: visibleItems.ids, with: vis))
+        return .applyIndexPatch(.visibility(of: visibleItems.ids, with: vis))
       }
       
       if case .normal = vis, !hiddenItems.isEmpty {
-        return .updateIndex(.visibility(of: hiddenItems.ids, with: vis))
+        return .applyIndexPatch(.visibility(of: hiddenItems.ids, with: vis))
       }
       
       return .noop
@@ -123,6 +123,8 @@ struct MultiSelectContextMenu: View {
   
   
   var body: some View {
+    ContextMenuTextItem("\("Content Item", qty: itemCount)")
+    
     ForEach(menuActions, id: \.id) { action in
       if case .text(let value, let symbol) = action {
         ContextMenuTextItem(value, symbol)
@@ -134,11 +136,7 @@ struct MultiSelectContextMenu: View {
       }
       
       else if case .addToQueueMenu = action {
-        AddToQueueMenu(
-          queues: queues,
-          items: contentItems,
-          onSelection: onSelection
-        )
+        AddToQueueMenu(items: contentItems, onSelection: onSelection)
       }
       
       else if case .filterOnMenu(let label, let tags) = action {

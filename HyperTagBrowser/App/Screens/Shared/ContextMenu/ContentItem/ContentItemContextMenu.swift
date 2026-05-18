@@ -11,9 +11,6 @@ struct ContentItemContextMenu: View {
   
   @Environment(AppViewModel.self) var appVM
   
-  @Query(ListQueuesRequest()) var queues: [QueueRecord]
-  @Query(ListBookmarksRequest()) var bookmarks: [BookmarkItem]
-  
   let contentItem: ContentItem
   let onSelection: DispatchFn
   
@@ -22,7 +19,7 @@ struct ContentItemContextMenu: View {
   }
   
   var itemScope: ContentScope {
-    .one(contentItem.pointer)
+    .only(contentItem.id)
   }
   
   var itemURL: URL {
@@ -39,11 +36,11 @@ struct ContentItemContextMenu: View {
   
   var timeTags: [FilteringTag] {
     [
-      .created(.init(date: itemCreated, bounds: .before)),
-      .created(.init(date: itemCreated, bounds: .onOrBefore)),
-      .created(.init(date: itemCreated, bounds: .on)),
-      .created(.init(date: itemCreated, bounds: .onOrAfter)),
-      .created(.init(date: itemCreated, bounds: .after)),
+      .created(.before(itemCreated)),
+      .created(.onOrBefore(itemCreated)),
+      .created(.onDate(itemCreated)),
+      .created(.onOrAfter(itemCreated)),
+      .created(.after(itemCreated)),
     ]
   }
   
@@ -51,6 +48,7 @@ struct ContentItemContextMenu: View {
     
     let folderActions: [ContentItemMenuAction] = [
       .createBookmark,
+      .copyBookmarkData,
       .separator,
       .rename,
       .relocate,
@@ -80,12 +78,17 @@ struct ContentItemContextMenu: View {
       .forgetItem,
     ]
     
+    let debugActions: [ContentItemMenuAction] = [
+      .showItemData,
+      .showSpotlightData,
+    ]
+    
     if contentItem.conforms(to: .folder) {
       return [folderActions + commonActions].flatMap { $0 }
     }
     
     if contentItem.conforms(to: .content) {
-      return [contentActions + commonActions].flatMap { $0 }
+      return [contentActions + commonActions, debugActions].flatMap { $0 }
     }
     
     return []
@@ -104,10 +107,16 @@ struct ContentItemContextMenu: View {
       return .associateTags(appVM.tagsStashed(in: stashId), to: itemScope)
     
     case .changeVisibility(let vis, _):
-      return .updateIndex(.visibility(of: [contentItem.id], with: vis))
+      return .applyIndexPatch(.visibility(of: [contentItem.id], with: vis))
     
     case .copyPath:
-      return .copyToClipboard(label: "", value: contentItem.url.filepath.string)
+      return .copyToClipboard(label: "Pathname", value: contentItem.url.filepath.string)
+      
+    case .copyBookmarkData:
+      guard let data = try? contentItem.url.getBookmarkData().base64EncodedString() else {
+        return .notify(.error("Unable to serialize bookmark data"))
+      }
+      return .copyToClipboard(label: "Bookmark Data", value: data)
     
     case .createBookmark:
       return .bookmarkContent(contentItem)
@@ -141,6 +150,12 @@ struct ContentItemContextMenu: View {
     
     case .showDetails:
       return .showSheet(.contentDetailSheet(item: contentItem))
+      
+    case .showSpotlightData:
+      return .showSheet(.debug_inspectSpotlightData(item: contentItem))
+      
+    case .showItemData:
+      return .showSheet(.debug_inspectContentItem(item: contentItem))
     
     case .updateThumbnail(_):
       return .updateThumbnails(of: [contentItem.index])
@@ -179,11 +194,7 @@ struct ContentItemContextMenu: View {
       }
       
       else if case .addToQueueMenu = action {
-        AddToQueueMenu(
-          queues: queues,
-          items: [contentItem],
-          onSelection: onSelection
-        )
+        AddToQueueMenu(items: [contentItem], onSelection: onSelection)
       }
       
       else if case .filterOnMenu(let label, let tags) = action {

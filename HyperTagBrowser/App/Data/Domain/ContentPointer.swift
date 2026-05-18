@@ -42,26 +42,23 @@ struct ContentPointer: Identifiable, Codable {
     }
   }
 
-  init(id: ContentId, filePath: FilePath) {
+  init(id: ContentId, filepath: FilePath) {
     self.contentId = id
-    self.contentPath = filePath
+    self.contentPath = filepath
   }
   
   @available(*, deprecated, message: "Use init(id:filePath:) instead")
   init(id: ContentId, fileURL: URL) {
-    self.contentId = id
-    self.contentPath = fileURL.filepath
+    self.init(id: id, filepath: fileURL.filepath)
   }
   
   init(filePath path: FilePath) {
-    self.contentId = ContentId.newID(forFile: path.fileURL)
-    self.contentPath = path
+    self.init(id: .newID(filepath: path), filepath: path)
   }
   
   @available(*, deprecated, message: "Use init(filePath:) instead")
   init(fileURL url: URL) {
-    self.contentId = ContentId.newID(forFile: url)
-    self.contentPath = url.filepath
+    self.init(id: .newID(filepath: url.filepath), filepath: url.filepath)
   }
   
   static func == (lhs: ContentPointer, rhs: ContentPointer) -> Bool {
@@ -99,6 +96,9 @@ struct ContentPointers: Codable, Transferable {
   init(_ value: ContentPointer) {
     self.init([value])
   }
+  
+  var isEmpty: Bool { values.isEmpty }
+  var notEmpty: Bool { values.isEmpty == false  }
 
   static var transferRepresentation: some TransferRepresentation {
     DataRepresentation(contentType: .contentPointer) { pointers in
@@ -107,6 +107,10 @@ struct ContentPointers: Codable, Transferable {
       let pointers = try JSONDecoder().decode(ContentPointers.self, from: data)
       return ContentPointers(pointers.values)
     }
+  }
+  
+  static var empty: ContentPointers {
+    ContentPointers([])
   }
 }
 

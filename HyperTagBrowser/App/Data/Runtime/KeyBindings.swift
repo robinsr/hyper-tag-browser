@@ -11,28 +11,19 @@ import Regex
  * This is used to centralize the management of keyboard shortcuts within the application
  */
 //struct KeyBinding: RawRepresentable, Identifiable, Hashable, Equatable, Sendable {
-struct KeyBinding: Identifiable, Hashable, Equatable, Sendable, CustomStringConvertible {
-  
-  var description: String
+struct KeyBinding: Identifiable, Hashable, Equatable, Sendable {
+  var name: String
   var keyboardShortcut: KeyboardShortcut
-  
-  var shortcut: KeyboardShortcut {
-    keyboardShortcut
-  }
-  
-  init?(rawValue: String) {
-    self.description = rawValue
-    self.keyboardShortcut = KeyboardShortcut(.end, modifiers: [])
-  }
+  let id: String = .randomIdentifier(20)
   
   init(_ key: KeyEquivalent, _ mods: EventModifiers) {
     self.keyboardShortcut = KeyboardShortcut(key, modifiers: mods)
-    self.description = keyboardShortcut.description
+    self.name = "Unnamed [\(keyboardShortcut.description)]"
   }
   
   init(_ key: KeyEquivalent, _ mods: EventModifiers, named name: String) {
     self.keyboardShortcut = KeyboardShortcut(key, modifiers: mods)
-    self.description = name
+    self.name = name
   }
   
   init(_ expression: String, named name: String) {
@@ -48,10 +39,8 @@ struct KeyBinding: Identifiable, Hashable, Equatable, Sendable, CustomStringConv
     self.init(key, mods, named: name)
   }
   
-  var id: String {
-    shortcut.keys
-      .map { $0.unicodeScalars.map { String($0) }.joined() }
-      .joined()
+  var shortcut: KeyboardShortcut {
+    keyboardShortcut
   }
   
   var mods: EventModifiers {
@@ -62,8 +51,15 @@ struct KeyBinding: Identifiable, Hashable, Equatable, Sendable, CustomStringConv
     keyboardShortcut.key
   }
   
-  func duplicate(_ description: String) -> KeyBinding {
-    return .init(key, mods, named: description)
+  func duplicate(_ name: String) -> KeyBinding {
+    return .init(key, mods, named: name)
+  }
+  
+  /**
+   * Duplicates the KeyBinding, adding an additional modifier key
+   */
+  func plus(_ other: EventModifiers, named name: String? = nil) -> KeyBinding {
+    .init(key, mods.union(other), named: name ?? self.name)
   }
   
   static func == (lhs: KeyBinding, rhs: KeyBinding) -> Bool {
@@ -74,32 +70,32 @@ struct KeyBinding: Identifiable, Hashable, Equatable, Sendable, CustomStringConv
   }
   
   var symbols: String {
-    shortcut.keys.joined()
+    keyboardShortcut.modifiers.asSymbols.joined() + key.asSymbol
   }
   
+  @available(*, deprecated, renamed: "symbols", message: "Use symbols instead.")
   var asCharacters: String {
     self.symbols
   }
   
+  @available(*, deprecated, renamed: "symbols", message: "Use symbols instead.")
   var string: String {
     self.symbols
   }
 }
 
 
-//extension KeyBinding: CustomStringConvertible, CustomDebugStringConvertible {
-//  var description: String {
-//    self.string
-//  }
-//}
-
-extension KeyBinding: CustomDebugStringConvertible {
-  var debugDescription: String {
-    "KeyBinding(key=\(self.key.asCharacter), mods=\(self.mods.string), symbols=\(self.symbols))"
+extension KeyBinding: CustomStringConvertible {
+  var description: String {
+    "[\(self.symbols)]"
   }
 }
 
-
+extension KeyBinding: CustomDebugStringConvertible {
+  var debugDescription: String {
+    "KeyBinding(name=\(name), shortcut=\(describing: keyboardShortcut))"
+  }
+}
 
 
 extension KeyBinding {
@@ -109,15 +105,10 @@ extension KeyBinding {
   static let gridCursorDown     = KeyBinding(.downArrow, [])
   static let gridCursorUp       = KeyBinding(.upArrow, [])
   static let gridSelect         = KeyBinding(.space, [])
-  
   static let listEditorDown     = KeyBinding(.downArrow, [])
   static let listEditorUp       = KeyBinding(.upArrow, [])
-
   static let onEnter            = KeyBinding(.return, [])
 
-
-  // Semantic shortcuts
-  
   
   static let hzNextItem            = KeyBinding("⌃.", named: "Next Suggestion")
   static let hzPrevItem            = KeyBinding("⌃,", named: "Previous Suggestion")
@@ -139,14 +130,13 @@ extension KeyBinding {
   
   static let showQuickActions      = AppPanels.quickActions.shortcut
   static let toggleSidebar         = AppPanels.sidebar.shortcut
+  static let toggleSidebarSide     = KeyBinding("⇧⌃S", named: "Toggle Sidebar Position")
   static let toggleManageTags      = AppPanels.tagmanager.shortcut
   static let toggleFilters         = AppPanels.browseRefinements.shortcut
   static let toggleBookmarks       = AppPanels.bookmarks.shortcut
   static let toggleQueueList       = AppPanels.workqueues.shortcut
   
-  static let toggleSidebarPosition = KeyBinding("⇧⌃S", named: "Toggle Sidebar Position")
-  
-  static let showSearch            = AppSheet.Cases.searchSheet.shortcut
+  static let showSearch            = KeyBinding("⌘F", named: "Search")
   static let showProfiles          = AppSheet.Cases.userProfiles.shortcut
   
   static let copy                  = KeyBinding("⌘C", named: "Copy")

@@ -10,32 +10,28 @@ import GRDB
 
 extension ValueObservationQueryable {
   
-  private func getFileInfo(file: String, function: String) -> (String, String) {
-    let funcNameRegex = try! NSRegularExpression(pattern: "\\(.*\\)", options: [])
-    let basename = URL(fileURLWithPath: file).deletingPathExtension().lastPathComponent
-    let funcName = function.replacingOccurrences(of: funcNameRegex, with: "")
-
-    return (basename, funcName)
-  }
-  
   /**
    * Returns a timer to measure the time it took to fetch the value.
    */
-  func startTimer(
-    file: String = #file,
-    function: String = #function
-  ) -> StoppableMeasurement {
-    let (basename, funcName) = getFileInfo(file: file, function: function)
-    
-    let metricName = "\(basename)_\(funcName)"
-    
+  func startTimer(file: String = #file, function: String = #function) -> StoppableMeasurement {
     return Container.shared.metricsRecorder().startTimer(
-      named: metricName,
+      named: MetricSource(file, function).name,
       attributes: [
         "thread": .string(Thread.current.name ?? "unknown"),
       ]
-    
     )
+  }
+  
+  private var debugFlag: QueryableDevFlags? {
+    QueryableDevFlags(rawValue: CodeLocation(#file, #function).filename)
+  }
+  
+  private var queryLogEnabled: Bool {
+    if let flag = self.debugFlag {
+      return Defaults[.debugQueryables].contains(flag)
+    } else {
+      return false
+    }
   }
   
   
@@ -43,14 +39,10 @@ extension ValueObservationQueryable {
    * Measures the time taken to execute the fetch block
    */
   func timeRequest(
-    file: String = #file,
-    function: String = #function,
-    block: () throws -> Value
+    file: String = #file, function: String = #function, block: () throws -> Value
   ) rethrows -> Value {
     let timer = startTimer(file: file, function: function)
-    
     defer { timer.stop() }
-    
     return try block()
   }
   
@@ -82,20 +74,14 @@ extension ValueObservationQueryable {
     file: String = #file,
     function: String = #function
   ) {
-    let (basename, funcName) = getFileInfo(file: file, function: function)
-    
-    let enabledOnTables = Defaults[.debugQueryables]
-    
-    guard let queryTable = QueryableDevFlags(rawValue: basename) else { return }
-    
-    guard enabledOnTables.contains(queryTable) else { return }
-    
+    guard queryLogEnabled else { return }
+    let metric = MetricSource(file, function)
     let log = EnvContainer.shared.logger("ValueObservationQueryable")
     
     do {
-      let sql = try request.toSQL(using: db, format: true)
+      let sql = try request.toSQL(using: db)
       
-      log.emit(.debug, ["\(basename)#\(funcName) Request:", sql].joined(separator: "\n"))
+      log.emit(.debug, "\(metric.name) Request: \n \(sql)")
     } catch {
       log.emit(.debug, "Failed to dump request: \(error)")
     }
@@ -106,17 +92,11 @@ extension ValueObservationQueryable {
     file: String = #file,
     function: String = #function
   ) {
-    let (basename, funcName) = getFileInfo(file: file, function: function)
-    
-    let enabledOnTables = Defaults[.debugQueryables]
-    
-    guard let queryTable = QueryableDevFlags(rawValue: basename) else { return }
-    
-    guard enabledOnTables.contains(queryTable) else { return }
-    
+    guard queryLogEnabled else { return }
+    let metric = MetricSource(file, function)
     let log = EnvContainer.shared.logger("ValueObservationQueryable")
 
-    log.dump(response, label: "\(basename)#\(funcName) Response:")
+    log.dump(response, label: "\(metric.name) Response:")
   }
   
   func dumpResponse<T>(
@@ -124,16 +104,10 @@ extension ValueObservationQueryable {
     file: String = #file,
     function: String = #function
   ) {
-    let (basename, funcName) = getFileInfo(file: file, function: function)
-    
-    let enabledOnTables = Defaults[.debugQueryables]
-    
-    guard let queryTable = QueryableDevFlags(rawValue: basename) else { return }
-    
-    guard enabledOnTables.contains(queryTable) else { return }
-    
+    guard queryLogEnabled else { return }
+    let metric = MetricSource(file, function)
     let log = EnvContainer.shared.logger("ValueObservationQueryable")
 
-    log.dump(response, label: "\(basename)#\(funcName) Response:")
+    log.dump(response, label: "\(metric.name) Response:")
   }
 }

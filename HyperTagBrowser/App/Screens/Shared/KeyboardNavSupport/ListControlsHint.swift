@@ -16,7 +16,7 @@ struct ListControlsHint: View {
       KeyBindingHintView(binding: rightControl)
       Text(verbatim: " to navigate, ")
       ShortcutBox {
-        Image(systemName: selectControl.symbolName)
+        Image(systemName: selectControl.sfSymbolName)
           .font(.system(size: 10))
           .bold()
           .padding(.vertical, 2)

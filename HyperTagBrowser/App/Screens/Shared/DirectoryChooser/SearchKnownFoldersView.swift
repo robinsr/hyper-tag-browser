@@ -17,8 +17,9 @@ struct SearchKnownFoldersView: View {
   private let itemAppearTransition: AnyTransition = .fade(duration: 0.2)
   
   @State var searchText = TextFieldModel(validate: [.presence], updateInterval: .milliseconds(300))
-  
   @State var suggestions: [FileTreeNode] = []
+  
+  @State var hoveredItem: FileTreeNode? = nil
   
   var body: some View {
     VStack(alignment: .center, spacing: 12) {
@@ -63,6 +64,7 @@ struct SearchKnownFoldersView: View {
         ForEach(suggestions, id: \.id) { node in
           SidebarButton(
             isActive: .constant(dirTree.selection.contains(node.id)),
+            isHovered: .constant(hoveredItem == node),
             onTapAction: {
               dirTree.toggleSuggestion(node)
             }) {
@@ -98,11 +100,13 @@ struct SearchKnownFoldersView: View {
 #Preview("SearchKnownFoldersView", traits: .sizeThatFitsLayout, .testBordersOn) {
   @Previewable @State var dirTree = DirTreeModel(cwd: TestData.testImageDir)
   
+  @Previewable @State var dbLocations: [FilePath] = TestLorem.uniqueWords.map {
+    TestData.projectDir.filepath.appending($0)
+  }
+  
   SearchKnownFoldersView()
     .withTestBorder(.orange.opacity(0.5))
-    .environment(\.dbLocations, TestData.LOREM_WORDS.uniqued().map {
-      TestData.projectDir.filepath.appending($0)
-    })
+    .environment(\.dbLocations, dbLocations)
     .environment(\.directoryTree, dirTree)
     .frame(width: 400, height: 600, alignment: .top)
     .padding()

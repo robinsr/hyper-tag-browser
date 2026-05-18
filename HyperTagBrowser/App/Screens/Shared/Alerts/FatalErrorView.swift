@@ -32,7 +32,7 @@ struct DatabaseErrorView: View {
           }
         }
         
-        Text("Error in database: \(userProfile.dbFile.filepath)")
+        Text("Error in database: \(userProfile.dbFile.filepath.string)")
       }
     }
   }

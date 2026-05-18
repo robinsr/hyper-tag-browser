@@ -26,7 +26,7 @@ extension TableDefinition {
    * Adds a column to the table with a foreign key reference.
    */
   @discardableResult
-  func column(_ name: String, ref: TableRecord.Type, refCol: String = "id") -> ColumnDefinition {
+  func column(_ name: String, ref: any TableRecord.Type, refCol: String = "id") -> ColumnDefinition {
     self.column(name)
       .references(ref.databaseTableName, column: refCol, onDelete: .cascade)
       .notNull()
@@ -37,7 +37,7 @@ extension TableDefinition {
    * Adds a column to the table with a foreign key reference.
    */
   @discardableResult
-  func column(_ columnName: String, references column: ColumnExpression, in table: TableRecord.Type) -> ColumnDefinition {
+  func column(_ columnName: String, references column: ColumnExpression, in table: any TableRecord.Type) -> ColumnDefinition {
     self.column(columnName).references(column, in: table)
   }
   
@@ -46,7 +46,7 @@ extension TableDefinition {
    * Adds a column to the table with a foreign key reference.
    */
   @discardableResult
-  func column(_ columnName: String, references column: String = "id", in table: TableRecord.Type) -> ColumnDefinition {
+  func column(_ columnName: String, references column: String = "id", in table: any TableRecord.Type) -> ColumnDefinition {
     self.column(columnName).references(column, in: table)
   }
   
