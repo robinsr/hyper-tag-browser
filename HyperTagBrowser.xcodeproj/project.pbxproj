@@ -14,6 +14,12 @@
 		9414B53E2D03909B00D99D70 /* GenericJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 9414B53D2D03909B00D99D70 /* GenericJSON */; };
 		943345E32C858BB900E1EC81 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = 943345E22C858BB900E1EC81 /* OrderedCollections */; };
 		943610962D7771AD00583057 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 943610952D7771AD00583057 /* SDWebImageSwiftUI */; };
+		944226382FBABAFA00CE29B7 /* OpenTelemetryApi in Frameworks */ = {isa = PBXBuildFile; productRef = 944226372FBABAFA00CE29B7 /* OpenTelemetryApi */; };
+		9442263A2FBABAFA00CE29B7 /* OpenTelemetryConcurrency in Frameworks */ = {isa = PBXBuildFile; productRef = 944226392FBABAFA00CE29B7 /* OpenTelemetryConcurrency */; };
+		9442263C2FBABAFA00CE29B7 /* OpenTelemetrySdk in Frameworks */ = {isa = PBXBuildFile; productRef = 9442263B2FBABAFA00CE29B7 /* OpenTelemetrySdk */; };
+		9442263E2FBABAFA00CE29B7 /* StdoutExporter in Frameworks */ = {isa = PBXBuildFile; productRef = 9442263D2FBABAFA00CE29B7 /* StdoutExporter */; };
+		944226412FBABB5600CE29B7 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 944226402FBABB5600CE29B7 /* SwiftDate */; };
+		944226442FBABE4D00CE29B7 /* FileMonitor in Frameworks */ = {isa = PBXBuildFile; productRef = 944226432FBABE4D00CE29B7 /* FileMonitor */; };
 		94448C3F2DC146F0009D1051 /* With in Frameworks */ = {isa = PBXBuildFile; productRef = 94448C3E2DC146F0009D1051 /* With */; };
 		94448C422DC15060009D1051 /* ErrorKit in Frameworks */ = {isa = PBXBuildFile; productRef = 94448C412DC15060009D1051 /* ErrorKit */; };
 		9446773F2DF3690D00D10EE2 /* XCGLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 9446773E2DF3690D00D10EE2 /* XCGLogger */; };
@@ -81,7 +87,6 @@
 		94832AD82C898B6900E94361 /* Flow in Frameworks */ = {isa = PBXBuildFile; productRef = 94832AD72C898B6900E94361 /* Flow */; };
 		948B79002DE657B100B095EF /* OTelSwiftLog in Frameworks */ = {isa = PBXBuildFile; productRef = 948B78FF2DE657B100B095EF /* OTelSwiftLog */; };
 		948B79022DE657B100B095EF /* SignPostIntegration in Frameworks */ = {isa = PBXBuildFile; productRef = 948B79012DE657B100B095EF /* SignPostIntegration */; };
-		94998BC42DF0F96D00C0E6D6 /* EnumOptionSet in Frameworks */ = {isa = PBXBuildFile; productRef = 94998BC32DF0F96D00C0E6D6 /* EnumOptionSet */; };
 		94A4D0802CCAF78600017FBA /* JulianDayNumber in Frameworks */ = {isa = PBXBuildFile; productRef = 94A4D07F2CCAF78600017FBA /* JulianDayNumber */; };
 		94A646EC2CEB299B00C7E459 /* Quick in Frameworks */ = {isa = PBXBuildFile; productRef = 94A646EB2CEB299B00C7E459 /* Quick */; };
 		94AB798B2CA49D5B00B22EBE /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 94AB798A2CA49D5B00B22EBE /* Defaults */; };
@@ -188,13 +193,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		94149AF72DF00B02002CF547 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Untitled.swift,
-			);
-			target = 947341C12C7EADB70047C718 /* HyperTagBrowser */;
-		};
 		94EEC0672C9D392F004E3AF7 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -208,7 +206,7 @@
 		941C17A82D4407C9002C15D5 /* Resources */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Resources; sourceTree = "<group>"; };
 		946094642CD0235D00CFA9A1 /* App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = App; sourceTree = "<group>"; };
 		9471A2812C993CE30005FC58 /* App */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (94EEC0672C9D392F004E3AF7 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = App; sourceTree = "<group>"; };
-		9471A2B12C993CE60005FC58 /* Extensions */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (94149AF72DF00B02002CF547 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Extensions; sourceTree = "<group>"; };
+		9471A2B12C993CE60005FC58 /* Extensions */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Extensions; sourceTree = "<group>"; };
 		948399062D0E96D200A2A091 /* TestSupport */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TestSupport; sourceTree = "<group>"; };
 		94CF1CB52DC064E6006B34BD /* Extensions */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Extensions; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -225,9 +223,10 @@
 				94CFAE472D603CD7000F8802 /* Outline in Frameworks */,
 				94E878152D18EE2D00B3F173 /* Percentage in Frameworks */,
 				944FE1312D04D79500CB4AA4 /* StyledMarkdown in Frameworks */,
-				94998BC42DF0F96D00C0E6D6 /* EnumOptionSet in Frameworks */,
 				94AB798B2CA49D5B00B22EBE /* Defaults in Frameworks */,
+				9442263A2FBABAFA00CE29B7 /* OpenTelemetryConcurrency in Frameworks */,
 				948B79002DE657B100B095EF /* OTelSwiftLog in Frameworks */,
+				9442263E2FBABAFA00CE29B7 /* StdoutExporter in Frameworks */,
 				94448C422DC15060009D1051 /* ErrorKit in Frameworks */,
 				94FEA8882D50207E00288A21 /* OpenTelemetrySdk in Frameworks */,
 				94F75E032D51F63D0027B4E0 /* Metrics in Frameworks */,
@@ -235,6 +234,7 @@
 				94E3C3932CA7DFD8002CF3FC /* XAttr in Frameworks */,
 				943345E32C858BB900E1EC81 /* OrderedCollections in Frameworks */,
 				945DC2E92D28C75300242CF5 /* SwiftUIIntrospect in Frameworks */,
+				944226412FBABB5600CE29B7 /* SwiftDate in Frameworks */,
 				944E41AB2D10DF1A00143FC1 /* HighlightSwift in Frameworks */,
 				94EE4E762CBA172A0069B88C /* GRDBQuery in Frameworks */,
 				94CEA71E2D69DD3D006B1BB2 /* Cache in Frameworks */,
@@ -243,17 +243,20 @@
 				948B79022DE657B100B095EF /* SignPostIntegration in Frameworks */,
 				9414B53E2D03909B00D99D70 /* GenericJSON in Frameworks */,
 				940ED4FA2C9FAF1B00F639C8 /* FullDiskAccess in Frameworks */,
+				944226442FBABE4D00CE29B7 /* FileMonitor in Frameworks */,
 				94832AD32C892D0200E94361 /* MacSettings in Frameworks */,
 				94DFAEC22C9A61BD00AC0B5A /* DequeModule in Frameworks */,
 				94C5E10C2DC082EB00038C72 /* XCGLogger in Frameworks */,
 				94A4D0802CCAF78600017FBA /* JulianDayNumber in Frameworks */,
 				945DC2EC2D290CF300242CF5 /* RationalModule in Frameworks */,
 				945FA79D2CCDF24C005B5EAE /* DebouncedOnChange in Frameworks */,
+				9442263C2FBABAFA00CE29B7 /* OpenTelemetrySdk in Frameworks */,
 				94448C3F2DC146F0009D1051 /* With in Frameworks */,
 				94FEA88E2D50207E00288A21 /* StdoutExporter in Frameworks */,
 				94FEA88C2D50207E00288A21 /* ResourceExtension in Frameworks */,
 				94832AD82C898B6900E94361 /* Flow in Frameworks */,
 				9405650C2CD2024500648DD5 /* LegibleError in Frameworks */,
+				944226382FBABAFA00CE29B7 /* OpenTelemetryApi in Frameworks */,
 				94CE71A22CBF45B500F35581 /* Regex in Frameworks */,
 				9482DCE42DC6174900EF725C /* ZipArchive in Frameworks */,
 				947966092D14C74300485E96 /* SwifterSwift in Frameworks */,
@@ -591,7 +594,12 @@
 				945B95662DD03D8A00DDC7F3 /* KBar */,
 				948B78FF2DE657B100B095EF /* OTelSwiftLog */,
 				948B79012DE657B100B095EF /* SignPostIntegration */,
-				94998BC32DF0F96D00C0E6D6 /* EnumOptionSet */,
+				944226372FBABAFA00CE29B7 /* OpenTelemetryApi */,
+				944226392FBABAFA00CE29B7 /* OpenTelemetryConcurrency */,
+				9442263B2FBABAFA00CE29B7 /* OpenTelemetrySdk */,
+				9442263D2FBABAFA00CE29B7 /* StdoutExporter */,
+				944226402FBABB5600CE29B7 /* SwiftDate */,
+				944226432FBABE4D00CE29B7 /* FileMonitor */,
 			);
 			productName = HyperTagBrowser;
 			productReference = 947341C22C7EADB70047C718 /* HyperTagBrowser.app */;
@@ -712,7 +720,9 @@
 				94448C402DC15060009D1051 /* XCRemoteSwiftPackageReference "ErrorKit" */,
 				9482DCE22DC6174900EF725C /* XCRemoteSwiftPackageReference "ZipArchive" */,
 				945B95652DD03D8A00DDC7F3 /* XCRemoteSwiftPackageReference "KBar" */,
-				94998BC22DF0F96D00C0E6D6 /* XCRemoteSwiftPackageReference "EnumOptionSet" */,
+				944226362FBABAFA00CE29B7 /* XCRemoteSwiftPackageReference "opentelemetry-swift-core" */,
+				9442263F2FBABB5600CE29B7 /* XCRemoteSwiftPackageReference "SwiftDate" */,
+				944226422FBABE4D00CE29B7 /* XCRemoteSwiftPackageReference "FileMonitor" */,
 			);
 			productRefGroup = 947341C32C7EADB70047C718 /* Products */;
 			projectDirPath = "";
@@ -907,7 +917,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "TEST $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_REFLECTION_METADATA_LEVEL = all;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Beta;
 		};
@@ -1119,7 +1129,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_REFLECTION_METADATA_LEVEL = all;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Alpha;
 		};
@@ -1159,7 +1169,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_REFLECTION_METADATA_LEVEL = all;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};
@@ -1331,6 +1341,30 @@
 				version = 3.1.3;
 			};
 		};
+		944226362FBABAFA00CE29B7 /* XCRemoteSwiftPackageReference "opentelemetry-swift-core" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/open-telemetry/opentelemetry-swift-core.git";
+			requirement = {
+				kind = exactVersion;
+				version = 2.3.0;
+			};
+		};
+		9442263F2FBABB5600CE29B7 /* XCRemoteSwiftPackageReference "SwiftDate" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/malcommac/SwiftDate.git";
+			requirement = {
+				kind = exactVersion;
+				version = 7.0.0;
+			};
+		};
+		944226422FBABE4D00CE29B7 /* XCRemoteSwiftPackageReference "FileMonitor" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/aus-der-Technik/FileMonitor.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.2.1;
+			};
+		};
 		94448C3D2DC146F0009D1051 /* XCRemoteSwiftPackageReference "with" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/capnslipp/with.git";
@@ -1448,7 +1482,7 @@
 			repositoryURL = "https://github.com/tevelee/SwiftUI-Flow.git";
 			requirement = {
 				kind = exactVersion;
-				version = 3.0.0;
+				version = 3.1.1;
 			};
 		};
 		94998BC22DF0F96D00C0E6D6 /* XCRemoteSwiftPackageReference "EnumOptionSet" */ = {
@@ -1480,7 +1514,7 @@
 			repositoryURL = "git@github.com:sindresorhus/Defaults.git";
 			requirement = {
 				kind = exactVersion;
-				version = 9.0.2;
+				version = 9.0.6;
 			};
 		};
 		94AB88032CEB2BAD00413C2C /* XCRemoteSwiftPackageReference "Nimble" */ = {
@@ -1488,7 +1522,7 @@
 			repositoryURL = "https://github.com/Quick/Nimble.git";
 			requirement = {
 				kind = exactVersion;
-				version = 13.6.2;
+				version = 14.0.0;
 			};
 		};
 		94C5E1082DC082EB00038C72 /* XCRemoteSwiftPackageReference "XCGLogger" */ = {
@@ -1584,7 +1618,7 @@
 			repositoryURL = "https://github.com/apple/swift-metrics.git";
 			requirement = {
 				kind = exactVersion;
-				version = 2.5.1;
+				version = 2.7.1;
 			};
 		};
 		94FEA8842D50207E00288A21 /* XCRemoteSwiftPackageReference "opentelemetry-swift" */ = {
@@ -1592,7 +1626,7 @@
 			repositoryURL = "https://github.com/open-telemetry/opentelemetry-swift";
 			requirement = {
 				kind = exactVersion;
-				version = 1.13.0;
+				version = 2.3.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -1627,6 +1661,36 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 943610942D7771AD00583057 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
+		};
+		944226372FBABAFA00CE29B7 /* OpenTelemetryApi */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 944226362FBABAFA00CE29B7 /* XCRemoteSwiftPackageReference "opentelemetry-swift-core" */;
+			productName = OpenTelemetryApi;
+		};
+		944226392FBABAFA00CE29B7 /* OpenTelemetryConcurrency */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 944226362FBABAFA00CE29B7 /* XCRemoteSwiftPackageReference "opentelemetry-swift-core" */;
+			productName = OpenTelemetryConcurrency;
+		};
+		9442263B2FBABAFA00CE29B7 /* OpenTelemetrySdk */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 944226362FBABAFA00CE29B7 /* XCRemoteSwiftPackageReference "opentelemetry-swift-core" */;
+			productName = OpenTelemetrySdk;
+		};
+		9442263D2FBABAFA00CE29B7 /* StdoutExporter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 944226362FBABAFA00CE29B7 /* XCRemoteSwiftPackageReference "opentelemetry-swift-core" */;
+			productName = StdoutExporter;
+		};
+		944226402FBABB5600CE29B7 /* SwiftDate */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9442263F2FBABB5600CE29B7 /* XCRemoteSwiftPackageReference "SwiftDate" */;
+			productName = SwiftDate;
+		};
+		944226432FBABE4D00CE29B7 /* FileMonitor */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 944226422FBABE4D00CE29B7 /* XCRemoteSwiftPackageReference "FileMonitor" */;
+			productName = FileMonitor;
 		};
 		94448C3E2DC146F0009D1051 /* With */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1922,11 +1986,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 94FEA8842D50207E00288A21 /* XCRemoteSwiftPackageReference "opentelemetry-swift" */;
 			productName = SignPostIntegration;
-		};
-		94998BC32DF0F96D00C0E6D6 /* EnumOptionSet */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 94998BC22DF0F96D00C0E6D6 /* XCRemoteSwiftPackageReference "EnumOptionSet" */;
-			productName = EnumOptionSet;
 		};
 		94A4D07F2CCAF78600017FBA /* JulianDayNumber */ = {
 			isa = XCSwiftPackageProductDependency;
