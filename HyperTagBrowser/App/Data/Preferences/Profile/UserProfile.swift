@@ -41,7 +41,9 @@ typealias AnyUserProfile = any UserProfile
 extension UserProfile {
   
   var suiteName: String {
-    EnvContainer.shared.stagedPath().appending(id).string
+    let prefix = EnvContainer.shared.domainStage()
+    
+    return "\(prefix).\(id)"
   }
   
   /// The location of the properties file for this profile.

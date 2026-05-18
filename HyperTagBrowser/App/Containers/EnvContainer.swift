@@ -13,16 +13,6 @@ public final class EnvContainer: SharedContainer {
 
 
 /**
- * Example of how to override the default arguments in FactoryContext
- */
-// extension FactoryContext {
-//   var arguments: [String] {
-//     return ["BigBootyJudy"]
-//   }
-// }
-
-
-/**
  * A container for the broadest dependencies and values. eg BundleId, stage name/ID, etc
  */
 extension EnvContainer: AutoRegistering {
@@ -78,9 +68,12 @@ extension EnvContainer: AutoRegistering {
     self { Constants.appDomain }.scope(.cached)
   }
   
-  var stagedPath: Factory<DotPath> {
+  var domainStage: Factory<String> {
     self {
-      DotPath(self.domain(), self.stage().id)
+      let domain = self.domain()
+      let stage = self.stage()
+      
+      return [ domain, stage.id ].dotPath
     }
     .scope(.cached)
   }

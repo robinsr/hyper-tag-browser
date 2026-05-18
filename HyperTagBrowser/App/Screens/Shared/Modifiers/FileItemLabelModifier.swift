@@ -40,7 +40,7 @@ struct FileItemLabelModifier : ViewModifier {
   
   
   func body(content: Content) -> some View {
-    HStack(spacing: iconSize /  1.95) {
+    HStack(spacing: iconSize /  4) {
       Group {
         switch presentation {
         case .symbol: SymbolIcon

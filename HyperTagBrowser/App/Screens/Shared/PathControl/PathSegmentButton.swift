@@ -2,6 +2,7 @@
 
 import Factory
 import SwiftUI
+import UniformTypeIdentifiers
 
 
 struct PathSegmentButton: View {
@@ -16,12 +17,20 @@ struct PathSegmentButton: View {
   let fileIconWidth: CGFloat = 24
   let descendentsHandleWidth: CGFloat = 24
   
-  var isHome: Bool {
+  var isHomeFolder: Bool {
     step.url == UserLocation.home
   }
   
   var fullWidth: CGFloat {
     String(step.name).widthGuestimate(fontSize: 12) + fileIconWidth + descendentsHandleWidth
+  }
+  
+  var itemType: UTType {
+    step.url.contentType
+  }
+  
+  var hoverAnimation: Animation {
+    .easeInOut(duration: 0.2).delay(0.5)
   }
   
   var body: some View {
@@ -32,24 +41,28 @@ struct PathSegmentButton: View {
       .modify(when: collapsible) { view in
         view
           .frame(maxWidth: isHovering ? fullWidth : 74)
-          .animation(.easeInOut(duration: 0.2), value: isHovering)
+          .animation(hoverAnimation, value: isHovering)
           .clipped()
       }
   }
   
   var ButtonContent: some View {
     HStack(spacing: 0) {
-      Image(.home)
-        .dynamicTypeSize(.xLarge)
-        .visible(isHome)
+      
+      if isHomeFolder {
+        Image(.home)
+          .dynamicTypeSize(.xLarge)
+      }
       
       Button {
         onItemTap(step.url)
       } label: {
         Text(step.name)
-          .prefixWithFileIcon(.folder, visibility: isHome ? .hidden : .visible)
+          .modify(unless: isHomeFolder) {
+            $0.prefixWithFileIcon(itemType)
+          }
       }
-      .buttonStyle(.weblink)
+      .buttonStyle(.plain)
       
       PathSegmentDescendants(step)
         .visible(step.hasDescendants)

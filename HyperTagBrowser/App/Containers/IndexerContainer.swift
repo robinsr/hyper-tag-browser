@@ -6,40 +6,37 @@ import Foundation
 import GRDB
 import GRDBQuery
 import System
-//import DequeModule
 
 
 public final class IndexerContainer: SharedContainer {
   public static let shared = IndexerContainer()
-  
   public let manager = ContainerManager()
-  private let root = EnvContainer.shared
-  private let prefs = PreferencesContainer.shared
   
   private let logger = CustomLogger("IndexerContainer", level: .debug)
   
   
   var databasePath: Factory<FilePath> {
     self {
-      self.prefs.userProfile().dbFile.filepath
+      PreferencesContainer.shared.userProfile().dbFile.filepath
     }
-    .onPreview {
-      UserLocation.homePath.appending("workspace/xcode/TaggedFileBrowser/previewdb.sqlite")
+    .onPreview { @MainActor in
+      TestData.previewDb
     }
-    .onTest {
-      UserLocation.homePath.appending("workspace/xcode/TaggedFileBrowser/previewdb.sqlite")
+    .onPreview { @MainActor in
+      TestData.previewDb
     }
     .scope(.cached)
   }
   
   var newDbURL: ParameterFactory<String, URL> {
     self { name in
-      let stageId = self.root.stage().id
-      let dbFilename = ["userdb", stageId, name, "sqlite"].dotPath
+      let stage = EnvContainer.shared.stage()
+      let dbFilename = ["userdb", stage.id, name, "sqlite"].dotPath
       
       return AppLocation.appSupport.appending(dbFilename).fileURL
     }
   }
+
   
   //
   // MARK: - GRDB Section
@@ -113,16 +110,10 @@ public final class IndexerContainer: SharedContainer {
   
   var indexTaskQueue: Factory<DispatchQueue> {
     self {
-      DispatchQueue(label: "\(Constants.appDomain).indexTaskQueue")
+      let domain = EnvContainer.shared.domain()
+      
+      return DispatchQueue(label: "\(domain).indexTaskQueue")
     }
     .scope(.singleton)
-  }
-  
-  
-  var indexerQueryCache: Factory<IndexerQueryCache> {
-    self {
-      IndexerQueryCache()
-    }
-    .scope(.cached)
   }
 }

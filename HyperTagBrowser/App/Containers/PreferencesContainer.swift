@@ -11,23 +11,8 @@
     public static let shared = PreferencesContainer()
     public let manager = ContainerManager()
 
-
     private let logger = CustomLogger("PreferencesContainer", level: .debug)
-    
-    private func debugResult<T>(_ key: String, _ fn: () -> T) -> T {
-      let value = fn()
-      self.logger.debug("\(key): \(describing: value)")
-      return value
-    }
-    
-    private var stage: String {
-      EnvContainer.shared.stage().id
-    }
-    
-    
-    private var lastOpened: String {
-      DateFormatter.iso8601.string(from: .now)
-    }
+
 
     /**
      * The name of the prefs file for app-wide preferences.
@@ -38,7 +23,9 @@
      */
     private var appPrefsKey: Factory<String> {
       self {
-        EnvContainer.shared.stagedPath().appending("prefs").string
+        let prefix = EnvContainer.shared.domainStage()
+        
+        return "\(prefix).prefs"
       }
     }
     
@@ -49,7 +36,10 @@
      */
     private var userPrefsKey: Factory<String> {
       self {
-        EnvContainer.shared.stagedPath().appending(self.userProfileId()).string
+        let prefix = EnvContainer.shared.domainStage()
+        let profileId = self.userProfileId()
+        
+        return "\(prefix).\(profileId)"
       }
     }
     
@@ -59,9 +49,9 @@
      */
     public var appPrefsFile: Factory<FilePath> {
       self {
-        AppLocation.preferences
-          .appending(self.appPrefsKey())
-          .appendingExtension("plist")
+        let basename = self.appPrefsKey()
+        
+        return AppLocation.preferences.appending("\(basename).plist")
       }
       .scope(.cached)
     }
@@ -81,10 +71,13 @@
      */
     public var userPreferences: Factory<UserDefaults> {
       self {
+        let stage = EnvContainer.shared.stage()
+        let timestamp = DateFormatter.iso8601.string(from: .now)
+        
         let suite = self.getSuite(id: self.userPrefsKey())
         
-        suite.set(self.stage, forKey: "tfb-stage-name")
-        suite.set(self.lastOpened, forKey: "tfb-last-opened")
+        suite.set(stage.id, forKey: "tfb-stage-name")
+        suite.set(timestamp, forKey: "tfb-last-opened")
         
         return suite
       }
@@ -95,7 +88,6 @@
     //
     // MARK: - User Profile & Profile-Specific Properties
     //
-
 
     /**
      * Returns all profile **keys** listed in the stage prefs suite
@@ -125,7 +117,7 @@
         let args = EnvContainer.shared.runFlags()
         
         
-        /// Find and use profile based on the `--profile-name=$NAME` argument
+        /// Use profile specified by the `--profile-name=<name>` argument
         if let profileName = args.profileName {
           if let profileId = self.profileId(for: profileName) {
             self.logger.emit(.debug, "Using override profile id: \(profileId)")
@@ -135,7 +127,7 @@
           }
         }
 
-        /// Use profile based on `--profile=$NAME` argument if provided
+        /// Use profile specified by the `--profile=<id>` argument
         if let profileId = args.profileId {
           if self.profileExists(id: profileId) {
             self.logger.emit(.debug, "Using override profile id: \(profileId)")
@@ -166,15 +158,6 @@
         ActiveUserProfile(suite: self.userPreferences())
       }
       .scope(.cached)
-    }
-
-    /**
-     * Returns the name of the user profile currently active
-     */
-    var userProfileName: Factory<String> {
-      self {
-        self.userProfile().name
-      }
     }
     
     /**
@@ -261,7 +244,9 @@
     }
     
     func getSuite(id: String) -> UserDefaults {
-      getSuite(key: EnvContainer.shared.stagedPath().appending(id).string)
+      let prefix = EnvContainer.shared.domainStage()
+      
+      return getSuite(key: "\(prefix).\(id)")
     }
 
     /**

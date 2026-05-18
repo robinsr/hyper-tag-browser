@@ -17,8 +17,6 @@ struct TestData {
   
   // MARK: - Test filepaths
 
-  
-  
   private static let project = Constants.appDisplayName
   private static let homedir = UserLocation.home.filepath
   private static let libdir = URL.libraryDirectory.filepath
@@ -26,7 +24,7 @@ struct TestData {
   static let workdir = homedir.appending("workspace/xcode/HyperTagBrowser")
   static let source = workdir.appending("HyperTagBrowser/App")
   static let resourcesdir = homedir.appending("workspace/projects/taggedfilebrowser")
-  static let dbFile = resourcesdir.appending("previewdb.sqlite")
+  static let previewDb = resourcesdir.appending("previewdb.sqlite")
   static let testImageDir = resourcesdir.appending("testimages")
   static let cloudImageDir = libdir.appending("Mobile Documents/com~apple~CloudDocs/Images/wallpapers")
 
@@ -41,6 +39,7 @@ struct TestData {
   static var cloudImageURLs = fs.listURLs(at: cloudImageDir.fileURL, types: .images)
   static var cloudDirFiles = fs.listURLs(at: cloudImageDir.fileURL, types: .all)
 
+  
   // MARK: - Test ContentItems (IndexInfoRecord)
 
   static let testIndexRecords: [IndexRecord] = testImageURLs.compactMap {

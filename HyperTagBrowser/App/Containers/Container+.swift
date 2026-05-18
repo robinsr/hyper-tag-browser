@@ -7,15 +7,15 @@ import SwiftUI
 
 
 extension Container {
-  
-  private var root: EnvContainer { .shared }
-  private var prefs: PreferencesContainer { .shared }
-  
+
   private var logger: CustomLogger {
     EnvContainer.shared.logger("Container")
   }
+
   
-    // MARK: - View Models
+  //
+  // MARK: - View Models
+  //
   
   var appViewModel: Factory<AppViewModel> {
     self { @MainActor in
@@ -62,7 +62,7 @@ extension Container {
   
   var directoryTree: Factory<DirTreeModel> {
     self { @MainActor in
-      DirTreeModel(cwd: self.prefs.startingLocation().fileURL)
+      DirTreeModel(cwd: PreferencesContainer.shared.startingLocation().fileURL)
     }
     .scope(.cached)
   }
@@ -95,27 +95,28 @@ extension Container {
     .scope(.cached)
   }
       
-    // -------------------------
-    // MARK: - Search Properties
-    // -------------------------
+  
+  //
+  // MARK: - Search Properties
+  //
   
   var spotlightService: Factory<SpotlightSearchService> {
     self {
-      SpotlightSearchService(
-        indexName: self.spotlightServiceIndexName(),
-        domainId: self.spotlightDomainIdentifier(),
-        profileId: self.prefs.userProfileId()
-      )
+      let name = self.spotlightServiceIndexName()
+      let domain = self.spotlightDomainIdentifier()
+      let profile = PreferencesContainer.shared.userProfileId()
+      
+      return SpotlightSearchService(indexName: name, domainId: domain, profileId: profile)
     }
     .scope(.cached)
   }
   
   var spotlightDomainIdentifier: Factory<String> {
     self {
-      let stage = self.root.stage().id
-      let profileId = self.prefs.userProfileId()
+      let stage = EnvContainer.shared.stage()
+      let profile = PreferencesContainer.shared.userProfileId()
       
-      return [stage, profileId].dotPath // eg "release.default" or "beta.testProfile1"
+      return [stage.id, profile].dotPath // eg "release.default" or "beta.testProfile1"
     }
     .onDebug {
       return "default"
@@ -125,10 +126,11 @@ extension Container {
   
   var spotlightServiceIndexName: Factory<String> {
     self {
-      let stagedPath = self.root.stagedPath()
-      let profileId = self.prefs.userProfileId()
+      let domain = EnvContainer.shared.domain()
+      let stage = EnvContainer.shared.stage()
+      let profileId = PreferencesContainer.shared.userProfileId()
       
-      return [ stagedPath, profileId, "index" ].dotPath
+      return [ domain, stage.id, profileId, "index" ].dotPath // eg "com.app.release.ABC123.index"
     }
     .context(.arg("useDefaultSearchIndex")) {
       self.logger.emit(.debug, "Overriding spotlightServiceIndexName to 'default'")
@@ -137,7 +139,10 @@ extension Container {
     .scope(.cached)
   }
   
-    // MARK: - Services/Filesystem
+  
+  //
+  // MARK: - Services/Filesystem
+  //
   
   var metadataService: Factory<MetadataService> {
     self {
@@ -160,7 +165,6 @@ extension Container {
     .scope(.cached)
   }
   
-//  @MainActor
   var fileService: Factory<LocalFileService> {
     self { @MainActor in
       LocalFileService(monitoring: true)
@@ -183,7 +187,9 @@ extension Container {
   }
   
   
-    // MARK: - Other Properties
+  //
+  // MARK: - Other Properties
+  //
   
   var executor: Factory<CommandExecutor> {
     self { @MainActor in
@@ -205,6 +211,7 @@ extension Container {
     }
     .scope(.cached)
   }
+  
   
   //
   // MARK: - Metrics

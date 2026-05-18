@@ -7,22 +7,20 @@ import System
 
 
 public final class ThumbnailContainer: SharedContainer {
-  
-  typealias ContentDataCache = Storage<ContentId, Data>
-  
   public static let shared = ThumbnailContainer()
-  
   public let manager = ContainerManager()
-  private let root = EnvContainer.shared
-  private let prefs = PreferencesContainer.shared
+  
   private let logger = EnvContainer.shared.logger("ThumbnailContainer")
   
 
   var store: Factory<ThumbnailStore> {
-    self { @MainActor in ThumbnailStore() }.scope(.cached)
+    self { @MainActor in
+      ThumbnailStore()
+    }
+    .scope(.cached)
   }
   
-  var cache: Factory<ContentDataCache> {
+  var cache: Factory<Storage<ContentId, Data>> {
     self {
       try! Storage<ContentId, Data>(
         diskConfig: self.diskConfig(),
@@ -34,16 +32,29 @@ public final class ThumbnailContainer: SharedContainer {
     .scope(.singleton)
   }
   
-  var cacheDir: Factory<FilePath> {
-    self { self.root.stagedPath().appending("thumbstore").filepath }.scope(.singleton)
+  var cacheName: Factory<String> {
+    self {
+      let prefix = EnvContainer.shared.domainStage()
+      
+      return "\(prefix).thumbstore"
+    }
+    .scope(.singleton)
   }
   
   var diskConfig: Factory<DiskConfig> {
-    self { DiskConfig(name: self.cacheDir().string, expiry: .days(15)) }.scope(.singleton)
+    self {
+      let name = self.cacheName()
+      
+      return DiskConfig(name: name, expiry: .days(15))
+    }
+    .scope(.singleton)
   }
   
   var memConfig: Factory<MemoryConfig> {
-    self { MemoryConfig(expiry: .minutes(30), countLimit: 10, totalCostLimit: 10) }.scope(.singleton)
+    self {
+      MemoryConfig(expiry: .minutes(30), countLimit: 10, totalCostLimit: 10)
+    }
+    .scope(.singleton)
   }
 }
 

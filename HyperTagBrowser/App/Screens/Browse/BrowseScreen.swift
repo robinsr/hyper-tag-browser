@@ -11,7 +11,7 @@ struct BrowseScreen: View {
   
   @Injected(\Container.executor) var exec
   @Injected(\IndexerContainer.indexService) var indexer
-  @Injected(\PreferencesContainer.userProfileName) var profileName
+  @Injected(\PreferencesContainer.userProfile) var profile
   @Injected(\Container.themeProvider) var theme
   
   @Environment(AppViewModel.self) var appVM
@@ -137,7 +137,7 @@ struct BrowseScreen: View {
       ProfileInfoButton()
         .styleClass(.statusbar)
         .accessibilityLabel("Switch profiles")
-        .accessibilityValue(profileName, isEnabled: true)
+        .accessibilityValue(profile.name, isEnabled: true)
       #if DEBUG
       VolumeInfoButton(url: location)
         .styleClass(.statusbar)
