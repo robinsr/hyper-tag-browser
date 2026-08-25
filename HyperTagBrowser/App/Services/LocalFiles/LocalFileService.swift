@@ -8,6 +8,11 @@ import System
 import UniformTypeIdentifiers
 import ZipArchive
 
+#if DEBUG
+// SMB performance probe — throwaway instrumentation, remove before ship
+import os
+#endif
+
 
 /**
  * Provides for listing contents of local filesytem directories
@@ -40,8 +45,16 @@ final class LocalFileService {
   private let logger = EnvContainer.shared.logger("LocalFileService")
   
   private let cache = Container.shared.fileCache()
-  
+
   @Injected(\.metadataService) private var metadata
+
+  #if DEBUG
+  // SMB performance probe — throwaway instrumentation, remove before ship
+  private static let smbProbe = OSSignposter(
+    subsystem: "com.robinsr.hypertag",
+    category: "SMBProbe.indexer"
+  )
+  #endif
   
   init(monitoring: Bool = false) {
     
@@ -333,14 +346,23 @@ final class LocalFileService {
     var files: [ContentPointer] = []
     
     while let fileURL = autoreleasepool(invoking: { contents.nextObject() }) as? URL {
-      
+      #if DEBUG
+      // SMB performance probe — throwaway instrumentation, remove before ship
+      let spID = LocalFileService.smbProbe.makeSignpostID()
+      let spState = LocalFileService.smbProbe.beginInterval(
+        "loop-body", id: spID,
+        "file: \(fileURL.lastPathComponent)"
+      )
+      defer { LocalFileService.smbProbe.endInterval("loop-body", spState) }
+      #endif
+
       guard let contentType: UTType = fileURL.resourceValue(forKey: .contentTypeKey) else {
         logger.emit(.warning, "Error getting UTType for \(fileURL.lastPathComponent)")
         continue
       }
-      
+
       guard types.allows(filetype: contentType) else { continue }
-      
+
       do {
         if let contentId = try metadata.retrieveXID(for: fileURL) {
           files.append(ContentPointer(id: contentId, filepath: fileURL.filepath))
@@ -349,7 +371,7 @@ final class LocalFileService {
       } catch {
         logger.emit(.error, ErrorMsg("Error retrieving XID for \(fileURL.filepath)", error))
       }
-      
+
       do {
         let contentId = try metadata.assignNewXID(to: fileURL)
         files.append(ContentPointer(id: contentId, filepath: fileURL.filepath))

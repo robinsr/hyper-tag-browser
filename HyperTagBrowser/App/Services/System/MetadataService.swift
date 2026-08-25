@@ -6,32 +6,65 @@ import Factory
 import Foundation
 import XAttr
 
+#if DEBUG
+// SMB performance probe — throwaway instrumentation, remove before ship
+import os
+#endif
+
 
 struct MetadataService {
   static let shared = MetadataService()
-  
+
   private let log = EnvContainer.shared.logger("MetadataService")
+
+  #if DEBUG
+  // SMB performance probe — throwaway instrumentation, remove before ship
+  private static let smbProbe = OSSignposter(
+    subsystem: "com.robinsr.hypertag",
+    category: "SMBProbe.xattr"
+  )
+  #endif
   
 
   func assignNewXID(to url: URL) throws -> ContentId {
+    #if DEBUG
+    // SMB performance probe — throwaway instrumentation, remove before ship
+    let spID = MetadataService.smbProbe.makeSignpostID()
+    let spState = MetadataService.smbProbe.beginInterval(
+      "xattr-write", id: spID,
+      "file: \(url.lastPathComponent)"
+    )
+    defer { MetadataService.smbProbe.endInterval("xattr-write", spState) }
+    #endif
+
     let id = ContentId.newID(filepath: url.filepath)
-    
+
     guard let idData = id.value.data(using: .utf8) else {
       throw MetadataError.createIdFailed(url)
     }
-    
+
     do {
-      try url.setExtendedAttribute(data: idData , forName: Constants.xContentIdKey)
+      try url.setExtendedAttribute(data: idData, forName: Constants.xContentIdKey)
     } catch {
       throw MetadataError.attributeWriteError(error)
     }
-    
+
     return id
   }
   
   func retrieveXID(for url: URL) throws -> ContentId? {
+    #if DEBUG
+    // SMB performance probe — throwaway instrumentation, remove before ship
+    let spID = MetadataService.smbProbe.makeSignpostID()
+    let spState = MetadataService.smbProbe.beginInterval(
+      "xattr-read", id: spID,
+      "file: \(url.lastPathComponent)"
+    )
+    defer { MetadataService.smbProbe.endInterval("xattr-read", spState) }
+    #endif
+
     var attributes: [String: Data] = [:]
-    
+
     do {
       attributes = try url.extendedAttributeValues(forNames: try url.extendedAttributeNames())
     } catch {
