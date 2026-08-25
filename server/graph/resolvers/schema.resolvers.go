@@ -8,11 +8,45 @@ package resolvers
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/robinsr/taggedfilebrowser/server/db/queries"
 	"github.com/robinsr/taggedfilebrowser/server/graph"
 	"github.com/robinsr/taggedfilebrowser/server/graph/model"
 )
+
+// Tags is the resolver for the tags field.
+func (r *fileResolver) Tags(ctx context.Context, obj *model.File) ([]*model.Tag, error) {
+	rows, err := queries.ListTagsForFile(ctx, r.db, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]*model.Tag, len(rows))
+	for i, t := range rows {
+		out[i] = tagRowToModel(t)
+	}
+	return out, nil
+}
+
+// TagCount is the resolver for the tagCount field.
+func (r *fileResolver) TagCount(ctx context.Context, obj *model.File) (int, error) {
+	return queries.GetFileTagCount(ctx, r.db, obj.ID)
+}
+
+// Bookmarked is the resolver for the bookmarked field.
+func (r *fileResolver) Bookmarked(ctx context.Context, obj *model.File) (bool, error) {
+	return queries.IsFileBookmarked(ctx, r.db, obj.ID)
+}
+
+// Queues is the resolver for the queues field.
+func (r *fileResolver) Queues(ctx context.Context, obj *model.File) ([]*model.Queue, error) {
+	panic(fmt.Errorf("not implemented: Queues - queues"))
+}
+
+// History is the resolver for the history field.
+func (r *fileResolver) History(ctx context.Context, obj *model.File) ([]*model.FileHistoryEntry, error) {
+	panic(fmt.Errorf("not implemented: History - history"))
+}
 
 // File is the resolver for the file field.
 func (r *queryResolver) File(ctx context.Context, id string) (*model.File, error) {
@@ -43,12 +77,34 @@ func (r *queryResolver) Files(ctx context.Context, filter *model.FileFilterInput
 
 // Tag is the resolver for the tag field.
 func (r *queryResolver) Tag(ctx context.Context, id string) (*model.Tag, error) {
-	panic(fmt.Errorf("not implemented: Tag - tag"))
+	row, err := queries.GetTag(ctx, r.db, id)
+	if err != nil || row == nil {
+		return nil, err
+	}
+	return tagRowToModel(row), nil
 }
 
 // Tags is the resolver for the tags field.
 func (r *queryResolver) Tags(ctx context.Context, domain *model.TagDomain, typeArg *model.TagType) ([]*model.Tag, error) {
-	panic(fmt.Errorf("not implemented: Tags - tags"))
+	var domainStr *string
+	var tagTypeStr *string
+	if domain != nil {
+		s := strings.ToLower(string(*domain))
+		domainStr = &s
+	}
+	if typeArg != nil {
+		s := dbTagTypeRawValue(*typeArg)
+		tagTypeStr = &s
+	}
+	rows, err := queries.ListTags(ctx, r.db, domainStr, tagTypeStr)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]*model.Tag, len(rows))
+	for i, t := range rows {
+		out[i] = tagRowToModel(t)
+	}
+	return out, nil
 }
 
 // SavedQuery is the resolver for the savedQuery field.
@@ -81,19 +137,71 @@ func (r *queryResolver) Queues(ctx context.Context) ([]*model.Queue, error) {
 	panic(fmt.Errorf("not implemented: Queues - queues"))
 }
 
+// Domain is the resolver for the domain field.
+func (r *tagResolver) Domain(ctx context.Context, obj *model.Tag) (model.TagDomain, error) {
+	return obj.Domain, nil
+}
+
+// Aliases is the resolver for the aliases field.
+func (r *tagResolver) Aliases(ctx context.Context, obj *model.Tag) ([]*model.Tag, error) {
+	rows, err := queries.ListAliasesForTag(ctx, r.db, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]*model.Tag, len(rows))
+	for i, t := range rows {
+		out[i] = tagRowToModel(t)
+	}
+	return out, nil
+}
+
+// Parent is the resolver for the parent field.
+func (r *tagResolver) Parent(ctx context.Context, obj *model.Tag) (*model.Tag, error) {
+	// relatedId is not stored in model.Tag; re-fetch the row to get it.
+	row, err := queries.GetTag(ctx, r.db, obj.ID)
+	if err != nil || row == nil || row.RelatedID == nil {
+		return nil, err
+	}
+	parent, err := queries.GetTag(ctx, r.db, *row.RelatedID)
+	if err != nil || parent == nil {
+		return nil, err
+	}
+	return tagRowToModel(parent), nil
+}
+
+// FileCount is the resolver for the fileCount field.
+func (r *tagResolver) FileCount(ctx context.Context, obj *model.Tag) (int, error) {
+	return queries.CountFilesForTag(ctx, r.db, obj.ID)
+}
+
+// Files is the resolver for the files field.
+func (r *tagResolver) Files(ctx context.Context, obj *model.Tag, first *int, after *string) (*model.FileConnection, error) {
+	n := 20
+	if first != nil {
+		n = *first
+	}
+	cursor := ""
+	if after != nil {
+		cursor = *after
+	}
+	list, err := queries.ListFilesForTag(ctx, r.db, obj.ID, n, cursor)
+	if err != nil {
+		return nil, err
+	}
+	return fileListToConnection(list), nil
+}
+
+// File returns graph.FileResolver implementation.
+func (r *Resolver) File() graph.FileResolver { return &fileResolver{r} }
+
 // Query returns graph.QueryResolver implementation.
 func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
 
-type queryResolver struct{ *Resolver }
+// Tag returns graph.TagResolver implementation.
+func (r *Resolver) Tag() graph.TagResolver { return &tagResolver{r} }
 
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-	func (r *queryResolver) Placeholder(ctx context.Context) (*bool, error) {
-	panic(fmt.Errorf("not implemented: Placeholder - _placeholder"))
-}
-*/
+type (
+	fileResolver  struct{ *Resolver }
+	queryResolver struct{ *Resolver }
+	tagResolver   struct{ *Resolver }
+)

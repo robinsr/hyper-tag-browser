@@ -7,6 +7,8 @@ import (
 	"github.com/robinsr/taggedfilebrowser/server/graph/model"
 )
 
+// --- File conversions ---
+
 func fileRowToModel(f *queries.File) *model.File {
 	return &model.File{
 		ID:         f.ID,
@@ -19,10 +21,6 @@ func fileRowToModel(f *queries.File) *model.File {
 		Modified:   f.Modified,
 		Comment:    f.Comment,
 		Visibility: dbVisibilityToModel(f.Visibility),
-		// Slice fields initialized to empty; field resolvers added in T7+
-		Tags:    []*model.Tag{},
-		Queues:  []*model.Queue{},
-		History: []*model.FileHistoryEntry{},
 	}
 }
 
@@ -128,5 +126,104 @@ func utTypesForGroup(g model.ContentTypeGroup) []string {
 		return all
 	default:
 		return nil
+	}
+}
+
+// --- Tag conversions ---
+
+func tagRowToModel(t *queries.Tag) *model.Tag {
+	tt := dbTagTypeToModel(t.TagType)
+	return &model.Tag{
+		ID:        t.ID,
+		TagValue:  t.TagValue,
+		TagType:   tt,
+		Domain:    tagTypeToDomain(tt),
+		EntryType: dbEntryTypeToModel(t.EntryType),
+	}
+}
+
+func dbTagTypeToModel(raw string) model.TagType {
+	switch raw {
+	case "tag":
+		return model.TagTypeTag
+	case "artist":
+		return model.TagTypeArtist
+	case "creator":
+		return model.TagTypeCreator
+	case "contributor":
+		return model.TagTypeContributor
+	case "owner":
+		return model.TagTypeOwner
+	case "queue":
+		return model.TagTypeQueue
+	case "related":
+		return model.TagTypeRelated
+	case "createdBefore":
+		return model.TagTypeCreatedBefore
+	case "createdOnOrBefore":
+		return model.TagTypeCreatedOnOrBefore
+	case "createdOn":
+		return model.TagTypeCreatedOn
+	case "createdOnOrAfter":
+		return model.TagTypeCreatedOnOrAfter
+	case "createdAfter":
+		return model.TagTypeCreatedAfter
+	default:
+		return model.TagTypeTag
+	}
+}
+
+func dbEntryTypeToModel(raw string) model.TagEntryType {
+	if raw == "alias" {
+		return model.TagEntryTypeAlias
+	}
+	return model.TagEntryTypeNormal
+}
+
+// tagTypeToDomain computes TagDomain from TagType (not stored in DB).
+func tagTypeToDomain(t model.TagType) model.TagDomain {
+	switch t {
+	case model.TagTypeTag:
+		return model.TagDomainDescriptive
+	case model.TagTypeArtist, model.TagTypeCreator, model.TagTypeContributor, model.TagTypeOwner:
+		return model.TagDomainAttribution
+	case model.TagTypeQueue:
+		return model.TagDomainQueue
+	case model.TagTypeRelated:
+		return model.TagDomainUnlabeled
+	default:
+		return model.TagDomainCreation
+	}
+}
+
+// dbTagTypeRawValue is the inverse of dbTagTypeToModel.
+func dbTagTypeRawValue(t model.TagType) string {
+	switch t {
+	case model.TagTypeTag:
+		return "tag"
+	case model.TagTypeArtist:
+		return "artist"
+	case model.TagTypeCreator:
+		return "creator"
+	case model.TagTypeContributor:
+		return "contributor"
+	case model.TagTypeOwner:
+		return "owner"
+	case model.TagTypeQueue:
+		return "queue"
+	case model.TagTypeRelated:
+		return "related"
+	case model.TagTypeCreatedBefore:
+		return "createdBefore"
+	case model.TagTypeCreatedOnOrBefore:
+		return "createdOnOrBefore"
+	case model.TagTypeCreatedOn:
+		return "createdOn"
+	case model.TagTypeCreatedOnOrAfter:
+		return "createdOnOrAfter"
+	case model.TagTypeCreatedAfter:
+		return "createdAfter"
+	default:
+		return "tag"
 	}
 }

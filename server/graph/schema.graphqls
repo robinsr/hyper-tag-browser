@@ -1,6 +1,8 @@
 # server/graph/schema.graphqls
 scalar DateTime
 
+directive @goField(forceResolver: Boolean, name: String, omittable: Boolean) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+
 enum TagType {
   TAG
   ARTIST
@@ -69,23 +71,23 @@ type File {
   comment: String!
   volume: String!
   visibility: FileVisibility!
-  tags: [Tag!]!
-  tagCount: Int!
-  bookmarked: Boolean!
-  queues: [Queue!]!
-  history: [FileHistoryEntry!]!
+  tags: [Tag!]! @goField(forceResolver: true)
+  tagCount: Int! @goField(forceResolver: true)
+  bookmarked: Boolean! @goField(forceResolver: true)
+  queues: [Queue!]! @goField(forceResolver: true)
+  history: [FileHistoryEntry!]! @goField(forceResolver: true)
 }
 
 type Tag {
   id: ID!
   tagValue: String!
   tagType: TagType!
-  domain: TagDomain!
+  domain: TagDomain! @goField(forceResolver: true)
   entryType: TagEntryType!
-  aliases: [Tag!]!
-  parent: Tag
-  fileCount: Int!
-  files(first: Int, after: String): FileConnection!
+  aliases: [Tag!]! @goField(forceResolver: true)
+  parent: Tag @goField(forceResolver: true)
+  fileCount: Int! @goField(forceResolver: true)
+  files(first: Int, after: String): FileConnection! @goField(forceResolver: true)
 }
 
 type Queue {
