@@ -7,11 +7,22 @@ import Factory
 
 // TODO: launch profile from dock menu
 class AppDelegate: NSObject, NSApplicationDelegate {
-  
+
   private let logger = EnvContainer.shared.logger("AppDelegate")
-  
+
   @Injected(\PreferencesContainer.externalProfiles) var profiles
   @Injected(\PreferencesContainer.userProfileId) var current
+  @Injected(\IndexerContainer.databasePath) var databasePath
+
+  func applicationDidFinishLaunching(_ notification: Notification) {
+    Task { @MainActor in
+      ServerManager.shared.writeConfig(databasePath: databasePath.string, enabled: true)
+    }
+  }
+
+  func applicationWillTerminate(_ notification: Notification) {
+    ServerManager.shared.writeConfig(databasePath: databasePath.string, enabled: false)
+  }
   
   var menuItems: [NSMenuItem] {
     return profiles.map { profile in
