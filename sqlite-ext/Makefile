@@ -2,11 +2,11 @@ SDK      := $(shell xcrun --show-sdk-path)
 CC       := clang
 CFLAGS   := -fPIC -dynamiclib \
              -isysroot $(SDK) \
-             -I$(SDK)/usr/include \
+             -I/opt/homebrew/opt/sqlite/include \
              -std=c11 \
              -Wall -Wextra \
              -Wno-deprecated-declarations
-LDFLAGS  := -framework CoreServices
+LDFLAGS  := -framework CoreServices -undefined dynamic_lookup
 TARGET   := build/htb_ext.dylib
 INSTALL  := $(HOME)/.local/lib/htb_ext.dylib
 LITECLI  := $(HOME)/.config/litecli/config
