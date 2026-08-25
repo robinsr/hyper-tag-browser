@@ -204,3 +204,7 @@ node_modules/
 # Temporary folders
 tmp/
 temp/
+
+# Agents
+
+docs/plans/
