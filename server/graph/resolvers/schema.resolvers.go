@@ -7,7 +7,6 @@ package resolvers
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/robinsr/taggedfilebrowser/server/db/queries"
@@ -57,7 +56,15 @@ func (r *fileResolver) Queues(ctx context.Context, obj *model.File) ([]*model.Qu
 
 // History is the resolver for the history field.
 func (r *fileResolver) History(ctx context.Context, obj *model.File) ([]*model.FileHistoryEntry, error) {
-	panic(fmt.Errorf("not implemented: History - history"))
+	rows, err := queries.ListFileHistory(ctx, r.db, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]*model.FileHistoryEntry, len(rows))
+	for i, h := range rows {
+		out[i] = historyRowToModel(h)
+	}
+	return out, nil
 }
 
 // File is the resolver for the file field.
@@ -121,17 +128,46 @@ func (r *queryResolver) Tags(ctx context.Context, domain *model.TagDomain, typeA
 
 // SavedQuery is the resolver for the savedQuery field.
 func (r *queryResolver) SavedQuery(ctx context.Context, id string) (*model.SavedQuery, error) {
-	panic(fmt.Errorf("not implemented: SavedQuery - savedQuery"))
+	row, err := queries.GetSavedQuery(ctx, r.db, id)
+	if err != nil || row == nil {
+		return nil, err
+	}
+	return savedQueryRowToModel(row), nil
 }
 
 // SavedQueries is the resolver for the savedQueries field.
 func (r *queryResolver) SavedQueries(ctx context.Context) ([]*model.SavedQuery, error) {
-	panic(fmt.Errorf("not implemented: SavedQueries - savedQueries"))
+	rows, err := queries.ListSavedQueries(ctx, r.db)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]*model.SavedQuery, len(rows))
+	for i, sq := range rows {
+		out[i] = savedQueryRowToModel(sq)
+	}
+	return out, nil
 }
 
 // SavedQueryResults is the resolver for the savedQueryResults field.
 func (r *queryResolver) SavedQueryResults(ctx context.Context, id string, first *int, after *string) (*model.FileConnection, error) {
-	panic(fmt.Errorf("not implemented: SavedQueryResults - savedQueryResults"))
+	sq, err := queries.GetSavedQuery(ctx, r.db, id)
+	if err != nil || sq == nil {
+		return nil, err
+	}
+	f := parseSavedQueryToDBFilter(sq.Query)
+	n := 20
+	if first != nil {
+		n = *first
+	}
+	cursor := ""
+	if after != nil {
+		cursor = *after
+	}
+	list, err := queries.ListFiles(ctx, r.db, f, n, cursor)
+	if err != nil {
+		return nil, err
+	}
+	return fileListToConnection(list), nil
 }
 
 // Bookmarks is the resolver for the bookmarks field.

@@ -1,6 +1,8 @@
 package resolvers
 
 import (
+	"encoding/json"
+	"strconv"
 	"strings"
 
 	"github.com/robinsr/taggedfilebrowser/server/db/queries"
@@ -226,6 +228,172 @@ func tagTypeToDomain(t model.TagType) model.TagDomain {
 		return model.TagDomainUnlabeled
 	default:
 		return model.TagDomainCreation
+	}
+}
+
+// --- SavedQuery / History conversions ---
+
+// swiftQueryJSON mirrors the JSON format stored by the Swift app in app_saved_content_queries.
+type swiftQueryJSON struct {
+	Root       string   `json:"root"`
+	Types      []string `json:"types"`
+	Visibility string   `json:"visibility"`
+	SortBy     string   `json:"sortBy"`
+	Mode       struct {
+		Type string `json:"type"`
+	} `json:"mode"`
+}
+
+func savedQueryRowToModel(sq *queries.SavedQueryRow) *model.SavedQuery {
+	return &model.SavedQuery{
+		ID:        sq.ID,
+		Name:      sq.Name,
+		Filter:    parseSavedQueryToModelFilter(sq.Query),
+		CreatedAt: sq.CreatedAt,
+		UpdatedAt: sq.UpdatedAt,
+	}
+}
+
+func parseSavedQueryToModelFilter(jsonStr string) *model.FileFilter {
+	var q swiftQueryJSON
+	if err := json.Unmarshal([]byte(jsonStr), &q); err != nil {
+		return &model.FileFilter{}
+	}
+	f := &model.FileFilter{}
+	if q.Root != "" {
+		f.Root = &q.Root
+	}
+	if v := swiftVisibilityToModel(q.Visibility); v != "" {
+		f.Visibility = &v
+	}
+	if t := swiftTraversalToModel(q.Mode.Type); t != "" {
+		f.Traversal = &t
+	}
+	if s := swiftSortByToModel(q.SortBy); s != "" {
+		f.SortBy = &s
+	}
+	if len(q.Types) > 0 {
+		f.Types = swiftTypesToContentTypeGroups(q.Types)
+	}
+	return f
+}
+
+func parseSavedQueryToDBFilter(jsonStr string) queries.FileFilter {
+	var q swiftQueryJSON
+	if err := json.Unmarshal([]byte(jsonStr), &q); err != nil {
+		return queries.FileFilter{}
+	}
+	f := queries.FileFilter{Root: q.Root}
+	if q.Mode.Type == "recursive" {
+		f.Traversal = "RECURSIVE"
+	}
+	if q.Visibility != "" && strings.ToLower(q.Visibility) != "any" {
+		f.Visibility = strings.ToLower(q.Visibility)
+	} else if strings.ToLower(q.Visibility) == "any" {
+		f.Visibility = "ANY"
+	}
+	if s := swiftSortByToModel(q.SortBy); s != "" {
+		f.SortOrder = string(s)
+	}
+	if len(q.Types) > 0 {
+		groups := swiftTypesToContentTypeGroups(q.Types)
+		f.Types = contentTypeGroupsToUTTypes(groups)
+	}
+	return f
+}
+
+func swiftVisibilityToModel(v string) model.VisibilityFilter {
+	switch strings.ToLower(v) {
+	case "normal":
+		return model.VisibilityFilterNormal
+	case "hidden":
+		return model.VisibilityFilterHidden
+	case "lost":
+		return model.VisibilityFilterLost
+	case "any":
+		return model.VisibilityFilterAny
+	}
+	return ""
+}
+
+func swiftTraversalToModel(m string) model.TraversalMode {
+	if m == "recursive" {
+		return model.TraversalModeRecursive
+	}
+	if m == "immediate" || m == "flat" {
+		return model.TraversalModeFlat
+	}
+	return ""
+}
+
+func swiftSortByToModel(s string) model.SortOrder {
+	switch s {
+	case "nameAsc":
+		return model.SortOrderNameAsc
+	case "nameDesc":
+		return model.SortOrderNameDesc
+	case "createdAsc":
+		return model.SortOrderCreatedAsc
+	case "createdDesc":
+		return model.SortOrderCreatedDesc
+	case "modifiedAsc":
+		return model.SortOrderModifiedAsc
+	case "modifiedDesc":
+		return model.SortOrderModifiedDesc
+	case "sizeAsc":
+		return model.SortOrderSizeAsc
+	case "sizeDesc":
+		return model.SortOrderSizeDesc
+	}
+	return ""
+}
+
+func swiftTypesToContentTypeGroups(types []string) []model.ContentTypeGroup {
+	var groups []model.ContentTypeGroup
+	for _, t := range types {
+		switch strings.ToLower(t) {
+		case "images":
+			groups = append(groups, model.ContentTypeGroupImages)
+		case "video":
+			groups = append(groups, model.ContentTypeGroupVideo)
+		case "folders":
+			groups = append(groups, model.ContentTypeGroupFolders)
+		case "database":
+			groups = append(groups, model.ContentTypeGroupDatabase)
+		case "all":
+			groups = append(groups, model.ContentTypeGroupAll)
+		}
+	}
+	return groups
+}
+
+func historyRowToModel(h *queries.HistoryRow) *model.FileHistoryEntry {
+	return &model.FileHistoryEntry{
+		ID:        strconv.FormatInt(h.ID, 10),
+		Timestamp: h.Timestamp,
+		Column:    dbColumnNameToModel(h.ColumnName),
+		OldValue:  h.OldValue,
+		NewValue:  h.NewValue,
+		FsStatus:  dbFsStatusToModel(h.FsStatus),
+		IndexType: h.IndexType,
+	}
+}
+
+func dbColumnNameToModel(col string) model.HistoryColumn {
+	if col == "location" {
+		return model.HistoryColumnLocation
+	}
+	return model.HistoryColumnName
+}
+
+func dbFsStatusToModel(s string) model.FsStatus {
+	switch s {
+	case "synced":
+		return model.FsStatusSynced
+	case "failed":
+		return model.FsStatusFailed
+	default:
+		return model.FsStatusPending
 	}
 }
 
