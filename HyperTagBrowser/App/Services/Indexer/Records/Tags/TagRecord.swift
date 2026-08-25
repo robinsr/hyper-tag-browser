@@ -102,7 +102,7 @@ extension TagRecord: FetchableRecord, PersistableRecord {
 
   struct Selections {
     static var filterValue: SQLExpression {
-      DatabaseFunctions.textJoin.call(FilteringTag.separator, Columns.tagValue, Columns.tagType)
+      DatabaseFunctions.textJoin.call(FilteringTag.separator, Columns.tagType, Columns.tagValue)
     }
   }
   

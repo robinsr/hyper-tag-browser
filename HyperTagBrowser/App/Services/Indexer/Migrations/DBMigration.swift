@@ -28,6 +28,7 @@ struct MigrationVersions {
     case jun_9_2025_add_bookmarkrecord_contentId
     case aug_2_2025_add_indexes_location_type_size_created_visibility
     case aug_13_2025_add_indexes_on_common_joins
+    case migrate_20260824_fix_tagrecord_filtervalue
     case none
     
     static var allVersions: [Version] {
@@ -74,7 +75,6 @@ struct MigrationVersions {
       migrateFn: { db in
         try db.create(table: IndexRecord.databaseTableName) { table in
           table.id("id")
-          
           table.column("timestamp",  .datetime).defaults(sql: "CURRENT_TIMESTAMP")
           table.column("name",       .text).notNull()
           table.column("location",   .text).notNull()
@@ -90,22 +90,17 @@ struct MigrationVersions {
         
         try db.create(table: TagRecord.databaseTableName) { table in
           table.id("id")
-          
           table.column("tagType",     .text).notNull().defaults(to: FilteringTag.TagType.tag.rawValue)
           table.column("tagValue",    .text).notNull()
           table.column("entryType",   .text).notNull().defaults(to: TagRecord.EntryType.normal.rawValue)
-          
-            /// "filterValue" BROKEN as TagRecord.Selections.filterValuie = `textJoin('|', "tagValue", "tagType")`
           table.column("filterValue", .text).generatedAs(TagRecord.Selections.filterValue)
           table.column("relatedId",   .text).references(TagRecord.databaseTableName, column: "id", onDelete: .cascade)
-          
           table.uniqueKey(["tagType", "tagValue"], onConflict: .ignore)
         }
         
         
         try db.create(table: BookmarkRecord.databaseTableName) { table in
           table.id("id")
-          
           table.column("created",  .date).notNull()
           table.column("contentId", .text).references(IndexRecord.databaseTableName, column: "id", onDelete: .cascade)
         }
@@ -113,7 +108,6 @@ struct MigrationVersions {
         
         try db.create(table: QueueRecord.databaseTableName) { table in
           table.id("id")
-          
           table.column("name",    .text).notNull()
           table.column("created", .datetime).notNull()
           table.column("tagName", .text).generatedAs(QueueRecord.Selections.filterValue)
@@ -122,23 +116,18 @@ struct MigrationVersions {
         
         try db.create(table: IndexTagRecord.databaseTableName) { table in
           table.id("id")
-          
           table.column("tagId",     references: TagRecord.Columns.id,   in: TagRecord.self).notNull()
           table.column("contentId", references: IndexRecord.Columns.id, in: IndexRecord.self).notNull()
-          
           table.uniqueKey(["tagId", "contentId"], onConflict: .fail)
         }
         
         
         try db.create(table: QueueItemRecord.databaseTableName) { table in
           table.id("id")
-          
           table.column("created",   .datetime).notNull()
           table.column("completed", .boolean).notNull()
-          
           table.column("queueId",   references: QueueRecord.Columns.id, in: QueueRecord.self).notNull()
           table.column("contentId", references: IndexRecord.Columns.id, in: IndexRecord.self).notNull()
-          
           table.uniqueKey(["queueId", "contentId"], onConflict: .ignore)
         }
         
@@ -506,6 +495,20 @@ struct MigrationVersions {
           CREATE INDEX IF NOT EXISTS idx_app_content_indices_modified ON app_content_indices(modified);
         """)
       }
-    )
+    ),
+    
+    Config(
+      version: .migrate_20260824_fix_tagrecord_filtervalue,
+      description: """
+        Fixes erroneous TagRecord.filterValue sql `AS` expression (before: value+type; after: type+value) 
+      """,
+      migrateFn: { db in
+        try db.alter(table: TagRecord.databaseTableName) { t in
+          t.drop(column: "filterValue")
+        }
+        try db.alter(table: TagRecord.databaseTableName) { t in
+          t.add(column: "filterValue", .text).generatedAs(TagRecord.Selections.filterValue)
+        }
+      })
   ]
 }
