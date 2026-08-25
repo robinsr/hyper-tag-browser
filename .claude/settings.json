@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [],
+    "deny": [],
+    "additionalDirectories": [
+      "/Users/ryan/workspace/xcode/TaggedFileBrowser"
+    ]
+  }
+}
