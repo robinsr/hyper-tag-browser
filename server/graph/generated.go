@@ -14,6 +14,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
+	"github.com/robinsr/taggedfilebrowser/server/graph/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -35,8 +36,133 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Bookmark struct {
+		CreatedAt func(childComplexity int) int
+		File      func(childComplexity int) int
+		ID        func(childComplexity int) int
+	}
+
+	File struct {
+		Bookmarked func(childComplexity int) int
+		Comment    func(childComplexity int) int
+		Created    func(childComplexity int) int
+		History    func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Location   func(childComplexity int) int
+		Modified   func(childComplexity int) int
+		Name       func(childComplexity int) int
+		Queues     func(childComplexity int) int
+		Size       func(childComplexity int) int
+		TagCount   func(childComplexity int) int
+		Tags       func(childComplexity int) int
+		Type       func(childComplexity int) int
+		Visibility func(childComplexity int) int
+		Volume     func(childComplexity int) int
+	}
+
+	FileConnection struct {
+		Edges      func(childComplexity int) int
+		Nodes      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	FileEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
+	FileFilter struct {
+		ExcludeContent func(childComplexity int) int
+		NameMatching   func(childComplexity int) int
+		Root           func(childComplexity int) int
+		SortBy         func(childComplexity int) int
+		TagsMatching   func(childComplexity int) int
+		Traversal      func(childComplexity int) int
+		Types          func(childComplexity int) int
+		Visibility     func(childComplexity int) int
+	}
+
+	FileHistoryEntry struct {
+		Column    func(childComplexity int) int
+		FsStatus  func(childComplexity int) int
+		ID        func(childComplexity int) int
+		IndexType func(childComplexity int) int
+		NewValue  func(childComplexity int) int
+		OldValue  func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
+	NameFilter struct {
+		Operator func(childComplexity int) int
+		Values   func(childComplexity int) int
+	}
+
+	PageInfo struct {
+		EndCursor       func(childComplexity int) int
+		HasNextPage     func(childComplexity int) int
+		HasPreviousPage func(childComplexity int) int
+		StartCursor     func(childComplexity int) int
+	}
+
 	Query struct {
-		Placeholder func(childComplexity int) int
+		Bookmarks         func(childComplexity int) int
+		File              func(childComplexity int, id string) int
+		Files             func(childComplexity int, filter *model.FileFilterInput, first *int, after *string) int
+		Queue             func(childComplexity int, id string) int
+		Queues            func(childComplexity int) int
+		SavedQueries      func(childComplexity int) int
+		SavedQuery        func(childComplexity int, id string) int
+		SavedQueryResults func(childComplexity int, id string, first *int, after *string) int
+		Tag               func(childComplexity int, id string) int
+		Tags              func(childComplexity int, domain *model.TagDomain, typeArg *model.TagType) int
+	}
+
+	Queue struct {
+		Created   func(childComplexity int) int
+		ID        func(childComplexity int) int
+		ItemCount func(childComplexity int) int
+		Items     func(childComplexity int) int
+		Name      func(childComplexity int) int
+	}
+
+	QueueItem struct {
+		AddedAt   func(childComplexity int) int
+		Completed func(childComplexity int) int
+		File      func(childComplexity int) int
+		ID        func(childComplexity int) int
+	}
+
+	SavedQuery struct {
+		CreatedAt func(childComplexity int) int
+		Filter    func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Name      func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+	}
+
+	Tag struct {
+		Aliases   func(childComplexity int) int
+		Domain    func(childComplexity int) int
+		EntryType func(childComplexity int) int
+		FileCount func(childComplexity int) int
+		Files     func(childComplexity int, first *int, after *string) int
+		ID        func(childComplexity int) int
+		Parent    func(childComplexity int) int
+		TagType   func(childComplexity int) int
+		TagValue  func(childComplexity int) int
+	}
+
+	TagCriterion struct {
+		Effect   func(childComplexity int) int
+		TagType  func(childComplexity int) int
+		TagValue func(childComplexity int) int
+	}
+
+	TagsFilter struct {
+		Criteria func(childComplexity int) int
+		Enabled  func(childComplexity int) int
+		Operator func(childComplexity int) int
 	}
 }
 
@@ -45,7 +171,16 @@ type ComplexityRoot struct {
 // region    ************************** generated!.gotpl **************************
 
 type QueryResolver interface {
-	Placeholder(ctx context.Context) (*bool, error)
+	File(ctx context.Context, id string) (*model.File, error)
+	Files(ctx context.Context, filter *model.FileFilterInput, first *int, after *string) (*model.FileConnection, error)
+	Tag(ctx context.Context, id string) (*model.Tag, error)
+	Tags(ctx context.Context, domain *model.TagDomain, typeArg *model.TagType) ([]*model.Tag, error)
+	SavedQuery(ctx context.Context, id string) (*model.SavedQuery, error)
+	SavedQueries(ctx context.Context) ([]*model.SavedQuery, error)
+	SavedQueryResults(ctx context.Context, id string, first *int, after *string) (*model.FileConnection, error)
+	Bookmarks(ctx context.Context) ([]*model.Bookmark, error)
+	Queue(ctx context.Context, id string) (*model.Queue, error)
+	Queues(ctx context.Context) ([]*model.Queue, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -66,12 +201,565 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 	_ = ec
 	switch typeName + "." + field {
 
-	case "Query._placeholder":
-		if e.ComplexityRoot.Query.Placeholder == nil {
+	case "Bookmark.createdAt":
+		if e.ComplexityRoot.Bookmark.CreatedAt == nil {
 			break
 		}
 
-		return e.ComplexityRoot.Query.Placeholder(childComplexity), true
+		return e.ComplexityRoot.Bookmark.CreatedAt(childComplexity), true
+	case "Bookmark.file":
+		if e.ComplexityRoot.Bookmark.File == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bookmark.File(childComplexity), true
+	case "Bookmark.id":
+		if e.ComplexityRoot.Bookmark.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Bookmark.ID(childComplexity), true
+
+	case "File.bookmarked":
+		if e.ComplexityRoot.File.Bookmarked == nil {
+			break
+		}
+
+		return e.ComplexityRoot.File.Bookmarked(childComplexity), true
+	case "File.comment":
+		if e.ComplexityRoot.File.Comment == nil {
+			break
+		}
+
+		return e.ComplexityRoot.File.Comment(childComplexity), true
+	case "File.created":
+		if e.ComplexityRoot.File.Created == nil {
+			break
+		}
+
+		return e.ComplexityRoot.File.Created(childComplexity), true
+	case "File.history":
+		if e.ComplexityRoot.File.History == nil {
+			break
+		}
+
+		return e.ComplexityRoot.File.History(childComplexity), true
+	case "File.id":
+		if e.ComplexityRoot.File.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.File.ID(childComplexity), true
+	case "File.location":
+		if e.ComplexityRoot.File.Location == nil {
+			break
+		}
+
+		return e.ComplexityRoot.File.Location(childComplexity), true
+	case "File.modified":
+		if e.ComplexityRoot.File.Modified == nil {
+			break
+		}
+
+		return e.ComplexityRoot.File.Modified(childComplexity), true
+	case "File.name":
+		if e.ComplexityRoot.File.Name == nil {
+			break
+		}
+
+		return e.ComplexityRoot.File.Name(childComplexity), true
+	case "File.queues":
+		if e.ComplexityRoot.File.Queues == nil {
+			break
+		}
+
+		return e.ComplexityRoot.File.Queues(childComplexity), true
+	case "File.size":
+		if e.ComplexityRoot.File.Size == nil {
+			break
+		}
+
+		return e.ComplexityRoot.File.Size(childComplexity), true
+	case "File.tagCount":
+		if e.ComplexityRoot.File.TagCount == nil {
+			break
+		}
+
+		return e.ComplexityRoot.File.TagCount(childComplexity), true
+	case "File.tags":
+		if e.ComplexityRoot.File.Tags == nil {
+			break
+		}
+
+		return e.ComplexityRoot.File.Tags(childComplexity), true
+	case "File.type":
+		if e.ComplexityRoot.File.Type == nil {
+			break
+		}
+
+		return e.ComplexityRoot.File.Type(childComplexity), true
+	case "File.visibility":
+		if e.ComplexityRoot.File.Visibility == nil {
+			break
+		}
+
+		return e.ComplexityRoot.File.Visibility(childComplexity), true
+	case "File.volume":
+		if e.ComplexityRoot.File.Volume == nil {
+			break
+		}
+
+		return e.ComplexityRoot.File.Volume(childComplexity), true
+
+	case "FileConnection.edges":
+		if e.ComplexityRoot.FileConnection.Edges == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileConnection.Edges(childComplexity), true
+	case "FileConnection.nodes":
+		if e.ComplexityRoot.FileConnection.Nodes == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileConnection.Nodes(childComplexity), true
+	case "FileConnection.pageInfo":
+		if e.ComplexityRoot.FileConnection.PageInfo == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileConnection.PageInfo(childComplexity), true
+	case "FileConnection.totalCount":
+		if e.ComplexityRoot.FileConnection.TotalCount == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileConnection.TotalCount(childComplexity), true
+
+	case "FileEdge.cursor":
+		if e.ComplexityRoot.FileEdge.Cursor == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileEdge.Cursor(childComplexity), true
+	case "FileEdge.node":
+		if e.ComplexityRoot.FileEdge.Node == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileEdge.Node(childComplexity), true
+
+	case "FileFilter.excludeContent":
+		if e.ComplexityRoot.FileFilter.ExcludeContent == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileFilter.ExcludeContent(childComplexity), true
+	case "FileFilter.nameMatching":
+		if e.ComplexityRoot.FileFilter.NameMatching == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileFilter.NameMatching(childComplexity), true
+	case "FileFilter.root":
+		if e.ComplexityRoot.FileFilter.Root == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileFilter.Root(childComplexity), true
+	case "FileFilter.sortBy":
+		if e.ComplexityRoot.FileFilter.SortBy == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileFilter.SortBy(childComplexity), true
+	case "FileFilter.tagsMatching":
+		if e.ComplexityRoot.FileFilter.TagsMatching == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileFilter.TagsMatching(childComplexity), true
+	case "FileFilter.traversal":
+		if e.ComplexityRoot.FileFilter.Traversal == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileFilter.Traversal(childComplexity), true
+	case "FileFilter.types":
+		if e.ComplexityRoot.FileFilter.Types == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileFilter.Types(childComplexity), true
+	case "FileFilter.visibility":
+		if e.ComplexityRoot.FileFilter.Visibility == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileFilter.Visibility(childComplexity), true
+
+	case "FileHistoryEntry.column":
+		if e.ComplexityRoot.FileHistoryEntry.Column == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileHistoryEntry.Column(childComplexity), true
+	case "FileHistoryEntry.fsStatus":
+		if e.ComplexityRoot.FileHistoryEntry.FsStatus == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileHistoryEntry.FsStatus(childComplexity), true
+	case "FileHistoryEntry.id":
+		if e.ComplexityRoot.FileHistoryEntry.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileHistoryEntry.ID(childComplexity), true
+	case "FileHistoryEntry.indexType":
+		if e.ComplexityRoot.FileHistoryEntry.IndexType == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileHistoryEntry.IndexType(childComplexity), true
+	case "FileHistoryEntry.newValue":
+		if e.ComplexityRoot.FileHistoryEntry.NewValue == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileHistoryEntry.NewValue(childComplexity), true
+	case "FileHistoryEntry.oldValue":
+		if e.ComplexityRoot.FileHistoryEntry.OldValue == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileHistoryEntry.OldValue(childComplexity), true
+	case "FileHistoryEntry.timestamp":
+		if e.ComplexityRoot.FileHistoryEntry.Timestamp == nil {
+			break
+		}
+
+		return e.ComplexityRoot.FileHistoryEntry.Timestamp(childComplexity), true
+
+	case "NameFilter.operator":
+		if e.ComplexityRoot.NameFilter.Operator == nil {
+			break
+		}
+
+		return e.ComplexityRoot.NameFilter.Operator(childComplexity), true
+	case "NameFilter.values":
+		if e.ComplexityRoot.NameFilter.Values == nil {
+			break
+		}
+
+		return e.ComplexityRoot.NameFilter.Values(childComplexity), true
+
+	case "PageInfo.endCursor":
+		if e.ComplexityRoot.PageInfo.EndCursor == nil {
+			break
+		}
+
+		return e.ComplexityRoot.PageInfo.EndCursor(childComplexity), true
+	case "PageInfo.hasNextPage":
+		if e.ComplexityRoot.PageInfo.HasNextPage == nil {
+			break
+		}
+
+		return e.ComplexityRoot.PageInfo.HasNextPage(childComplexity), true
+	case "PageInfo.hasPreviousPage":
+		if e.ComplexityRoot.PageInfo.HasPreviousPage == nil {
+			break
+		}
+
+		return e.ComplexityRoot.PageInfo.HasPreviousPage(childComplexity), true
+	case "PageInfo.startCursor":
+		if e.ComplexityRoot.PageInfo.StartCursor == nil {
+			break
+		}
+
+		return e.ComplexityRoot.PageInfo.StartCursor(childComplexity), true
+
+	case "Query.bookmarks":
+		if e.ComplexityRoot.Query.Bookmarks == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Query.Bookmarks(childComplexity), true
+	case "Query.file":
+		if e.ComplexityRoot.Query.File == nil {
+			break
+		}
+
+		args, err := ec.field_Query_file_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.File(childComplexity, args["id"].(string)), true
+	case "Query.files":
+		if e.ComplexityRoot.Query.Files == nil {
+			break
+		}
+
+		args, err := ec.field_Query_files_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.Files(childComplexity, args["filter"].(*model.FileFilterInput), args["first"].(*int), args["after"].(*string)), true
+
+	case "Query.queue":
+		if e.ComplexityRoot.Query.Queue == nil {
+			break
+		}
+
+		args, err := ec.field_Query_queue_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.Queue(childComplexity, args["id"].(string)), true
+	case "Query.queues":
+		if e.ComplexityRoot.Query.Queues == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Query.Queues(childComplexity), true
+	case "Query.savedQueries":
+		if e.ComplexityRoot.Query.SavedQueries == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Query.SavedQueries(childComplexity), true
+	case "Query.savedQuery":
+		if e.ComplexityRoot.Query.SavedQuery == nil {
+			break
+		}
+
+		args, err := ec.field_Query_savedQuery_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.SavedQuery(childComplexity, args["id"].(string)), true
+	case "Query.savedQueryResults":
+		if e.ComplexityRoot.Query.SavedQueryResults == nil {
+			break
+		}
+
+		args, err := ec.field_Query_savedQueryResults_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.SavedQueryResults(childComplexity, args["id"].(string), args["first"].(*int), args["after"].(*string)), true
+	case "Query.tag":
+		if e.ComplexityRoot.Query.Tag == nil {
+			break
+		}
+
+		args, err := ec.field_Query_tag_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.Tag(childComplexity, args["id"].(string)), true
+	case "Query.tags":
+		if e.ComplexityRoot.Query.Tags == nil {
+			break
+		}
+
+		args, err := ec.field_Query_tags_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.Tags(childComplexity, args["domain"].(*model.TagDomain), args["type"].(*model.TagType)), true
+
+	case "Queue.created":
+		if e.ComplexityRoot.Queue.Created == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Queue.Created(childComplexity), true
+	case "Queue.id":
+		if e.ComplexityRoot.Queue.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Queue.ID(childComplexity), true
+	case "Queue.itemCount":
+		if e.ComplexityRoot.Queue.ItemCount == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Queue.ItemCount(childComplexity), true
+	case "Queue.items":
+		if e.ComplexityRoot.Queue.Items == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Queue.Items(childComplexity), true
+	case "Queue.name":
+		if e.ComplexityRoot.Queue.Name == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Queue.Name(childComplexity), true
+
+	case "QueueItem.addedAt":
+		if e.ComplexityRoot.QueueItem.AddedAt == nil {
+			break
+		}
+
+		return e.ComplexityRoot.QueueItem.AddedAt(childComplexity), true
+	case "QueueItem.completed":
+		if e.ComplexityRoot.QueueItem.Completed == nil {
+			break
+		}
+
+		return e.ComplexityRoot.QueueItem.Completed(childComplexity), true
+	case "QueueItem.file":
+		if e.ComplexityRoot.QueueItem.File == nil {
+			break
+		}
+
+		return e.ComplexityRoot.QueueItem.File(childComplexity), true
+	case "QueueItem.id":
+		if e.ComplexityRoot.QueueItem.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.QueueItem.ID(childComplexity), true
+
+	case "SavedQuery.createdAt":
+		if e.ComplexityRoot.SavedQuery.CreatedAt == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SavedQuery.CreatedAt(childComplexity), true
+	case "SavedQuery.filter":
+		if e.ComplexityRoot.SavedQuery.Filter == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SavedQuery.Filter(childComplexity), true
+	case "SavedQuery.id":
+		if e.ComplexityRoot.SavedQuery.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SavedQuery.ID(childComplexity), true
+	case "SavedQuery.name":
+		if e.ComplexityRoot.SavedQuery.Name == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SavedQuery.Name(childComplexity), true
+	case "SavedQuery.updatedAt":
+		if e.ComplexityRoot.SavedQuery.UpdatedAt == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SavedQuery.UpdatedAt(childComplexity), true
+
+	case "Tag.aliases":
+		if e.ComplexityRoot.Tag.Aliases == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Tag.Aliases(childComplexity), true
+	case "Tag.domain":
+		if e.ComplexityRoot.Tag.Domain == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Tag.Domain(childComplexity), true
+	case "Tag.entryType":
+		if e.ComplexityRoot.Tag.EntryType == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Tag.EntryType(childComplexity), true
+	case "Tag.fileCount":
+		if e.ComplexityRoot.Tag.FileCount == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Tag.FileCount(childComplexity), true
+	case "Tag.files":
+		if e.ComplexityRoot.Tag.Files == nil {
+			break
+		}
+
+		args, err := ec.field_Tag_files_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Tag.Files(childComplexity, args["first"].(*int), args["after"].(*string)), true
+	case "Tag.id":
+		if e.ComplexityRoot.Tag.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Tag.ID(childComplexity), true
+	case "Tag.parent":
+		if e.ComplexityRoot.Tag.Parent == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Tag.Parent(childComplexity), true
+	case "Tag.tagType":
+		if e.ComplexityRoot.Tag.TagType == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Tag.TagType(childComplexity), true
+	case "Tag.tagValue":
+		if e.ComplexityRoot.Tag.TagValue == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Tag.TagValue(childComplexity), true
+
+	case "TagCriterion.effect":
+		if e.ComplexityRoot.TagCriterion.Effect == nil {
+			break
+		}
+
+		return e.ComplexityRoot.TagCriterion.Effect(childComplexity), true
+	case "TagCriterion.tagType":
+		if e.ComplexityRoot.TagCriterion.TagType == nil {
+			break
+		}
+
+		return e.ComplexityRoot.TagCriterion.TagType(childComplexity), true
+	case "TagCriterion.tagValue":
+		if e.ComplexityRoot.TagCriterion.TagValue == nil {
+			break
+		}
+
+		return e.ComplexityRoot.TagCriterion.TagValue(childComplexity), true
+
+	case "TagsFilter.criteria":
+		if e.ComplexityRoot.TagsFilter.Criteria == nil {
+			break
+		}
+
+		return e.ComplexityRoot.TagsFilter.Criteria(childComplexity), true
+	case "TagsFilter.enabled":
+		if e.ComplexityRoot.TagsFilter.Enabled == nil {
+			break
+		}
+
+		return e.ComplexityRoot.TagsFilter.Enabled(childComplexity), true
+	case "TagsFilter.operator":
+		if e.ComplexityRoot.TagsFilter.Operator == nil {
+			break
+		}
+
+		return e.ComplexityRoot.TagsFilter.Operator(childComplexity), true
 
 	}
 	return 0, false
@@ -80,7 +768,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := newExecutionContext(opCtx, e, make(chan graphql.DeferredResult))
-	inputUnmarshalMap := graphql.BuildUnmarshalerMap()
+	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputFileFilterInput,
+		ec.unmarshalInputNameMatchingInput,
+		ec.unmarshalInputTagCriterionInput,
+		ec.unmarshalInputTagsMatchingInput,
+	)
 	first := true
 
 	switch opCtx.Operation.Operation {
@@ -158,6 +851,238 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // childFields_* functions provide shared child field context lookups.
 // Each function is generated once per unique object type, deduplicating the
 // switch statements that were previously inlined in every fieldContext_* function.
+
+func (ec *executionContext) childFields_Bookmark(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "id":
+		return ec.fieldContext_Bookmark_id(ctx, field)
+	case "file":
+		return ec.fieldContext_Bookmark_file(ctx, field)
+	case "createdAt":
+		return ec.fieldContext_Bookmark_createdAt(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type Bookmark", field.Name)
+}
+
+func (ec *executionContext) childFields_File(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "id":
+		return ec.fieldContext_File_id(ctx, field)
+	case "name":
+		return ec.fieldContext_File_name(ctx, field)
+	case "location":
+		return ec.fieldContext_File_location(ctx, field)
+	case "type":
+		return ec.fieldContext_File_type(ctx, field)
+	case "size":
+		return ec.fieldContext_File_size(ctx, field)
+	case "created":
+		return ec.fieldContext_File_created(ctx, field)
+	case "modified":
+		return ec.fieldContext_File_modified(ctx, field)
+	case "comment":
+		return ec.fieldContext_File_comment(ctx, field)
+	case "volume":
+		return ec.fieldContext_File_volume(ctx, field)
+	case "visibility":
+		return ec.fieldContext_File_visibility(ctx, field)
+	case "tags":
+		return ec.fieldContext_File_tags(ctx, field)
+	case "tagCount":
+		return ec.fieldContext_File_tagCount(ctx, field)
+	case "bookmarked":
+		return ec.fieldContext_File_bookmarked(ctx, field)
+	case "queues":
+		return ec.fieldContext_File_queues(ctx, field)
+	case "history":
+		return ec.fieldContext_File_history(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type File", field.Name)
+}
+
+func (ec *executionContext) childFields_FileConnection(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "edges":
+		return ec.fieldContext_FileConnection_edges(ctx, field)
+	case "nodes":
+		return ec.fieldContext_FileConnection_nodes(ctx, field)
+	case "pageInfo":
+		return ec.fieldContext_FileConnection_pageInfo(ctx, field)
+	case "totalCount":
+		return ec.fieldContext_FileConnection_totalCount(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type FileConnection", field.Name)
+}
+
+func (ec *executionContext) childFields_FileEdge(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "cursor":
+		return ec.fieldContext_FileEdge_cursor(ctx, field)
+	case "node":
+		return ec.fieldContext_FileEdge_node(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type FileEdge", field.Name)
+}
+
+func (ec *executionContext) childFields_FileFilter(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "root":
+		return ec.fieldContext_FileFilter_root(ctx, field)
+	case "traversal":
+		return ec.fieldContext_FileFilter_traversal(ctx, field)
+	case "sortBy":
+		return ec.fieldContext_FileFilter_sortBy(ctx, field)
+	case "visibility":
+		return ec.fieldContext_FileFilter_visibility(ctx, field)
+	case "types":
+		return ec.fieldContext_FileFilter_types(ctx, field)
+	case "nameMatching":
+		return ec.fieldContext_FileFilter_nameMatching(ctx, field)
+	case "excludeContent":
+		return ec.fieldContext_FileFilter_excludeContent(ctx, field)
+	case "tagsMatching":
+		return ec.fieldContext_FileFilter_tagsMatching(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type FileFilter", field.Name)
+}
+
+func (ec *executionContext) childFields_FileHistoryEntry(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "id":
+		return ec.fieldContext_FileHistoryEntry_id(ctx, field)
+	case "timestamp":
+		return ec.fieldContext_FileHistoryEntry_timestamp(ctx, field)
+	case "column":
+		return ec.fieldContext_FileHistoryEntry_column(ctx, field)
+	case "oldValue":
+		return ec.fieldContext_FileHistoryEntry_oldValue(ctx, field)
+	case "newValue":
+		return ec.fieldContext_FileHistoryEntry_newValue(ctx, field)
+	case "fsStatus":
+		return ec.fieldContext_FileHistoryEntry_fsStatus(ctx, field)
+	case "indexType":
+		return ec.fieldContext_FileHistoryEntry_indexType(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type FileHistoryEntry", field.Name)
+}
+
+func (ec *executionContext) childFields_NameFilter(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "operator":
+		return ec.fieldContext_NameFilter_operator(ctx, field)
+	case "values":
+		return ec.fieldContext_NameFilter_values(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type NameFilter", field.Name)
+}
+
+func (ec *executionContext) childFields_PageInfo(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "hasNextPage":
+		return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
+	case "hasPreviousPage":
+		return ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
+	case "startCursor":
+		return ec.fieldContext_PageInfo_startCursor(ctx, field)
+	case "endCursor":
+		return ec.fieldContext_PageInfo_endCursor(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
+}
+
+func (ec *executionContext) childFields_Queue(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "id":
+		return ec.fieldContext_Queue_id(ctx, field)
+	case "name":
+		return ec.fieldContext_Queue_name(ctx, field)
+	case "created":
+		return ec.fieldContext_Queue_created(ctx, field)
+	case "itemCount":
+		return ec.fieldContext_Queue_itemCount(ctx, field)
+	case "items":
+		return ec.fieldContext_Queue_items(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type Queue", field.Name)
+}
+
+func (ec *executionContext) childFields_QueueItem(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "id":
+		return ec.fieldContext_QueueItem_id(ctx, field)
+	case "file":
+		return ec.fieldContext_QueueItem_file(ctx, field)
+	case "addedAt":
+		return ec.fieldContext_QueueItem_addedAt(ctx, field)
+	case "completed":
+		return ec.fieldContext_QueueItem_completed(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type QueueItem", field.Name)
+}
+
+func (ec *executionContext) childFields_SavedQuery(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "id":
+		return ec.fieldContext_SavedQuery_id(ctx, field)
+	case "name":
+		return ec.fieldContext_SavedQuery_name(ctx, field)
+	case "filter":
+		return ec.fieldContext_SavedQuery_filter(ctx, field)
+	case "createdAt":
+		return ec.fieldContext_SavedQuery_createdAt(ctx, field)
+	case "updatedAt":
+		return ec.fieldContext_SavedQuery_updatedAt(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type SavedQuery", field.Name)
+}
+
+func (ec *executionContext) childFields_Tag(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "id":
+		return ec.fieldContext_Tag_id(ctx, field)
+	case "tagValue":
+		return ec.fieldContext_Tag_tagValue(ctx, field)
+	case "tagType":
+		return ec.fieldContext_Tag_tagType(ctx, field)
+	case "domain":
+		return ec.fieldContext_Tag_domain(ctx, field)
+	case "entryType":
+		return ec.fieldContext_Tag_entryType(ctx, field)
+	case "aliases":
+		return ec.fieldContext_Tag_aliases(ctx, field)
+	case "parent":
+		return ec.fieldContext_Tag_parent(ctx, field)
+	case "fileCount":
+		return ec.fieldContext_Tag_fileCount(ctx, field)
+	case "files":
+		return ec.fieldContext_Tag_files(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type Tag", field.Name)
+}
+
+func (ec *executionContext) childFields_TagCriterion(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "effect":
+		return ec.fieldContext_TagCriterion_effect(ctx, field)
+	case "tagType":
+		return ec.fieldContext_TagCriterion_tagType(ctx, field)
+	case "tagValue":
+		return ec.fieldContext_TagCriterion_tagValue(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type TagCriterion", field.Name)
+}
+
+func (ec *executionContext) childFields_TagsFilter(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "enabled":
+		return ec.fieldContext_TagsFilter_enabled(ctx, field)
+	case "operator":
+		return ec.fieldContext_TagsFilter_operator(ctx, field)
+	case "criteria":
+		return ec.fieldContext_TagsFilter_criteria(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type TagsFilter", field.Name)
+}
 
 func (ec *executionContext) childFields___Directive(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 	switch field.Name {
@@ -289,6 +1214,166 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_file_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id",
+		func(ctx context.Context, v any) (string, error) {
+			return ec.unmarshalNID2string(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_files_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "filter",
+		func(ctx context.Context, v any) (*model.FileFilterInput, error) {
+			return ec.unmarshalOFileFilterInput2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileFilterInput(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["filter"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "first",
+		func(ctx context.Context, v any) (*int, error) {
+			return ec.unmarshalOInt2ᚖint(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["first"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "after",
+		func(ctx context.Context, v any) (*string, error) {
+			return ec.unmarshalOString2ᚖstring(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["after"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_queue_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id",
+		func(ctx context.Context, v any) (string, error) {
+			return ec.unmarshalNID2string(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_savedQueryResults_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id",
+		func(ctx context.Context, v any) (string, error) {
+			return ec.unmarshalNID2string(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "first",
+		func(ctx context.Context, v any) (*int, error) {
+			return ec.unmarshalOInt2ᚖint(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["first"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "after",
+		func(ctx context.Context, v any) (*string, error) {
+			return ec.unmarshalOString2ᚖstring(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["after"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_savedQuery_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id",
+		func(ctx context.Context, v any) (string, error) {
+			return ec.unmarshalNID2string(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_tag_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id",
+		func(ctx context.Context, v any) (string, error) {
+			return ec.unmarshalNID2string(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_tags_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "domain",
+		func(ctx context.Context, v any) (*model.TagDomain, error) {
+			return ec.unmarshalOTagDomain2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagDomain(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["domain"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "type",
+		func(ctx context.Context, v any) (*model.TagType, error) {
+			return ec.unmarshalOTagType2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagType(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["type"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Tag_files_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "first",
+		func(ctx context.Context, v any) (*int, error) {
+			return ec.unmarshalOInt2ᚖint(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["first"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "after",
+		func(ctx context.Context, v any) (*string, error) {
+			return ec.unmarshalOString2ᚖstring(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["after"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field___Directive_args_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -349,27 +1434,1542 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Query__placeholder(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Bookmark_id(ctx context.Context, field graphql.CollectedField, obj *model.Bookmark) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
 		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.fieldContext_Query__placeholder(ctx, field)
+			return ec.fieldContext_Bookmark_id(ctx, field)
 		},
 		func(ctx context.Context) (any, error) {
-			return ec.Resolvers.Query().Placeholder(ctx)
+			return obj.ID, nil
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v *bool) graphql.Marshaler {
-			return ec.marshalOBoolean2ᚖbool(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNID2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bookmark_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bookmark", field, false, false, errors.New("field of type ID does not have child fields"))
+}
+
+func (ec *executionContext) _Bookmark_file(ctx context.Context, field graphql.CollectedField, obj *model.Bookmark) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bookmark_file(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.File, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.File) graphql.Marshaler {
+			return ec.marshalNFile2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFile(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bookmark_file(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Bookmark",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_File(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Bookmark_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Bookmark) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Bookmark_createdAt(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.CreatedAt, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNDateTime2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Bookmark_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Bookmark", field, false, false, errors.New("field of type DateTime does not have child fields"))
+}
+
+func (ec *executionContext) _File_id(ctx context.Context, field graphql.CollectedField, obj *model.File) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_File_id(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNID2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_File_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("File", field, false, false, errors.New("field of type ID does not have child fields"))
+}
+
+func (ec *executionContext) _File_name(ctx context.Context, field graphql.CollectedField, obj *model.File) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_File_name(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_File_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("File", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _File_location(ctx context.Context, field graphql.CollectedField, obj *model.File) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_File_location(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Location, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_File_location(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("File", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _File_type(ctx context.Context, field graphql.CollectedField, obj *model.File) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_File_type(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Type, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_File_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("File", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _File_size(ctx context.Context, field graphql.CollectedField, obj *model.File) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_File_size(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Size, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v int) graphql.Marshaler {
+			return ec.marshalNInt2int(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_File_size(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("File", field, false, false, errors.New("field of type Int does not have child fields"))
+}
+
+func (ec *executionContext) _File_created(ctx context.Context, field graphql.CollectedField, obj *model.File) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_File_created(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Created, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNDateTime2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_File_created(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("File", field, false, false, errors.New("field of type DateTime does not have child fields"))
+}
+
+func (ec *executionContext) _File_modified(ctx context.Context, field graphql.CollectedField, obj *model.File) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_File_modified(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Modified, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNDateTime2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_File_modified(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("File", field, false, false, errors.New("field of type DateTime does not have child fields"))
+}
+
+func (ec *executionContext) _File_comment(ctx context.Context, field graphql.CollectedField, obj *model.File) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_File_comment(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Comment, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_File_comment(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("File", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _File_volume(ctx context.Context, field graphql.CollectedField, obj *model.File) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_File_volume(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Volume, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_File_volume(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("File", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _File_visibility(ctx context.Context, field graphql.CollectedField, obj *model.File) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_File_visibility(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Visibility, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v model.FileVisibility) graphql.Marshaler {
+			return ec.marshalNFileVisibility2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileVisibility(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_File_visibility(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("File", field, false, false, errors.New("field of type FileVisibility does not have child fields"))
+}
+
+func (ec *executionContext) _File_tags(ctx context.Context, field graphql.CollectedField, obj *model.File) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_File_tags(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Tags, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.Tag) graphql.Marshaler {
+			return ec.marshalNTag2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_File_tags(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "File",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_Tag(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _File_tagCount(ctx context.Context, field graphql.CollectedField, obj *model.File) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_File_tagCount(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.TagCount, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v int) graphql.Marshaler {
+			return ec.marshalNInt2int(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_File_tagCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("File", field, false, false, errors.New("field of type Int does not have child fields"))
+}
+
+func (ec *executionContext) _File_bookmarked(ctx context.Context, field graphql.CollectedField, obj *model.File) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_File_bookmarked(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Bookmarked, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v bool) graphql.Marshaler {
+			return ec.marshalNBoolean2bool(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_File_bookmarked(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("File", field, false, false, errors.New("field of type Boolean does not have child fields"))
+}
+
+func (ec *executionContext) _File_queues(ctx context.Context, field graphql.CollectedField, obj *model.File) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_File_queues(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Queues, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.Queue) graphql.Marshaler {
+			return ec.marshalNQueue2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐQueueᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_File_queues(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "File",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_Queue(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _File_history(ctx context.Context, field graphql.CollectedField, obj *model.File) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_File_history(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.History, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.FileHistoryEntry) graphql.Marshaler {
+			return ec.marshalNFileHistoryEntry2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileHistoryEntryᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_File_history(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "File",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_FileHistoryEntry(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _FileConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.FileConnection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileConnection_edges(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Edges, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.FileEdge) graphql.Marshaler {
+			return ec.marshalNFileEdge2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileEdgeᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_FileConnection_edges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "FileConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_FileEdge(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _FileConnection_nodes(ctx context.Context, field graphql.CollectedField, obj *model.FileConnection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileConnection_nodes(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Nodes, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.File) graphql.Marshaler {
+			return ec.marshalNFile2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_FileConnection_nodes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "FileConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_File(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _FileConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *model.FileConnection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileConnection_pageInfo(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.PageInfo, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.PageInfo) graphql.Marshaler {
+			return ec.marshalNPageInfo2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐPageInfo(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_FileConnection_pageInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "FileConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_PageInfo(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _FileConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *model.FileConnection) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileConnection_totalCount(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.TotalCount, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v int) graphql.Marshaler {
+			return ec.marshalNInt2int(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_FileConnection_totalCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("FileConnection", field, false, false, errors.New("field of type Int does not have child fields"))
+}
+
+func (ec *executionContext) _FileEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *model.FileEdge) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileEdge_cursor(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Cursor, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_FileEdge_cursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("FileEdge", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _FileEdge_node(ctx context.Context, field graphql.CollectedField, obj *model.FileEdge) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileEdge_node(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Node, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.File) graphql.Marshaler {
+			return ec.marshalNFile2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFile(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_FileEdge_node(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "FileEdge",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_File(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _FileFilter_root(ctx context.Context, field graphql.CollectedField, obj *model.FileFilter) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileFilter_root(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Root, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *string) graphql.Marshaler {
+			return ec.marshalOString2ᚖstring(ctx, selections, v)
 		},
 		true,
 		false,
 	)
 }
-func (ec *executionContext) fieldContext_Query__placeholder(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Query", field, true, true, errors.New("field of type Boolean does not have child fields"))
+func (ec *executionContext) fieldContext_FileFilter_root(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("FileFilter", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _FileFilter_traversal(ctx context.Context, field graphql.CollectedField, obj *model.FileFilter) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileFilter_traversal(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Traversal, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.TraversalMode) graphql.Marshaler {
+			return ec.marshalOTraversalMode2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTraversalMode(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_FileFilter_traversal(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("FileFilter", field, false, false, errors.New("field of type TraversalMode does not have child fields"))
+}
+
+func (ec *executionContext) _FileFilter_sortBy(ctx context.Context, field graphql.CollectedField, obj *model.FileFilter) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileFilter_sortBy(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.SortBy, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.SortOrder) graphql.Marshaler {
+			return ec.marshalOSortOrder2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐSortOrder(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_FileFilter_sortBy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("FileFilter", field, false, false, errors.New("field of type SortOrder does not have child fields"))
+}
+
+func (ec *executionContext) _FileFilter_visibility(ctx context.Context, field graphql.CollectedField, obj *model.FileFilter) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileFilter_visibility(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Visibility, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.VisibilityFilter) graphql.Marshaler {
+			return ec.marshalOVisibilityFilter2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐVisibilityFilter(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_FileFilter_visibility(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("FileFilter", field, false, false, errors.New("field of type VisibilityFilter does not have child fields"))
+}
+
+func (ec *executionContext) _FileFilter_types(ctx context.Context, field graphql.CollectedField, obj *model.FileFilter) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileFilter_types(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Types, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []model.ContentTypeGroup) graphql.Marshaler {
+			return ec.marshalOContentTypeGroup2ᚕgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐContentTypeGroupᚄ(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_FileFilter_types(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("FileFilter", field, false, false, errors.New("field of type ContentTypeGroup does not have child fields"))
+}
+
+func (ec *executionContext) _FileFilter_nameMatching(ctx context.Context, field graphql.CollectedField, obj *model.FileFilter) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileFilter_nameMatching(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.NameMatching, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.NameFilter) graphql.Marshaler {
+			return ec.marshalONameFilter2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐNameFilter(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_FileFilter_nameMatching(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "FileFilter",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_NameFilter(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _FileFilter_excludeContent(ctx context.Context, field graphql.CollectedField, obj *model.FileFilter) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileFilter_excludeContent(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.ExcludeContent, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.NameFilter) graphql.Marshaler {
+			return ec.marshalONameFilter2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐNameFilter(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_FileFilter_excludeContent(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "FileFilter",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_NameFilter(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _FileFilter_tagsMatching(ctx context.Context, field graphql.CollectedField, obj *model.FileFilter) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileFilter_tagsMatching(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.TagsMatching, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.TagsFilter) graphql.Marshaler {
+			return ec.marshalOTagsFilter2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagsFilter(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_FileFilter_tagsMatching(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "FileFilter",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_TagsFilter(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _FileHistoryEntry_id(ctx context.Context, field graphql.CollectedField, obj *model.FileHistoryEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileHistoryEntry_id(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNID2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_FileHistoryEntry_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("FileHistoryEntry", field, false, false, errors.New("field of type ID does not have child fields"))
+}
+
+func (ec *executionContext) _FileHistoryEntry_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.FileHistoryEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileHistoryEntry_timestamp(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Timestamp, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNDateTime2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_FileHistoryEntry_timestamp(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("FileHistoryEntry", field, false, false, errors.New("field of type DateTime does not have child fields"))
+}
+
+func (ec *executionContext) _FileHistoryEntry_column(ctx context.Context, field graphql.CollectedField, obj *model.FileHistoryEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileHistoryEntry_column(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Column, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v model.HistoryColumn) graphql.Marshaler {
+			return ec.marshalNHistoryColumn2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐHistoryColumn(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_FileHistoryEntry_column(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("FileHistoryEntry", field, false, false, errors.New("field of type HistoryColumn does not have child fields"))
+}
+
+func (ec *executionContext) _FileHistoryEntry_oldValue(ctx context.Context, field graphql.CollectedField, obj *model.FileHistoryEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileHistoryEntry_oldValue(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.OldValue, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_FileHistoryEntry_oldValue(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("FileHistoryEntry", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _FileHistoryEntry_newValue(ctx context.Context, field graphql.CollectedField, obj *model.FileHistoryEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileHistoryEntry_newValue(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.NewValue, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_FileHistoryEntry_newValue(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("FileHistoryEntry", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _FileHistoryEntry_fsStatus(ctx context.Context, field graphql.CollectedField, obj *model.FileHistoryEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileHistoryEntry_fsStatus(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.FsStatus, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v model.FsStatus) graphql.Marshaler {
+			return ec.marshalNFsStatus2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFsStatus(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_FileHistoryEntry_fsStatus(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("FileHistoryEntry", field, false, false, errors.New("field of type FsStatus does not have child fields"))
+}
+
+func (ec *executionContext) _FileHistoryEntry_indexType(ctx context.Context, field graphql.CollectedField, obj *model.FileHistoryEntry) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_FileHistoryEntry_indexType(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.IndexType, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *string) graphql.Marshaler {
+			return ec.marshalOString2ᚖstring(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_FileHistoryEntry_indexType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("FileHistoryEntry", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _NameFilter_operator(ctx context.Context, field graphql.CollectedField, obj *model.NameFilter) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_NameFilter_operator(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Operator, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v model.FilterOperator) graphql.Marshaler {
+			return ec.marshalNFilterOperator2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFilterOperator(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_NameFilter_operator(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("NameFilter", field, false, false, errors.New("field of type FilterOperator does not have child fields"))
+}
+
+func (ec *executionContext) _NameFilter_values(ctx context.Context, field graphql.CollectedField, obj *model.NameFilter) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_NameFilter_values(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Values, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []string) graphql.Marshaler {
+			return ec.marshalNString2ᚕstringᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_NameFilter_values(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("NameFilter", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _PageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.HasNextPage, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v bool) graphql.Marshaler {
+			return ec.marshalNBoolean2bool(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_PageInfo_hasNextPage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("PageInfo", field, false, false, errors.New("field of type Boolean does not have child fields"))
+}
+
+func (ec *executionContext) _PageInfo_hasPreviousPage(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.HasPreviousPage, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v bool) graphql.Marshaler {
+			return ec.marshalNBoolean2bool(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_PageInfo_hasPreviousPage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("PageInfo", field, false, false, errors.New("field of type Boolean does not have child fields"))
+}
+
+func (ec *executionContext) _PageInfo_startCursor(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_PageInfo_startCursor(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.StartCursor, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *string) graphql.Marshaler {
+			return ec.marshalOString2ᚖstring(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_PageInfo_startCursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("PageInfo", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_PageInfo_endCursor(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.EndCursor, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *string) graphql.Marshaler {
+			return ec.marshalOString2ᚖstring(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_PageInfo_endCursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("PageInfo", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _Query_file(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Query_file(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().File(ctx, fc.Args["id"].(string))
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.File) graphql.Marshaler {
+			return ec.marshalOFile2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFile(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Query_file(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_File(ctx, field)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_file_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_files(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Query_files(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().Files(ctx, fc.Args["filter"].(*model.FileFilterInput), fc.Args["first"].(*int), fc.Args["after"].(*string))
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.FileConnection) graphql.Marshaler {
+			return ec.marshalNFileConnection2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileConnection(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Query_files(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_FileConnection(ctx, field)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_files_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_tag(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Query_tag(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().Tag(ctx, fc.Args["id"].(string))
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.Tag) graphql.Marshaler {
+			return ec.marshalOTag2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTag(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Query_tag(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_Tag(ctx, field)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_tag_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_tags(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Query_tags(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().Tags(ctx, fc.Args["domain"].(*model.TagDomain), fc.Args["type"].(*model.TagType))
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.Tag) graphql.Marshaler {
+			return ec.marshalNTag2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Query_tags(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_Tag(ctx, field)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_tags_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_savedQuery(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Query_savedQuery(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().SavedQuery(ctx, fc.Args["id"].(string))
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.SavedQuery) graphql.Marshaler {
+			return ec.marshalOSavedQuery2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐSavedQuery(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Query_savedQuery(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_SavedQuery(ctx, field)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_savedQuery_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_savedQueries(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Query_savedQueries(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return ec.Resolvers.Query().SavedQueries(ctx)
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.SavedQuery) graphql.Marshaler {
+			return ec.marshalNSavedQuery2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐSavedQueryᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Query_savedQueries(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_SavedQuery(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_savedQueryResults(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Query_savedQueryResults(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().SavedQueryResults(ctx, fc.Args["id"].(string), fc.Args["first"].(*int), fc.Args["after"].(*string))
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.FileConnection) graphql.Marshaler {
+			return ec.marshalNFileConnection2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileConnection(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Query_savedQueryResults(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_FileConnection(ctx, field)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_savedQueryResults_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_bookmarks(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Query_bookmarks(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return ec.Resolvers.Query().Bookmarks(ctx)
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.Bookmark) graphql.Marshaler {
+			return ec.marshalNBookmark2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐBookmarkᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Query_bookmarks(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_Bookmark(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_queue(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Query_queue(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().Queue(ctx, fc.Args["id"].(string))
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.Queue) graphql.Marshaler {
+			return ec.marshalOQueue2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐQueue(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Query_queue(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_Queue(ctx, field)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_queue_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_queues(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Query_queues(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return ec.Resolvers.Query().Queues(ctx)
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.Queue) graphql.Marshaler {
+			return ec.marshalNQueue2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐQueueᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Query_queues(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_Queue(ctx, field)
+		},
+	}
+	return fc, nil
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -443,6 +3043,747 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return ec.childFields___Schema(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Queue_id(ctx context.Context, field graphql.CollectedField, obj *model.Queue) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Queue_id(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNID2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Queue_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Queue", field, false, false, errors.New("field of type ID does not have child fields"))
+}
+
+func (ec *executionContext) _Queue_name(ctx context.Context, field graphql.CollectedField, obj *model.Queue) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Queue_name(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Queue_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Queue", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _Queue_created(ctx context.Context, field graphql.CollectedField, obj *model.Queue) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Queue_created(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Created, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNDateTime2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Queue_created(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Queue", field, false, false, errors.New("field of type DateTime does not have child fields"))
+}
+
+func (ec *executionContext) _Queue_itemCount(ctx context.Context, field graphql.CollectedField, obj *model.Queue) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Queue_itemCount(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.ItemCount, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v int) graphql.Marshaler {
+			return ec.marshalNInt2int(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Queue_itemCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Queue", field, false, false, errors.New("field of type Int does not have child fields"))
+}
+
+func (ec *executionContext) _Queue_items(ctx context.Context, field graphql.CollectedField, obj *model.Queue) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Queue_items(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Items, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.QueueItem) graphql.Marshaler {
+			return ec.marshalNQueueItem2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐQueueItemᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Queue_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Queue",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_QueueItem(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _QueueItem_id(ctx context.Context, field graphql.CollectedField, obj *model.QueueItem) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_QueueItem_id(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNID2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_QueueItem_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("QueueItem", field, false, false, errors.New("field of type ID does not have child fields"))
+}
+
+func (ec *executionContext) _QueueItem_file(ctx context.Context, field graphql.CollectedField, obj *model.QueueItem) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_QueueItem_file(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.File, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.File) graphql.Marshaler {
+			return ec.marshalNFile2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFile(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_QueueItem_file(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "QueueItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_File(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _QueueItem_addedAt(ctx context.Context, field graphql.CollectedField, obj *model.QueueItem) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_QueueItem_addedAt(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.AddedAt, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNDateTime2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_QueueItem_addedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("QueueItem", field, false, false, errors.New("field of type DateTime does not have child fields"))
+}
+
+func (ec *executionContext) _QueueItem_completed(ctx context.Context, field graphql.CollectedField, obj *model.QueueItem) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_QueueItem_completed(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Completed, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v bool) graphql.Marshaler {
+			return ec.marshalNBoolean2bool(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_QueueItem_completed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("QueueItem", field, false, false, errors.New("field of type Boolean does not have child fields"))
+}
+
+func (ec *executionContext) _SavedQuery_id(ctx context.Context, field graphql.CollectedField, obj *model.SavedQuery) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_SavedQuery_id(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNID2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_SavedQuery_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("SavedQuery", field, false, false, errors.New("field of type ID does not have child fields"))
+}
+
+func (ec *executionContext) _SavedQuery_name(ctx context.Context, field graphql.CollectedField, obj *model.SavedQuery) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_SavedQuery_name(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Name, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_SavedQuery_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("SavedQuery", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _SavedQuery_filter(ctx context.Context, field graphql.CollectedField, obj *model.SavedQuery) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_SavedQuery_filter(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Filter, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.FileFilter) graphql.Marshaler {
+			return ec.marshalNFileFilter2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileFilter(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_SavedQuery_filter(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SavedQuery",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_FileFilter(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SavedQuery_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.SavedQuery) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_SavedQuery_createdAt(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.CreatedAt, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNDateTime2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_SavedQuery_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("SavedQuery", field, false, false, errors.New("field of type DateTime does not have child fields"))
+}
+
+func (ec *executionContext) _SavedQuery_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.SavedQuery) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_SavedQuery_updatedAt(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.UpdatedAt, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNDateTime2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_SavedQuery_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("SavedQuery", field, false, false, errors.New("field of type DateTime does not have child fields"))
+}
+
+func (ec *executionContext) _Tag_id(ctx context.Context, field graphql.CollectedField, obj *model.Tag) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Tag_id(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNID2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Tag_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Tag", field, false, false, errors.New("field of type ID does not have child fields"))
+}
+
+func (ec *executionContext) _Tag_tagValue(ctx context.Context, field graphql.CollectedField, obj *model.Tag) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Tag_tagValue(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.TagValue, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Tag_tagValue(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Tag", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _Tag_tagType(ctx context.Context, field graphql.CollectedField, obj *model.Tag) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Tag_tagType(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.TagType, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v model.TagType) graphql.Marshaler {
+			return ec.marshalNTagType2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagType(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Tag_tagType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Tag", field, false, false, errors.New("field of type TagType does not have child fields"))
+}
+
+func (ec *executionContext) _Tag_domain(ctx context.Context, field graphql.CollectedField, obj *model.Tag) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Tag_domain(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Domain, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v model.TagDomain) graphql.Marshaler {
+			return ec.marshalNTagDomain2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagDomain(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Tag_domain(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Tag", field, false, false, errors.New("field of type TagDomain does not have child fields"))
+}
+
+func (ec *executionContext) _Tag_entryType(ctx context.Context, field graphql.CollectedField, obj *model.Tag) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Tag_entryType(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.EntryType, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v model.TagEntryType) graphql.Marshaler {
+			return ec.marshalNTagEntryType2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagEntryType(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Tag_entryType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Tag", field, false, false, errors.New("field of type TagEntryType does not have child fields"))
+}
+
+func (ec *executionContext) _Tag_aliases(ctx context.Context, field graphql.CollectedField, obj *model.Tag) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Tag_aliases(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Aliases, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.Tag) graphql.Marshaler {
+			return ec.marshalNTag2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Tag_aliases(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Tag",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_Tag(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Tag_parent(ctx context.Context, field graphql.CollectedField, obj *model.Tag) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Tag_parent(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Parent, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.Tag) graphql.Marshaler {
+			return ec.marshalOTag2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTag(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Tag_parent(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Tag",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_Tag(ctx, field)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Tag_fileCount(ctx context.Context, field graphql.CollectedField, obj *model.Tag) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Tag_fileCount(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.FileCount, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v int) graphql.Marshaler {
+			return ec.marshalNInt2int(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Tag_fileCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Tag", field, false, false, errors.New("field of type Int does not have child fields"))
+}
+
+func (ec *executionContext) _Tag_files(ctx context.Context, field graphql.CollectedField, obj *model.Tag) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Tag_files(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Files, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *model.FileConnection) graphql.Marshaler {
+			return ec.marshalNFileConnection2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileConnection(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_Tag_files(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Tag",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_FileConnection(ctx, field)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Tag_files_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _TagCriterion_effect(ctx context.Context, field graphql.CollectedField, obj *model.TagCriterion) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_TagCriterion_effect(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Effect, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v model.TagFilterEffect) graphql.Marshaler {
+			return ec.marshalNTagFilterEffect2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagFilterEffect(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_TagCriterion_effect(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("TagCriterion", field, false, false, errors.New("field of type TagFilterEffect does not have child fields"))
+}
+
+func (ec *executionContext) _TagCriterion_tagType(ctx context.Context, field graphql.CollectedField, obj *model.TagCriterion) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_TagCriterion_tagType(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.TagType, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v model.TagType) graphql.Marshaler {
+			return ec.marshalNTagType2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagType(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_TagCriterion_tagType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("TagCriterion", field, false, false, errors.New("field of type TagType does not have child fields"))
+}
+
+func (ec *executionContext) _TagCriterion_tagValue(ctx context.Context, field graphql.CollectedField, obj *model.TagCriterion) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_TagCriterion_tagValue(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.TagValue, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_TagCriterion_tagValue(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("TagCriterion", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _TagsFilter_enabled(ctx context.Context, field graphql.CollectedField, obj *model.TagsFilter) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_TagsFilter_enabled(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Enabled, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v bool) graphql.Marshaler {
+			return ec.marshalNBoolean2bool(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_TagsFilter_enabled(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("TagsFilter", field, false, false, errors.New("field of type Boolean does not have child fields"))
+}
+
+func (ec *executionContext) _TagsFilter_operator(ctx context.Context, field graphql.CollectedField, obj *model.TagsFilter) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_TagsFilter_operator(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Operator, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v model.FilterOperator) graphql.Marshaler {
+			return ec.marshalNFilterOperator2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFilterOperator(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_TagsFilter_operator(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("TagsFilter", field, false, false, errors.New("field of type FilterOperator does not have child fields"))
+}
+
+func (ec *executionContext) _TagsFilter_criteria(ctx context.Context, field graphql.CollectedField, obj *model.TagsFilter) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_TagsFilter_criteria(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Criteria, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v []*model.TagCriterion) graphql.Marshaler {
+			return ec.marshalNTagCriterion2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagCriterionᚄ(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_TagsFilter_criteria(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "TagsFilter",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.childFields_TagCriterion(ctx, field)
 		},
 	}
 	return fc, nil
@@ -1507,6 +4848,210 @@ func (ec *executionContext) fieldContext___Type_isOneOf(_ context.Context, field
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputFileFilterInput(ctx context.Context, obj any) (model.FileFilterInput, error) {
+	var it model.FileFilterInput
+	if obj == nil {
+		return it, nil
+	}
+
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"root", "traversal", "sortBy", "visibility", "types", "nameMatching", "excludeContent", "tagsMatching"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "root":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("root"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Root = data
+		case "traversal":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("traversal"))
+			data, err := ec.unmarshalOTraversalMode2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTraversalMode(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Traversal = data
+		case "sortBy":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sortBy"))
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐSortOrder(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SortBy = data
+		case "visibility":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("visibility"))
+			data, err := ec.unmarshalOVisibilityFilter2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐVisibilityFilter(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Visibility = data
+		case "types":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("types"))
+			data, err := ec.unmarshalOContentTypeGroup2ᚕgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐContentTypeGroupᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Types = data
+		case "nameMatching":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameMatching"))
+			data, err := ec.unmarshalONameMatchingInput2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐNameMatchingInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.NameMatching = data
+		case "excludeContent":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("excludeContent"))
+			data, err := ec.unmarshalONameMatchingInput2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐNameMatchingInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ExcludeContent = data
+		case "tagsMatching":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tagsMatching"))
+			data, err := ec.unmarshalOTagsMatchingInput2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagsMatchingInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TagsMatching = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputNameMatchingInput(ctx context.Context, obj any) (model.NameMatchingInput, error) {
+	var it model.NameMatchingInput
+	if obj == nil {
+		return it, nil
+	}
+
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"operator", "values"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "operator":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("operator"))
+			data, err := ec.unmarshalNFilterOperator2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFilterOperator(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Operator = data
+		case "values":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("values"))
+			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Values = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputTagCriterionInput(ctx context.Context, obj any) (model.TagCriterionInput, error) {
+	var it model.TagCriterionInput
+	if obj == nil {
+		return it, nil
+	}
+
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"effect", "tagType", "tagValue"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "effect":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("effect"))
+			data, err := ec.unmarshalNTagFilterEffect2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagFilterEffect(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Effect = data
+		case "tagType":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tagType"))
+			data, err := ec.unmarshalNTagType2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TagType = data
+		case "tagValue":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tagValue"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TagValue = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputTagsMatchingInput(ctx context.Context, obj any) (model.TagsMatchingInput, error) {
+	var it model.TagsMatchingInput
+	if obj == nil {
+		return it, nil
+	}
+
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"enabled", "operator", "criteria"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "enabled":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("enabled"))
+			data, err := ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Enabled = data
+		case "operator":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("operator"))
+			data, err := ec.unmarshalNFilterOperator2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFilterOperator(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Operator = data
+		case "criteria":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("criteria"))
+			data, err := ec.unmarshalNTagCriterionInput2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagCriterionInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Criteria = data
+		}
+	}
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -1514,6 +5059,495 @@ func (ec *executionContext) fieldContext___Type_isOneOf(_ context.Context, field
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var bookmarkImplementors = []string{"Bookmark"}
+
+func (ec *executionContext) _Bookmark(ctx context.Context, sel ast.SelectionSet, obj *model.Bookmark) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, bookmarkImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Bookmark")
+		case "id":
+			out.Values[i] = ec._Bookmark_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "file":
+			out.Values[i] = ec._Bookmark_file(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createdAt":
+			out.Values[i] = ec._Bookmark_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
+var fileImplementors = []string{"File"}
+
+func (ec *executionContext) _File(ctx context.Context, sel ast.SelectionSet, obj *model.File) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, fileImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("File")
+		case "id":
+			out.Values[i] = ec._File_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "name":
+			out.Values[i] = ec._File_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "location":
+			out.Values[i] = ec._File_location(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "type":
+			out.Values[i] = ec._File_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "size":
+			out.Values[i] = ec._File_size(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "created":
+			out.Values[i] = ec._File_created(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "modified":
+			out.Values[i] = ec._File_modified(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "comment":
+			out.Values[i] = ec._File_comment(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "volume":
+			out.Values[i] = ec._File_volume(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "visibility":
+			out.Values[i] = ec._File_visibility(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "tags":
+			out.Values[i] = ec._File_tags(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "tagCount":
+			out.Values[i] = ec._File_tagCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "bookmarked":
+			out.Values[i] = ec._File_bookmarked(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "queues":
+			out.Values[i] = ec._File_queues(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "history":
+			out.Values[i] = ec._File_history(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
+var fileConnectionImplementors = []string{"FileConnection"}
+
+func (ec *executionContext) _FileConnection(ctx context.Context, sel ast.SelectionSet, obj *model.FileConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, fileConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("FileConnection")
+		case "edges":
+			out.Values[i] = ec._FileConnection_edges(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "nodes":
+			out.Values[i] = ec._FileConnection_nodes(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._FileConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "totalCount":
+			out.Values[i] = ec._FileConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
+var fileEdgeImplementors = []string{"FileEdge"}
+
+func (ec *executionContext) _FileEdge(ctx context.Context, sel ast.SelectionSet, obj *model.FileEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, fileEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("FileEdge")
+		case "cursor":
+			out.Values[i] = ec._FileEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "node":
+			out.Values[i] = ec._FileEdge_node(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
+var fileFilterImplementors = []string{"FileFilter"}
+
+func (ec *executionContext) _FileFilter(ctx context.Context, sel ast.SelectionSet, obj *model.FileFilter) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, fileFilterImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("FileFilter")
+		case "root":
+			out.Values[i] = ec._FileFilter_root(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "traversal":
+			out.Values[i] = ec._FileFilter_traversal(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "sortBy":
+			out.Values[i] = ec._FileFilter_sortBy(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "visibility":
+			out.Values[i] = ec._FileFilter_visibility(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "types":
+			out.Values[i] = ec._FileFilter_types(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "nameMatching":
+			out.Values[i] = ec._FileFilter_nameMatching(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "excludeContent":
+			out.Values[i] = ec._FileFilter_excludeContent(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "tagsMatching":
+			out.Values[i] = ec._FileFilter_tagsMatching(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
+var fileHistoryEntryImplementors = []string{"FileHistoryEntry"}
+
+func (ec *executionContext) _FileHistoryEntry(ctx context.Context, sel ast.SelectionSet, obj *model.FileHistoryEntry) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, fileHistoryEntryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("FileHistoryEntry")
+		case "id":
+			out.Values[i] = ec._FileHistoryEntry_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._FileHistoryEntry_timestamp(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "column":
+			out.Values[i] = ec._FileHistoryEntry_column(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "oldValue":
+			out.Values[i] = ec._FileHistoryEntry_oldValue(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "newValue":
+			out.Values[i] = ec._FileHistoryEntry_newValue(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "fsStatus":
+			out.Values[i] = ec._FileHistoryEntry_fsStatus(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "indexType":
+			out.Values[i] = ec._FileHistoryEntry_indexType(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
+var nameFilterImplementors = []string{"NameFilter"}
+
+func (ec *executionContext) _NameFilter(ctx context.Context, sel ast.SelectionSet, obj *model.NameFilter) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nameFilterImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NameFilter")
+		case "operator":
+			out.Values[i] = ec._NameFilter_operator(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "values":
+			out.Values[i] = ec._NameFilter_values(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
+var pageInfoImplementors = []string{"PageInfo"}
+
+func (ec *executionContext) _PageInfo(ctx context.Context, sel ast.SelectionSet, obj *model.PageInfo) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, pageInfoImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PageInfo")
+		case "hasNextPage":
+			out.Values[i] = ec._PageInfo_hasNextPage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "hasPreviousPage":
+			out.Values[i] = ec._PageInfo_hasPreviousPage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "startCursor":
+			out.Values[i] = ec._PageInfo_startCursor(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "endCursor":
+			out.Values[i] = ec._PageInfo_endCursor(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
 
 var queryImplementors = []string{"Query"}
 
@@ -1535,7 +5569,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "_placeholder":
+		case "file":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -1544,8 +5578,206 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query__placeholder(ctx, field)
+				res = ec._Query_file(ctx, field)
 				if res == graphql.RequiredNull {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "files":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_files(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "tag":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_tag(ctx, field)
+				if res == graphql.RequiredNull {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "tags":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_tags(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "savedQuery":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_savedQuery(ctx, field)
+				if res == graphql.RequiredNull {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "savedQueries":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_savedQueries(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "savedQueryResults":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_savedQueryResults(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "bookmarks":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_bookmarks(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "queue":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_queue(ctx, field)
+				if res == graphql.RequiredNull {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "queues":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_queues(ctx, field)
+				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
 				return res
@@ -1570,6 +5802,349 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			})
 			if out.Values[i] == graphql.RequiredNull {
 				atomic.AddUint32(&out.Invalids, 1)
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
+var queueImplementors = []string{"Queue"}
+
+func (ec *executionContext) _Queue(ctx context.Context, sel ast.SelectionSet, obj *model.Queue) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, queueImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Queue")
+		case "id":
+			out.Values[i] = ec._Queue_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "name":
+			out.Values[i] = ec._Queue_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "created":
+			out.Values[i] = ec._Queue_created(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "itemCount":
+			out.Values[i] = ec._Queue_itemCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "items":
+			out.Values[i] = ec._Queue_items(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
+var queueItemImplementors = []string{"QueueItem"}
+
+func (ec *executionContext) _QueueItem(ctx context.Context, sel ast.SelectionSet, obj *model.QueueItem) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, queueItemImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("QueueItem")
+		case "id":
+			out.Values[i] = ec._QueueItem_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "file":
+			out.Values[i] = ec._QueueItem_file(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "addedAt":
+			out.Values[i] = ec._QueueItem_addedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "completed":
+			out.Values[i] = ec._QueueItem_completed(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
+var savedQueryImplementors = []string{"SavedQuery"}
+
+func (ec *executionContext) _SavedQuery(ctx context.Context, sel ast.SelectionSet, obj *model.SavedQuery) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, savedQueryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SavedQuery")
+		case "id":
+			out.Values[i] = ec._SavedQuery_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "name":
+			out.Values[i] = ec._SavedQuery_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "filter":
+			out.Values[i] = ec._SavedQuery_filter(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createdAt":
+			out.Values[i] = ec._SavedQuery_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updatedAt":
+			out.Values[i] = ec._SavedQuery_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
+var tagImplementors = []string{"Tag"}
+
+func (ec *executionContext) _Tag(ctx context.Context, sel ast.SelectionSet, obj *model.Tag) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, tagImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Tag")
+		case "id":
+			out.Values[i] = ec._Tag_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "tagValue":
+			out.Values[i] = ec._Tag_tagValue(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "tagType":
+			out.Values[i] = ec._Tag_tagType(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "domain":
+			out.Values[i] = ec._Tag_domain(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "entryType":
+			out.Values[i] = ec._Tag_entryType(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "aliases":
+			out.Values[i] = ec._Tag_aliases(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "parent":
+			out.Values[i] = ec._Tag_parent(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "fileCount":
+			out.Values[i] = ec._Tag_fileCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "files":
+			out.Values[i] = ec._Tag_files(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
+var tagCriterionImplementors = []string{"TagCriterion"}
+
+func (ec *executionContext) _TagCriterion(ctx context.Context, sel ast.SelectionSet, obj *model.TagCriterion) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, tagCriterionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TagCriterion")
+		case "effect":
+			out.Values[i] = ec._TagCriterion_effect(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "tagType":
+			out.Values[i] = ec._TagCriterion_tagType(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "tagValue":
+			out.Values[i] = ec._TagCriterion_tagValue(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
+var tagsFilterImplementors = []string{"TagsFilter"}
+
+func (ec *executionContext) _TagsFilter(ctx context.Context, sel ast.SelectionSet, obj *model.TagsFilter) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, tagsFilterImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TagsFilter")
+		case "enabled":
+			out.Values[i] = ec._TagsFilter_enabled(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "operator":
+			out.Values[i] = ec._TagsFilter_operator(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "criteria":
+			out.Values[i] = ec._TagsFilter_criteria(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -1984,6 +6559,32 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNBookmark2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐBookmarkᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Bookmark) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNBookmark2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐBookmark(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNBookmark2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐBookmark(ctx context.Context, sel ast.SelectionSet, v *model.Bookmark) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Bookmark(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v any) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -2000,6 +6601,294 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNContentTypeGroup2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐContentTypeGroup(ctx context.Context, v any) (model.ContentTypeGroup, error) {
+	var res model.ContentTypeGroup
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNContentTypeGroup2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐContentTypeGroup(ctx context.Context, sel ast.SelectionSet, v model.ContentTypeGroup) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNDateTime2string(ctx context.Context, v any) (string, error) {
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDateTime2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	_ = sel
+	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNFile2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.File) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNFile2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFile(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNFile2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFile(ctx context.Context, sel ast.SelectionSet, v *model.File) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._File(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNFileConnection2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileConnection(ctx context.Context, sel ast.SelectionSet, v model.FileConnection) graphql.Marshaler {
+	return ec._FileConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNFileConnection2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileConnection(ctx context.Context, sel ast.SelectionSet, v *model.FileConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._FileConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNFileEdge2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileEdgeᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.FileEdge) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNFileEdge2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileEdge(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNFileEdge2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileEdge(ctx context.Context, sel ast.SelectionSet, v *model.FileEdge) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._FileEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNFileFilter2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileFilter(ctx context.Context, sel ast.SelectionSet, v *model.FileFilter) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._FileFilter(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNFileHistoryEntry2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileHistoryEntryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.FileHistoryEntry) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNFileHistoryEntry2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileHistoryEntry(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNFileHistoryEntry2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileHistoryEntry(ctx context.Context, sel ast.SelectionSet, v *model.FileHistoryEntry) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._FileHistoryEntry(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNFileVisibility2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileVisibility(ctx context.Context, v any) (model.FileVisibility, error) {
+	var res model.FileVisibility
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNFileVisibility2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileVisibility(ctx context.Context, sel ast.SelectionSet, v model.FileVisibility) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNFilterOperator2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFilterOperator(ctx context.Context, v any) (model.FilterOperator, error) {
+	var res model.FilterOperator
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNFilterOperator2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFilterOperator(ctx context.Context, sel ast.SelectionSet, v model.FilterOperator) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNFsStatus2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFsStatus(ctx context.Context, v any) (model.FsStatus, error) {
+	var res model.FsStatus
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNFsStatus2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFsStatus(ctx context.Context, sel ast.SelectionSet, v model.FsStatus) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNHistoryColumn2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐHistoryColumn(ctx context.Context, v any) (model.HistoryColumn, error) {
+	var res model.HistoryColumn
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNHistoryColumn2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐHistoryColumn(ctx context.Context, sel ast.SelectionSet, v model.HistoryColumn) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNID2string(ctx context.Context, v any) (string, error) {
+	res, err := graphql.UnmarshalID(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	_ = sel
+	res := graphql.MarshalID(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v any) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	_ = sel
+	res := graphql.MarshalInt(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNPageInfo2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v *model.PageInfo) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._PageInfo(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNQueue2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐQueueᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Queue) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNQueue2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐQueue(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNQueue2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐQueue(ctx context.Context, sel ast.SelectionSet, v *model.Queue) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Queue(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNQueueItem2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐQueueItemᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.QueueItem) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNQueueItem2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐQueueItem(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNQueueItem2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐQueueItem(ctx context.Context, sel ast.SelectionSet, v *model.QueueItem) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._QueueItem(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNSavedQuery2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐSavedQueryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SavedQuery) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNSavedQuery2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐSavedQuery(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNSavedQuery2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐSavedQuery(ctx context.Context, sel ast.SelectionSet, v *model.SavedQuery) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SavedQuery(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v any) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -2014,6 +6903,146 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v any) ([]string, error) {
+	vSlice := graphql.CoerceList(v)
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNTag2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Tag) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNTag2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTag(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNTag2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTag(ctx context.Context, sel ast.SelectionSet, v *model.Tag) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Tag(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNTagCriterion2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagCriterionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.TagCriterion) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNTagCriterion2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagCriterion(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNTagCriterion2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagCriterion(ctx context.Context, sel ast.SelectionSet, v *model.TagCriterion) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._TagCriterion(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNTagCriterionInput2ᚕᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagCriterionInputᚄ(ctx context.Context, v any) ([]*model.TagCriterionInput, error) {
+	vSlice := graphql.CoerceList(v)
+	var err error
+	res := make([]*model.TagCriterionInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNTagCriterionInput2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagCriterionInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNTagCriterionInput2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagCriterionInput(ctx context.Context, v any) (*model.TagCriterionInput, error) {
+	res, err := ec.unmarshalInputTagCriterionInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNTagDomain2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagDomain(ctx context.Context, v any) (model.TagDomain, error) {
+	var res model.TagDomain
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTagDomain2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagDomain(ctx context.Context, sel ast.SelectionSet, v model.TagDomain) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNTagEntryType2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagEntryType(ctx context.Context, v any) (model.TagEntryType, error) {
+	var res model.TagEntryType
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTagEntryType2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagEntryType(ctx context.Context, sel ast.SelectionSet, v model.TagEntryType) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNTagFilterEffect2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagFilterEffect(ctx context.Context, v any) (model.TagFilterEffect, error) {
+	var res model.TagFilterEffect
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTagFilterEffect2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagFilterEffect(ctx context.Context, sel ast.SelectionSet, v model.TagFilterEffect) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNTagType2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagType(ctx context.Context, v any) (model.TagType, error) {
+	var res model.TagType
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTagType2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagType(ctx context.Context, sel ast.SelectionSet, v model.TagType) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
@@ -2186,6 +7215,120 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
+func (ec *executionContext) unmarshalOContentTypeGroup2ᚕgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐContentTypeGroupᚄ(ctx context.Context, v any) ([]model.ContentTypeGroup, error) {
+	if v == nil {
+		return nil, nil
+	}
+	vSlice := graphql.CoerceList(v)
+	var err error
+	res := make([]model.ContentTypeGroup, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNContentTypeGroup2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐContentTypeGroup(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOContentTypeGroup2ᚕgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐContentTypeGroupᚄ(ctx context.Context, sel ast.SelectionSet, v []model.ContentTypeGroup) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNContentTypeGroup2githubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐContentTypeGroup(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalOFile2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFile(ctx context.Context, sel ast.SelectionSet, v *model.File) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._File(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOFileFilterInput2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐFileFilterInput(ctx context.Context, v any) (*model.FileFilterInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputFileFilterInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v any) (*int, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalInt(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	_ = sel
+	_ = ctx
+	res := graphql.MarshalInt(*v)
+	return res
+}
+
+func (ec *executionContext) marshalONameFilter2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐNameFilter(ctx context.Context, sel ast.SelectionSet, v *model.NameFilter) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._NameFilter(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalONameMatchingInput2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐNameMatchingInput(ctx context.Context, v any) (*model.NameMatchingInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputNameMatchingInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOQueue2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐQueue(ctx context.Context, sel ast.SelectionSet, v *model.Queue) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Queue(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOSavedQuery2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐSavedQuery(ctx context.Context, sel ast.SelectionSet, v *model.SavedQuery) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._SavedQuery(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOSortOrder2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐSortOrder(ctx context.Context, v any) (*model.SortOrder, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.SortOrder)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOSortOrder2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐSortOrder(ctx context.Context, sel ast.SelectionSet, v *model.SortOrder) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v any) (*string, error) {
 	if v == nil {
 		return nil, nil
@@ -2202,6 +7345,92 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	_ = ctx
 	res := graphql.MarshalString(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOTag2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTag(ctx context.Context, sel ast.SelectionSet, v *model.Tag) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Tag(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOTagDomain2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagDomain(ctx context.Context, v any) (*model.TagDomain, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.TagDomain)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTagDomain2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagDomain(ctx context.Context, sel ast.SelectionSet, v *model.TagDomain) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) unmarshalOTagType2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagType(ctx context.Context, v any) (*model.TagType, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.TagType)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTagType2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagType(ctx context.Context, sel ast.SelectionSet, v *model.TagType) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) marshalOTagsFilter2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagsFilter(ctx context.Context, sel ast.SelectionSet, v *model.TagsFilter) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._TagsFilter(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOTagsMatchingInput2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTagsMatchingInput(ctx context.Context, v any) (*model.TagsMatchingInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputTagsMatchingInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOTraversalMode2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTraversalMode(ctx context.Context, v any) (*model.TraversalMode, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.TraversalMode)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTraversalMode2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐTraversalMode(ctx context.Context, sel ast.SelectionSet, v *model.TraversalMode) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) unmarshalOVisibilityFilter2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐVisibilityFilter(ctx context.Context, v any) (*model.VisibilityFilter, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.VisibilityFilter)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOVisibilityFilter2ᚖgithubᚗcomᚋrobinsrᚋtaggedfilebrowserᚋserverᚋgraphᚋmodelᚐVisibilityFilter(ctx context.Context, sel ast.SelectionSet, v *model.VisibilityFilter) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

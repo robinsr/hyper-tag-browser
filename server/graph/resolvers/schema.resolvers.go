@@ -10,14 +10,72 @@ import (
 	"fmt"
 
 	"github.com/robinsr/taggedfilebrowser/server/graph"
+	"github.com/robinsr/taggedfilebrowser/server/graph/model"
 )
 
-// Placeholder is the resolver for the _placeholder field.
-func (r *queryResolver) Placeholder(ctx context.Context) (*bool, error) {
-	panic(fmt.Errorf("not implemented: Placeholder - _placeholder"))
+// File is the resolver for the file field.
+func (r *queryResolver) File(ctx context.Context, id string) (*model.File, error) {
+	panic(fmt.Errorf("not implemented: File - file"))
+}
+
+// Files is the resolver for the files field.
+func (r *queryResolver) Files(ctx context.Context, filter *model.FileFilterInput, first *int, after *string) (*model.FileConnection, error) {
+	panic(fmt.Errorf("not implemented: Files - files"))
+}
+
+// Tag is the resolver for the tag field.
+func (r *queryResolver) Tag(ctx context.Context, id string) (*model.Tag, error) {
+	panic(fmt.Errorf("not implemented: Tag - tag"))
+}
+
+// Tags is the resolver for the tags field.
+func (r *queryResolver) Tags(ctx context.Context, domain *model.TagDomain, typeArg *model.TagType) ([]*model.Tag, error) {
+	panic(fmt.Errorf("not implemented: Tags - tags"))
+}
+
+// SavedQuery is the resolver for the savedQuery field.
+func (r *queryResolver) SavedQuery(ctx context.Context, id string) (*model.SavedQuery, error) {
+	panic(fmt.Errorf("not implemented: SavedQuery - savedQuery"))
+}
+
+// SavedQueries is the resolver for the savedQueries field.
+func (r *queryResolver) SavedQueries(ctx context.Context) ([]*model.SavedQuery, error) {
+	panic(fmt.Errorf("not implemented: SavedQueries - savedQueries"))
+}
+
+// SavedQueryResults is the resolver for the savedQueryResults field.
+func (r *queryResolver) SavedQueryResults(ctx context.Context, id string, first *int, after *string) (*model.FileConnection, error) {
+	panic(fmt.Errorf("not implemented: SavedQueryResults - savedQueryResults"))
+}
+
+// Bookmarks is the resolver for the bookmarks field.
+func (r *queryResolver) Bookmarks(ctx context.Context) ([]*model.Bookmark, error) {
+	panic(fmt.Errorf("not implemented: Bookmarks - bookmarks"))
+}
+
+// Queue is the resolver for the queue field.
+func (r *queryResolver) Queue(ctx context.Context, id string) (*model.Queue, error) {
+	panic(fmt.Errorf("not implemented: Queue - queue"))
+}
+
+// Queues is the resolver for the queues field.
+func (r *queryResolver) Queues(ctx context.Context) ([]*model.Queue, error) {
+	panic(fmt.Errorf("not implemented: Queues - queues"))
 }
 
 // Query returns graph.QueryResolver implementation.
 func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
 
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+/*
+	func (r *queryResolver) Placeholder(ctx context.Context) (*bool, error) {
+	panic(fmt.Errorf("not implemented: Placeholder - _placeholder"))
+}
+*/
