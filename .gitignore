@@ -208,3 +208,6 @@ temp/
 # Agents
 
 docs/plans/
+
+# Go server
+server/.gomodcache/
