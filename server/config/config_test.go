@@ -10,7 +10,7 @@ import (
 
 func TestLoad(t *testing.T) {
 	f, _ := os.CreateTemp("", "cfg*.json")
-	f.WriteString(`{"port":8765,"db_path":"/tmp/db.sqlite","log_level":"info","app_running":true}`)
+	f.WriteString(`{"databasePath":"/tmp/db.sqlite","port":8765,"enabled":true}`)
 	f.Close()
 	defer os.Remove(f.Name())
 
@@ -21,20 +21,24 @@ func TestLoad(t *testing.T) {
 	if cfg.Port != 8765 {
 		t.Errorf("port: got %d, want 8765", cfg.Port)
 	}
-	if cfg.DBPath != "/tmp/db.sqlite" {
-		t.Errorf("db_path: got %s, want /tmp/db.sqlite", cfg.DBPath)
+	if cfg.DatabasePath != "/tmp/db.sqlite" {
+		t.Errorf("databasePath: got %s, want /tmp/db.sqlite", cfg.DatabasePath)
 	}
-	if cfg.LogLevel != "info" {
-		t.Errorf("log_level: got %s, want info", cfg.LogLevel)
+	if !cfg.Enabled {
+		t.Error("enabled: got false, want true")
 	}
-	if !cfg.AppRunning {
-		t.Error("app_running: got false, want true")
+}
+
+func TestLoad_MissingFile(t *testing.T) {
+	_, err := config.Load("/tmp/does-not-exist-cfg-test.json")
+	if err == nil {
+		t.Error("expected non-nil error for missing file, got nil")
 	}
 }
 
 func TestWatch(t *testing.T) {
 	f, _ := os.CreateTemp("", "cfg*.json")
-	f.WriteString(`{"port":8765,"db_path":"/tmp/db.sqlite","log_level":"info","app_running":true}`)
+	f.WriteString(`{"databasePath":"/tmp/db.sqlite","port":8765,"enabled":true}`)
 	f.Close()
 	defer os.Remove(f.Name())
 
@@ -47,7 +51,7 @@ func TestWatch(t *testing.T) {
 	}
 	defer stop()
 
-	os.WriteFile(f.Name(), []byte(`{"port":9999,"db_path":"/tmp/db.sqlite","log_level":"debug","app_running":false}`), 0644)
+	os.WriteFile(f.Name(), []byte(`{"databasePath":"/tmp/db.sqlite","port":9999,"enabled":false}`), 0644)
 
 	select {
 	case cfg := <-received:

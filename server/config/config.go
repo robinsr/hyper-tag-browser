@@ -8,10 +8,9 @@ import (
 )
 
 type ServerConfig struct {
-	Port       int    `json:"port"`
-	DBPath     string `json:"db_path"`
-	LogLevel   string `json:"log_level"`
-	AppRunning bool   `json:"app_running"`
+	DatabasePath string `json:"databasePath"`
+	Port         int    `json:"port"`
+	Enabled      bool   `json:"enabled"`
 }
 
 func Load(path string) (ServerConfig, error) {
