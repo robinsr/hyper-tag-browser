@@ -9,18 +9,36 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/robinsr/taggedfilebrowser/server/db/queries"
 	"github.com/robinsr/taggedfilebrowser/server/graph"
 	"github.com/robinsr/taggedfilebrowser/server/graph/model"
 )
 
 // File is the resolver for the file field.
 func (r *queryResolver) File(ctx context.Context, id string) (*model.File, error) {
-	panic(fmt.Errorf("not implemented: File - file"))
+	row, err := queries.GetFile(ctx, r.db, id)
+	if err != nil || row == nil {
+		return nil, err
+	}
+	return fileRowToModel(row), nil
 }
 
 // Files is the resolver for the files field.
 func (r *queryResolver) Files(ctx context.Context, filter *model.FileFilterInput, first *int, after *string) (*model.FileConnection, error) {
-	panic(fmt.Errorf("not implemented: Files - files"))
+	f := parseFileFilter(filter)
+	n := 20
+	if first != nil {
+		n = *first
+	}
+	cursor := ""
+	if after != nil {
+		cursor = *after
+	}
+	list, err := queries.ListFiles(ctx, r.db, f, n, cursor)
+	if err != nil {
+		return nil, err
+	}
+	return fileListToConnection(list), nil
 }
 
 // Tag is the resolver for the tag field.
