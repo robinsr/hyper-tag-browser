@@ -1,0 +1,6 @@
+# server/graph/schema.graphqls
+scalar DateTime
+
+type Query {
+  _placeholder: Boolean
+}
