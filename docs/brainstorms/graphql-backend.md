@@ -1,7 +1,7 @@
 # GraphQL Backend — Brainstorm Checkpoint
 
 **Date:** 2026-08-24  
-**Status:** In progress — paused mid-brainstorm
+**Status:** In progress — active brainstorm
 
 ---
 
@@ -33,16 +33,40 @@ Alternatives considered and ruled out:
 - **Intermediate deliverable:** read-only queries (browsing files, tags, saved queries, bookmarks)
 - **Full target:** mutations for tagging, managing saved queries, queues, etc.
 
+### Repo structure: same repo, `server/` subdirectory
+- Go module lives at `server/go.mod`
+- Schema changes and resolver updates land in one PR — no cross-repo coordination
+- Xcode build phase compiles the Go binary and copies it into the app bundle
+
+### Process lifecycle: SMAppService + Launch Agent
+- Go binary registered as a Login Item agent via `SMAppService` (macOS 13+, well within macOS 15 target)
+- launchd owns the process: starts it, keeps it alive, restarts on crash
+- App settings panel calls `SMAppService.mainApp.register()` / `unregister()` to enable/disable
+- The server **can outlive the app** — read queries still work; anything requiring live Swift services (Spotlight, XAttr, indexing) is absent or returns a limited-mode error
+- **Not** an XPC Service (those are tied to the app bundle lifecycle and don't outlive the app)
+
+### Swift ↔ Go communication: plain HTTP
+- No XPC messaging needed — the Swift app hits the GraphQL HTTP endpoint like any other client
+- XPC solved the lifecycle problem; HTTP solves the communication problem
+
+### Server configuration: `server-config.json`
+- Location: `~/Library/Application Support/com.robinsr.taggedfilebrowser/server-config.json`
+- Written by the Swift app on launch and when settings change
+- Read by the Go server on startup; watched for live changes via `fsnotify`
+- Fields:
+  - `port` — HTTP port to listen on
+  - `db_path` — absolute path to the SQLite file
+  - `log_level` — debug / info / warn
+  - `app_running` — boolean; Swift app sets true on launch, false on quit; Go server uses this to advertise full vs limited functionality
+
 ---
 
-## Open Questions (to resume here)
+## Open Questions
 
-- [ ] Repo structure: same repo (`server/` subdir) or separate repo?
-- [ ] How does Swift launch/manage the Go subprocess? (XPC vs plain subprocess, port negotiation)
+- [ ] GraphQL schema design — root query types, connections, nested resolvers
 - [ ] Authentication/security for the local GraphQL endpoint (localhost only? token?)
-- [ ] GraphQL schema design — what are the root query types, connections, nested resolvers?
 - [ ] Web UI tech: browser-based or embedded `WKWebView` in the app?
-- [ ] Code generation strategy: gqlgen schema-first vs resolvers approach
+- [ ] Code generation strategy: gqlgen schema-first approach details
 
 ---
 
@@ -83,9 +107,9 @@ Alternatives considered and ruled out:
 
 ---
 
-## Next Steps (when resuming)
+## Next Steps
 
-1. Decide repo structure
-2. Sketch GraphQL schema (root types, queries, connections)
-3. Discuss Swift ↔ Go subprocess lifecycle management
+1. GraphQL schema design (root types, queries, connections)
+2. Authentication/security model
+3. Web UI integration approach
 4. Proceed to full architectural design → spec → implementation plan
