@@ -129,6 +129,39 @@ func utTypesForGroup(g model.ContentTypeGroup) []string {
 	}
 }
 
+// --- Bookmark/Queue conversions ---
+
+func bookmarkRowToModel(b *queries.BookmarkRow) *model.Bookmark {
+	return &model.Bookmark{
+		ID:        b.ID,
+		File:      fileRowToModel(b.File),
+		CreatedAt: b.Created,
+	}
+}
+
+func queueRowToModel(q *queries.QueueRow, items []*queries.QueueItemRow) *model.Queue {
+	modelItems := make([]*model.QueueItem, len(items))
+	for i, item := range items {
+		modelItems[i] = queueItemRowToModel(item)
+	}
+	return &model.Queue{
+		ID:        q.ID,
+		Name:      q.Name,
+		Created:   q.Created,
+		ItemCount: len(items),
+		Items:     modelItems,
+	}
+}
+
+func queueItemRowToModel(qi *queries.QueueItemRow) *model.QueueItem {
+	return &model.QueueItem{
+		ID:        qi.ID,
+		File:      fileRowToModel(qi.File),
+		AddedAt:   qi.Created,
+		Completed: qi.Completed,
+	}
+}
+
 // --- Tag conversions ---
 
 func tagRowToModel(t *queries.Tag) *model.Tag {

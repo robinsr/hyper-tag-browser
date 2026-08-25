@@ -40,7 +40,19 @@ func (r *fileResolver) Bookmarked(ctx context.Context, obj *model.File) (bool, e
 
 // Queues is the resolver for the queues field.
 func (r *fileResolver) Queues(ctx context.Context, obj *model.File) ([]*model.Queue, error) {
-	panic(fmt.Errorf("not implemented: Queues - queues"))
+	queueRows, err := queries.ListQueuesForFile(ctx, r.db, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]*model.Queue, len(queueRows))
+	for i, q := range queueRows {
+		items, err := queries.ListQueueItems(ctx, r.db, q.ID)
+		if err != nil {
+			return nil, err
+		}
+		out[i] = queueRowToModel(q, items)
+	}
+	return out, nil
 }
 
 // History is the resolver for the history field.
@@ -124,17 +136,45 @@ func (r *queryResolver) SavedQueryResults(ctx context.Context, id string, first 
 
 // Bookmarks is the resolver for the bookmarks field.
 func (r *queryResolver) Bookmarks(ctx context.Context) ([]*model.Bookmark, error) {
-	panic(fmt.Errorf("not implemented: Bookmarks - bookmarks"))
+	rows, err := queries.ListBookmarks(ctx, r.db)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]*model.Bookmark, len(rows))
+	for i, b := range rows {
+		out[i] = bookmarkRowToModel(b)
+	}
+	return out, nil
 }
 
 // Queue is the resolver for the queue field.
 func (r *queryResolver) Queue(ctx context.Context, id string) (*model.Queue, error) {
-	panic(fmt.Errorf("not implemented: Queue - queue"))
+	q, err := queries.GetQueue(ctx, r.db, id)
+	if err != nil || q == nil {
+		return nil, err
+	}
+	items, err := queries.ListQueueItems(ctx, r.db, id)
+	if err != nil {
+		return nil, err
+	}
+	return queueRowToModel(q, items), nil
 }
 
 // Queues is the resolver for the queues field.
 func (r *queryResolver) Queues(ctx context.Context) ([]*model.Queue, error) {
-	panic(fmt.Errorf("not implemented: Queues - queues"))
+	queueRows, err := queries.ListQueues(ctx, r.db)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]*model.Queue, len(queueRows))
+	for i, q := range queueRows {
+		items, err := queries.ListQueueItems(ctx, r.db, q.ID)
+		if err != nil {
+			return nil, err
+		}
+		out[i] = queueRowToModel(q, items)
+	}
+	return out, nil
 }
 
 // Domain is the resolver for the domain field.
