@@ -20,6 +20,7 @@ class TextFieldModel {
   var rawValue: String = "" {
     didSet {
       _valuePublisher.update(rawValue)
+      error = validations.compactMap { $0.validate(rawValue.trimmed) }.first
     }
   }
 
@@ -57,7 +58,7 @@ class TextFieldModel {
 
 
   var validationMessages: [String] {
-    validations.compactMap { $0.validate(_publishedValue) }
+    validations.compactMap { $0.validate(rawValue.trimmed) }
   }
 
   var isValid: Bool {

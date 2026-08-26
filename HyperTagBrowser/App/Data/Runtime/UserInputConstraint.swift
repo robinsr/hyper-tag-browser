@@ -7,7 +7,7 @@ import Regex
  * Defines validation constraints for the `TextFieldModel`.
  */
 struct UserInputConstraint: Sendable {
-  typealias StringTestFn = (String) -> Bool;
+  typealias StringTestFn = @Sendable (String) -> Bool
   
   let message: String
   
@@ -15,10 +15,15 @@ struct UserInputConstraint: Sendable {
   
   init(message: String) {
     self.message = message
-    
+
     self.testFn = { _ in
       return true
     }
+  }
+
+  init(message: String, testFn: @escaping StringTestFn) {
+    self.message = message
+    self.testFn = testFn
   }
   
   init(message: String, pattern: String, expected: Bool = true) {
@@ -53,8 +58,8 @@ struct UserInputConstraint: Sendable {
     Self.init(message: message, pattern: pattern, expected: false)
   }
   
-  static func satisfies(_ message: String, test: StringTestFn) -> Self {
-    Self.init(message: message)
+  static func satisfies(_ message: String, test: @escaping StringTestFn) -> Self {
+    Self.init(message: message, testFn: test)
   }
 
   /// Validates that the field is not empty
