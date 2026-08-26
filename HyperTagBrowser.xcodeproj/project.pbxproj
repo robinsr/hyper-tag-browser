@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		103A361BA8886D6CE8A3CC7C /* uitest-image-gamma.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 61AF2EF17A2CB189114A98E5 /* uitest-image-gamma.jpg */; };
+		1B695FA2C9B5B00B98776364 /* uitest-image-beta.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7B77BF6B298BEF7C4772A947 /* uitest-image-beta.jpg */; };
 		9404EB6C2DC31813009B0D3A /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9404EB6B2DC31813009B0D3A /* AVKit.framework */; };
 		9405650C2CD2024500648DD5 /* LegibleError in Frameworks */ = {isa = PBXBuildFile; productRef = 9405650B2CD2024500648DD5 /* LegibleError */; };
 		9406C35E2D0FA899008E4AC3 /* Difference in Frameworks */ = {isa = PBXBuildFile; productRef = 9406C35D2D0FA899008E4AC3 /* Difference */; };
@@ -103,6 +105,7 @@
 		94FEA88C2D50207E00288A21 /* ResourceExtension in Frameworks */ = {isa = PBXBuildFile; productRef = 94FEA88B2D50207E00288A21 /* ResourceExtension */; };
 		94FEA88E2D50207E00288A21 /* StdoutExporter in Frameworks */ = {isa = PBXBuildFile; productRef = 94FEA88D2D50207E00288A21 /* StdoutExporter */; };
 		94FEA8902D50275000288A21 /* SwiftMetricsShim in Frameworks */ = {isa = PBXBuildFile; productRef = 94FEA88F2D50275000288A21 /* SwiftMetricsShim */; };
+		B90F971D40C0E7749206BAFF /* uitest-image-alpha.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 249342D3FD70472608C09511 /* uitest-image-alpha.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -166,6 +169,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		249342D3FD70472608C09511 /* uitest-image-alpha.jpg */ = {isa = PBXFileReference; includeInIndex = 1; path = "uitest-image-alpha.jpg"; sourceTree = "<group>"; };
+		61AF2EF17A2CB189114A98E5 /* uitest-image-gamma.jpg */ = {isa = PBXFileReference; includeInIndex = 1; path = "uitest-image-gamma.jpg"; sourceTree = "<group>"; };
+		7B77BF6B298BEF7C4772A947 /* uitest-image-beta.jpg */ = {isa = PBXFileReference; includeInIndex = 1; path = "uitest-image-beta.jpg"; sourceTree = "<group>"; };
 		9404EB6B2DC31813009B0D3A /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		940FF1CD2D0B7BA3001435F0 /* UnitTestsOnly.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = UnitTestsOnly.xctestplan; sourceTree = "<group>"; };
 		946FA33A2C800D7900B8044C /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
@@ -188,7 +194,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		94EEC0672C9D392F004E3AF7 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		94EEC0672C9D392F004E3AF7 /* Exceptions for "App" folder in "HyperTagBrowser" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Utilities/Watchdog.swift,
@@ -198,7 +204,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		94AE67FC303E650C00A92C89 /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+		94AE67FC303E650C00A92C89 /* Exceptions for "Resources" folder in "" build phase */ = {
 			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
 			buildPhase = 94AE67FA303E64D700A92C89 /* CopyFiles */;
 			membershipExceptions = (
@@ -208,14 +214,96 @@
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		941C17A82D4407C9002C15D5 /* Resources */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (94AE67FC303E650C00A92C89 /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Resources; sourceTree = "<group>"; };
-		946094642CD0235D00CFA9A1 /* App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = App; sourceTree = "<group>"; };
-		9471A2812C993CE30005FC58 /* App */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (94EEC0672C9D392F004E3AF7 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = App; sourceTree = "<group>"; };
-		9471A2B12C993CE60005FC58 /* Extensions */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Extensions; sourceTree = "<group>"; };
-		947DAF6A303E534C004B03D3 /* scripts */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = scripts; sourceTree = "<group>"; };
-		947DD45B303E534C004B03D3 /* server */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = server; sourceTree = "<group>"; };
-		948399062D0E96D200A2A091 /* TestSupport */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TestSupport; sourceTree = "<group>"; };
-		94CF1CB52DC064E6006B34BD /* Extensions */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Extensions; sourceTree = "<group>"; };
+		941C17A82D4407C9002C15D5 /* Resources */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				94AE67FC303E650C00A92C89 /* Exceptions for "Resources" folder in "" build phase */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		946094642CD0235D00CFA9A1 /* App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		9471A2812C993CE30005FC58 /* App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				94EEC0672C9D392F004E3AF7 /* Exceptions for "App" folder in "HyperTagBrowser" target */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		9471A2B12C993CE60005FC58 /* Extensions */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		947DAF6A303E534C004B03D3 /* scripts */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = scripts;
+			sourceTree = "<group>";
+		};
+		947DD45B303E534C004B03D3 /* server */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = server;
+			sourceTree = "<group>";
+		};
+		948399062D0E96D200A2A091 /* TestSupport */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = TestSupport;
+			sourceTree = "<group>";
+		};
+		94CF1CB52DC064E6006B34BD /* Extensions */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -399,6 +487,7 @@
 				94AB87FB2CEB2AE600413C2C /* Screens */,
 				947341E12C7EADB80047C718 /* HyperTagBrowserUITests.swift */,
 				947341E32C7EADB80047C718 /* HyperTagBrowserUITestsLaunchTests.swift */,
+				B9085F461F6C313FD8846494 /* TestFixtures */,
 			);
 			path = HyperTagBrowserUITests;
 			sourceTree = "<group>";
@@ -431,7 +520,29 @@
 		};
 		94B359062D5678DF003E27CE /* Products */ = {
 			isa = PBXGroup;
+			children = (
+			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		9B2D4F151C13358DA32DDDA5 /* Files */ = {
+			isa = PBXGroup;
+			children = (
+				249342D3FD70472608C09511 /* uitest-image-alpha.jpg */,
+				7B77BF6B298BEF7C4772A947 /* uitest-image-beta.jpg */,
+				61AF2EF17A2CB189114A98E5 /* uitest-image-gamma.jpg */,
+			);
+			name = Files;
+			path = Files;
+			sourceTree = "<group>";
+		};
+		B9085F461F6C313FD8846494 /* TestFixtures */ = {
+			isa = PBXGroup;
+			children = (
+				9B2D4F151C13358DA32DDDA5 /* Files */,
+			);
+			name = TestFixtures;
+			path = TestFixtures;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -674,6 +785,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B90F971D40C0E7749206BAFF /* uitest-image-alpha.jpg in Resources */,
+				1B695FA2C9B5B00B98776364 /* uitest-image-beta.jpg in Resources */,
+				103A361BA8886D6CE8A3CC7C /* uitest-image-gamma.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
