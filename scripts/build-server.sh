@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -30,5 +30,6 @@ else
     GOARCH="amd64"
 fi
 
-GOOS=darwin GOARCH="$GOARCH" go build -o "$OUTPUT" "$SERVER_DIR"
+cd $SERVER_DIR
+GOOS=darwin GOARCH="$GOARCH" /opt/homebrew/bin/go build -o "$OUTPUT"
 echo "Built $GOARCH binary at $OUTPUT"
