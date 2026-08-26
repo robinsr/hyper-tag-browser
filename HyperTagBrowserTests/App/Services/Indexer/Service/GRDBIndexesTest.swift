@@ -33,7 +33,7 @@ extension GRDBIndexerServiceTests {
       }
       
       
-      @Test(".getIndex(withId:)", .disabled("Disabled for project migration"))
+      @Test(".getIndex(withId:)")
       func test_grdbindexer_getindex_getindex_withid() async throws {
         let fixture = IndexRecordFixture.withId(Indx.ids.first!)!
         
@@ -68,7 +68,7 @@ extension GRDBIndexerServiceTests {
         (service,queue) = try await TestSupportDB.setupDB()
       }
       
-      @Test(".getIndexes(matching:) - visible", .disabled("Disabled for project migration"))
+      @Test(".getIndexes(matching:) - visible")
       func test_get_indexes_params_visible() async throws {
         let params = IndxRequestParams(
           root: URL.temporaryDirectory.filepath,
@@ -87,7 +87,7 @@ extension GRDBIndexerServiceTests {
       }
       
 
-      @Test(".getIndexes(matching:) - hidden", .disabled("Disabled for project migration"))
+      @Test(".getIndexes(matching:) - hidden")
       func test_get_indexes_params_hidden() async throws {
         let params = IndxRequestParams(
           root: URL.temporaryDirectory.filepath,
@@ -103,7 +103,7 @@ extension GRDBIndexerServiceTests {
       }
       
       
-      @Test(".getIndexes(matching:) - any", .disabled("Disabled for project migration"))
+      @Test(".getIndexes(matching:) - any")
       func test_get_indexes_params_visibility_any() async throws {
         let allContentIds = IndexRecordFixture.Cases.allCases.map(\.id)
         
@@ -124,7 +124,7 @@ extension GRDBIndexerServiceTests {
         })
       }
       
-      @Test(".getIndexes(matching:) - video", .disabled("Disabled for project migration"))
+      @Test(".getIndexes(matching:) - video")
       func test_get_indexes_params_type_video() async throws {
         
         let params = IndxRequestParams(
@@ -151,7 +151,7 @@ extension GRDBIndexerServiceTests {
       }
       
       
-      @Test(".getIndexes(matching:) - FilteringTagMultiParam.or", .disabled("Disabled for project migration"))
+      @Test(".getIndexes(matching:) - FilteringTagMultiParam.or")
       func test_get_indexes_params_tagged_joined_or() async throws {
         let tags = Tags.bbqGoods.asFilters.map(\.asInclusive)
         
@@ -188,7 +188,7 @@ extension GRDBIndexerServiceTests {
       
       
       @MainActor
-      @Test(".getIndexes(matching:) - FilteringTagMultiParam.and", .disabled("Disabled for project migration"))
+      @Test(".getIndexes(matching:) - FilteringTagMultiParam.and")
       func test_get_indexes_params_tagged_joined_and() async throws {
         let tagsMatching = [
           Tags.Cases.porkchop.asFilter.asInclusive,
@@ -229,7 +229,7 @@ extension GRDBIndexerServiceTests {
         (service,queue) = try await TestSupportDB.setupDB()
       }
       
-      @Test(".getContentItems(withId:)", .disabled("Disabled for project migration"))
+      @Test(".getContentItems(withId:)")
       func test_get_index_info_for_ids() async throws {
         let ids = Indx.records.map(\.contentId)
         
@@ -252,7 +252,7 @@ extension GRDBIndexerServiceTests {
         (service,queue) = try await TestSupportDB.setupDB()
       }
       
-      @Test("getContentItem(withId:)", .disabled("Disabled for project migration"))
+      @Test("getContentItem(withId:)")
       func test_get_index_info() async throws {
         guard let result = try await service.getContentItem(withId: Indx.Cases.bakery.id) else {
           fail("IndexInfo with id \(Indx.Cases.bakery.id.value) not found")

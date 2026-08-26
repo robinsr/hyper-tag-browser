@@ -53,7 +53,7 @@ struct GRDBTagAssociationsTest {
       (service,queue) = try await TestSupportDB.setupDB()
     }
     
-    @Test(".getContentAssociations(tagId:) - Retrieve IndexTagRecord by ContentId", .disabled("Disabled for project migration"))
+    @Test(".getContentAssociations(tagId:) - Retrieve IndexTagRecord by ContentId")
     func test_get_content_associations() async throws {
       await expect {
         try await service.getContentAssociations(tagId: foodIds)
@@ -78,7 +78,7 @@ struct GRDBTagAssociationsTest {
       (service,queue) = try await TestSupportDB.setupDB()
     }
     
-    @Test(".tag(_:on:) - Add tag to content", .disabled("Disabled for project migration"))
+    @Test(".tag(_:on:) - Add tag to content")
     func test_add_tag_to_content() async throws {
       let newSideDish: FilteringTag = .tag("PotatoSalad")
       let bbqJoint = Eatery.bbq
@@ -130,7 +130,7 @@ struct GRDBTagAssociationsTest {
       (service,queue) = try await TestSupportDB.setupDB()
     }
     
-    @Test(".setTags(_:on:) - Overwrites previous tag associations for content", .disabled("Disabled for project migration"))
+    @Test(".setTags(_:on:) - Overwrites previous tag associations for content")
     func test_replace_tags_for_content() async throws {
       let newBakedGoods: [FilteringTag] = [.tag("danish"), .tag("tart"), .tag("muffin")]
       
@@ -149,7 +149,7 @@ struct GRDBTagAssociationsTest {
         }))
     }
     
-    @Test(".setTags(_:on:) - Overwrites previous tag associations for multiple contentIds", .disabled("Disabled for project migration"))
+    @Test(".setTags(_:on:) - Overwrites previous tag associations for multiple contentIds")
     func test_replace_tags_for_many_content() async throws {
       let newTags: [FilteringTag] = [.tag("danish"), .tag("tart"), .tag("muffin")]
       let content = [Eatery.bakery, Eatery.coffeeshop]
@@ -165,7 +165,7 @@ struct GRDBTagAssociationsTest {
       .to(haveCount(newTags.count))
     }
     
-    @Test(".setTags(adding:removing:on:) - Modify tags", .disabled("Disabled for project migration"))
+    @Test(".setTags(adding:removing:on:) - Modify tags")
     func test_modify_tags_for_content() async throws {
 
       let newSupplies: [FilteringTag] = [.tag("napkins"), .tag("straws")]
@@ -221,7 +221,7 @@ struct GRDBTagAssociationsTest {
     }
     
     
-    @Test(".untag(_:scope:) - Remove a tag entirely (no content associations)", .disabled("Disabled for project migration"))
+    @Test(".untag(_:scope:) - Remove a tag entirely (no content associations)")
     func test_remove_tag_with_value() async throws {
       await expect {
         try await service.untag(Food.chicken.asFilter, scope: .all)
@@ -235,7 +235,7 @@ struct GRDBTagAssociationsTest {
     }
     
     
-    @Test(".untag(_:scope:) - Throws error for non-existent tag", .disabled("Disabled for project migration"))
+    @Test(".untag(_:scope:) - Throws error for non-existent tag")
     func test_remove_tag_with_value_throws() async throws {
       await expect {
         try await service.untag(.tag("Zebra"), scope: .all)
@@ -244,7 +244,7 @@ struct GRDBTagAssociationsTest {
     }
     
     @MainActor
-    @Test(".untag(_:matching:) - Remove tag from content matching query parameters", .disabled("Disabled for project migration"))
+    @Test(".untag(_:matching:) - Remove tag from content matching query parameters")
     func test_remove_tag_with_value_matching() async throws {
       let hasDonuts = try await service.getContentIdAssociations(forTag: Food.donuts.id)
 
@@ -275,7 +275,7 @@ struct GRDBTagAssociationsTest {
     }
     
     @MainActor
-    @Test(".untag(_:from:) - Remove tag from content with IDs", .disabled("Disabled for project migration"))
+    @Test(".untag(_:from:) - Remove tag from content with IDs")
     func test_remove_tag_from_content() async throws {
       let hasDonuts = try await service.getContentIdAssociations(forTag: Food.donuts.id)
 
@@ -301,7 +301,7 @@ struct GRDBTagAssociationsTest {
     }
     
 
-    @Test(".untag(_:scope:) - Removes associations and TagRecord when no associations remain", .disabled("Disabled for project migration"))
+    @Test(".untag(_:scope:) - Removes associations and TagRecord when no associations remain")
     func test_remove_tag_if_unused() async throws {
       var tagCases = Foods.allFoods
 
@@ -331,7 +331,7 @@ struct GRDBTagAssociationsTest {
     }
     
 
-    @Test(".untag(_:from:) - Does not remove tag with associations", .disabled("Disabled for project migration"))
+    @Test(".untag(_:from:) - Does not remove tag with associations")
     func test_remove_tag_if_unused_with_value_not_removed() async throws {
       
       let contentItem = Eatery.bakery
@@ -370,7 +370,7 @@ struct GRDBTagAssociationsTest {
     let applePie: FilteringTag = .tag("apple pie")
     
 
-    @Test(".renameTag(_:to:) - Rename tag", .disabled("Disabled for project migration"))
+    @Test(".renameTag(_:to:) - Rename tag")
     func test_rename_tag_with_value_to() async throws {
       let hasDonuts = try await service.getContentIdAssociations(forTag: Food.donuts.id)
 
@@ -394,7 +394,7 @@ struct GRDBTagAssociationsTest {
     }
     
 
-    @Test(".renameTag(_:to:) - Apply new tag label", .disabled("Disabled for project migration"))
+    @Test(".renameTag(_:to:) - Apply new tag label")
     func test_rename_tag_change_tag_label() async throws {
       let hasDonuts = try await service.getContentIdAssociations(forTag: Food.donuts.id)
 
@@ -418,7 +418,7 @@ struct GRDBTagAssociationsTest {
     }
     
 
-    @Test(".renameTag(_:to:for:) - Rename tag for content IDs", .disabled("Disabled for project migration"))
+    @Test(".renameTag(_:to:for:) - Rename tag for content IDs")
     func test_rename_tag_with_value_to_for() async throws {
       
       let (renamed, tagitems) = try await service.renameTag(Food.pie.asFilter, to: applePie, for: [Eatery.diner.id])
@@ -449,7 +449,7 @@ struct GRDBTagAssociationsTest {
     
       /// Rename tag "pie" to "Apple Pie" but only for items that also have "waffles"
       /// Pie is on 3 items: bakery, bbq, and diner, and only one of those has waffles: the classic diner
-    @Test(".renameTag(_:to:matching:) - Rename tag for content matching query parameters", .disabled("Disabled for project migration"))
+    @Test(".renameTag(_:to:matching:) - Rename tag for content matching query parameters")
     func test_rename_tag_with_value_to_matching() async throws {
       let params = IndxRequestParams(
         root: URL.temporaryDirectory.filepath,
@@ -543,7 +543,7 @@ struct GRDBTagAssociationsTest {
 //    }
     
 
-    @Test(".consolidateTag(_:into:) - Consolidate tag into non-existent tag", .disabled("Disabled for project migration"))
+    @Test(".consolidateTag(_:into:) - Consolidate tag into non-existent tag")
     func test_consolidate_tag_with_value_into_non_existent() async throws {
       let brunch: FilteringTag = .tag("brunch")
       
@@ -556,7 +556,7 @@ struct GRDBTagAssociationsTest {
     }
     
 
-    @Test(".consolidateTag(_:into:) - Consolidate tag into itself", .disabled("Disabled for project migration"))
+    @Test(".consolidateTag(_:into:) - Consolidate tag into itself")
     func test_consolidate_tag_with_value_into_itself() async throws {
       let tagitems = try await service.consolidateTag(Food.donuts.asFilter, into: Food.donuts.asFilter)
       

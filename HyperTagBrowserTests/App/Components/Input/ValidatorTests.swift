@@ -71,7 +71,7 @@ struct TextFieldModelTests {
   struct ValidateTests {
     
     @MainActor
-    @Test("Validate presence", .disabled("Disabled for project migration"), arguments: TestCase.presence)
+    @Test("Validate presence", arguments: TestCase.presence)
     func test_validate_presence(testing: TestCase) {
       let model = TextFieldModel(validate: [.presence])
       model.rawValue = testing.input
@@ -92,7 +92,7 @@ struct TextFieldModelTests {
     }
     
     @MainActor
-    @Test("Validate filenames", .disabled("Disabled for project migration"), arguments: TestCase.filenames)
+    @Test("Validate filenames", arguments: TestCase.filenames)
     func test_validate_filenames(testing: TestCase) {
       let model = TextFieldModel(validate: [.presence, .disallow_colon, .disallow_forwardslash, .filename_extension])
       model.rawValue = testing.input

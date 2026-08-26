@@ -51,7 +51,7 @@ struct GRDBTagsTest {
     }
     
     
-    @Test(".createTagRecord(for:) - Creates a TagRecord for a FilteringTag", .disabled("Disabled for project migration"))
+    @Test(".createTagRecord(for:) - Creates a TagRecord for a FilteringTag")
     func test_create_tag_with_value() async throws {
       await expect {
         try await service.createTagRecord(for: .tag("create-tag-test"))
@@ -73,7 +73,7 @@ struct GRDBTagsTest {
     }
     
     
-    @Test(".tagExists(_filter:) - Check if TagRecord exists by FilteringTag", .disabled("Disabled for project migration"))
+    @Test(".tagExists(_filter:) - Check if TagRecord exists by FilteringTag")
     func test_tag_exists() async throws {
       
       foodFilters.forEach { filter in
@@ -105,7 +105,7 @@ struct GRDBTagsTest {
     }
     
     
-    @Test(".getTagRecord(for: _filter:) - Retrieve TagRecord by FilteringTag", .disabled("Disabled for project migration"))
+    @Test(".getTagRecord(for: _filter:) - Retrieve TagRecord by FilteringTag")
     func test_get_tag_with_value() async throws {
       await expect {
         try await service.getTagRecords(for: foodFilters)
@@ -115,7 +115,7 @@ struct GRDBTagsTest {
     }
     
     
-    @Test(".getTagRecord(for: forContent:) - Retrieve TagRecord by ContentId", .disabled("Disabled for project migration"))
+    @Test(".getTagRecord(for: forContent:) - Retrieve TagRecord by ContentId")
     func test_get_tags_for_content() async throws {
       
       let bakery: Eatery = .bakery
@@ -148,7 +148,7 @@ struct GRDBTagsTest {
     }
     
     
-    @Test(".getContentAssociations(tagId:) - Retrieve IndexTagRecord by ContentId", .disabled("Disabled for project migration"))
+    @Test(".getContentAssociations(tagId:) - Retrieve IndexTagRecord by ContentId")
     func test_get_content_associations() async throws {
       await expect {
         try await service.getContentAssociations(tagId: foodIds)
@@ -175,7 +175,7 @@ struct GRDBTagsTest {
     }
     
     
-    @Test(".findOrCreateTagRecords(for: ) - Fetches or creates TagRecord for FilteringTag", .disabled("Disabled for project migration"))
+    @Test(".findOrCreateTagRecords(for: ) - Fetches or creates TagRecord for FilteringTag")
     func test_find_or_create_tag_for_values() async throws {
       let filters: [FilteringTag] = Foods.fruitTags.first(3).asArray
       
