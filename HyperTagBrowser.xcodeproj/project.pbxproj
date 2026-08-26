@@ -11,6 +11,7 @@
 		1B695FA2C9B5B00B98776364 /* uitest-image-beta.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7B77BF6B298BEF7C4772A947 /* uitest-image-beta.jpg */; };
 		2C76E717E5C216D2C6E2C3A3 /* UITestEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C90778346049F38313C76A5 /* UITestEnvironment.swift */; };
 		44372250E2286998D4C5D6AA /* FolderLoadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD288D675B27306467A651C0 /* FolderLoadTests.swift */; };
+		7989C9E4FDCBB9AE6FEEB3DF /* TaggingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE069506EA9867D4DAA436A /* TaggingTests.swift */; };
 		7C5081871E1ABBF1E1300697 /* DetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42398D5989B9761B9CD3E7E /* DetailScreen.swift */; };
 		887B443917DD9809D6B9526E /* BrowseScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EF2C30C742FA825B993EBC2 /* BrowseScreen.swift */; };
 		9404EB6C2DC31813009B0D3A /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9404EB6B2DC31813009B0D3A /* AVKit.framework */; };
@@ -175,6 +176,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0EE069506EA9867D4DAA436A /* TaggingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TaggingTests.swift; sourceTree = "<group>"; };
 		1C90778346049F38313C76A5 /* UITestEnvironment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UITestEnvironment.swift; sourceTree = "<group>"; };
 		249342D3FD70472608C09511 /* uitest-image-alpha.jpg */ = {isa = PBXFileReference; includeInIndex = 1; path = "uitest-image-alpha.jpg"; sourceTree = "<group>"; };
 		2B723EDFB408596045D3110E /* BaseUITest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BaseUITest.swift; sourceTree = "<group>"; };
@@ -437,6 +439,7 @@
 			children = (
 				49506C5D100F3E2C95D25BEC /* AppLaunchTests.swift */,
 				CD288D675B27306467A651C0 /* FolderLoadTests.swift */,
+				0EE069506EA9867D4DAA436A /* TaggingTests.swift */,
 			);
 			name = Scenarios;
 			path = Scenarios;
@@ -860,6 +863,7 @@
 				7C5081871E1ABBF1E1300697 /* DetailScreen.swift in Sources */,
 				E41747299A536CC7B295DCED /* AppLaunchTests.swift in Sources */,
 				44372250E2286998D4C5D6AA /* FolderLoadTests.swift in Sources */,
+				7989C9E4FDCBB9AE6FEEB3DF /* TaggingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
