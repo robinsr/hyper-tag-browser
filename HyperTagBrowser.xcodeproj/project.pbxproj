@@ -110,6 +110,7 @@
 		95DD8BBB250189A362FF6648 /* BaseUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B723EDFB408596045D3110E /* BaseUITest.swift */; };
 		AB7C0F5FDD107D27391765DF /* UITestFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB4185DD6F12106797B362D /* UITestFixtures.swift */; };
 		B90F971D40C0E7749206BAFF /* uitest-image-alpha.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 249342D3FD70472608C09511 /* uitest-image-alpha.jpg */; };
+		E41747299A536CC7B295DCED /* AppLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49506C5D100F3E2C95D25BEC /* AppLaunchTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -176,6 +177,7 @@
 		1C90778346049F38313C76A5 /* UITestEnvironment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UITestEnvironment.swift; sourceTree = "<group>"; };
 		249342D3FD70472608C09511 /* uitest-image-alpha.jpg */ = {isa = PBXFileReference; includeInIndex = 1; path = "uitest-image-alpha.jpg"; sourceTree = "<group>"; };
 		2B723EDFB408596045D3110E /* BaseUITest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BaseUITest.swift; sourceTree = "<group>"; };
+		49506C5D100F3E2C95D25BEC /* AppLaunchTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppLaunchTests.swift; sourceTree = "<group>"; };
 		61AF2EF17A2CB189114A98E5 /* uitest-image-gamma.jpg */ = {isa = PBXFileReference; includeInIndex = 1; path = "uitest-image-gamma.jpg"; sourceTree = "<group>"; };
 		7B77BF6B298BEF7C4772A947 /* uitest-image-beta.jpg */ = {isa = PBXFileReference; includeInIndex = 1; path = "uitest-image-beta.jpg"; sourceTree = "<group>"; };
 		7EF2C30C742FA825B993EBC2 /* BrowseScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BrowseScreen.swift; sourceTree = "<group>"; };
@@ -428,6 +430,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1CC6E2773C29ED0959C3ABF9 /* Scenarios */ = {
+			isa = PBXGroup;
+			children = (
+				49506C5D100F3E2C95D25BEC /* AppLaunchTests.swift */,
+			);
+			name = Scenarios;
+			path = Scenarios;
+			sourceTree = "<group>";
+		};
 		947341B92C7EADB70047C718 = {
 			isa = PBXGroup;
 			children = (
@@ -499,6 +510,7 @@
 				CEB4185DD6F12106797B362D /* UITestFixtures.swift */,
 				1C90778346049F38313C76A5 /* UITestEnvironment.swift */,
 				2B723EDFB408596045D3110E /* BaseUITest.swift */,
+				1CC6E2773C29ED0959C3ABF9 /* Scenarios */,
 			);
 			path = HyperTagBrowserUITests;
 			sourceTree = "<group>";
@@ -843,6 +855,7 @@
 				95DD8BBB250189A362FF6648 /* BaseUITest.swift in Sources */,
 				887B443917DD9809D6B9526E /* BrowseScreen.swift in Sources */,
 				7C5081871E1ABBF1E1300697 /* DetailScreen.swift in Sources */,
+				E41747299A536CC7B295DCED /* AppLaunchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
