@@ -19,21 +19,24 @@ struct SettingsScreen: Scene {
 
 struct SettingsScreenContent: View {
   var tab: SettingsTab? = nil
-  
+
   @Injected(\EnvContainer.stage) var appStage
   @Injected(\Container.colorTheme) var colorTheme
   @Injected(\PreferencesContainer.userProfile) var userProfile
   @Injected(\PreferencesContainer.userProfileId) var profileKey
-  
+  @Injected(\IndexerContainer.databasePath) var databasePath
+
   @Default(.backgroundOpacity) var userPreferredBgOpacity
   @Default(.backgroundColor) var userPreferedBgColor
   @Default(.sidebarPosition) var sidebarPosition
   @Default(.devFlags) var devFlags
   @Default(.debugQueryables) var queryableFlags
-  
+
+  @ObservedObject var serverManager = ServerManager.shared
+
   @State var currentTab: SettingsTab = .general
   @State var showingHelpId: String?
-  
+
   @State var helpState = HelpPopoverState()
   
   
@@ -48,7 +51,8 @@ struct SettingsScreenContent: View {
         SettingsForm {
           GeneralBehavior
           ProfileScopeSettings
-          
+          ServerSettings
+
           Text("Settings for profile'\(userProfile.name)'")
             .font(.caption)
             .foregroundColor(.secondary)
@@ -109,6 +113,26 @@ struct SettingsScreenContent: View {
     }
   }
   
+
+  var ServerSettings: some View {
+    Section("GraphQL Server") {
+      Toggle("Enable GraphQL Server", isOn: Binding(
+        get: { serverManager.isEnabled },
+        set: { enabled in
+          if enabled {
+            try? serverManager.enable(databasePath: databasePath.string)
+          } else {
+            try? serverManager.disable(databasePath: databasePath.string)
+          }
+        }
+      ))
+      if serverManager.isEnabled {
+        Text("Serving on http://127.0.0.1:8765/")
+          .font(.caption)
+          .foregroundStyle(.secondary)
+      }
+    }
+  }
 
   var AppearenceSettings: some View {
     Section {

@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -18,12 +20,20 @@ import (
 	"github.com/robinsr/taggedfilebrowser/server/graph/resolvers"
 )
 
+func defaultConfigPath() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return ""
+	}
+	return filepath.Join(home, "Library", "Application Support", "com.hypertag.server", "server-config.json")
+}
+
 func main() {
-	configPath := flag.String("config", "", "path to server config JSON (required)")
+	configPath := flag.String("config", defaultConfigPath(), "path to server config JSON")
 	flag.Parse()
 
 	if *configPath == "" {
-		log.Fatal("--config path is required")
+		log.Fatal("--config path is required and no default could be determined")
 	}
 
 	for {

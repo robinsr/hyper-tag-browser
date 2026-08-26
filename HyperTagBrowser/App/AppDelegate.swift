@@ -16,14 +16,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
   func applicationDidFinishLaunching(_ notification: Notification) {
     Task { @MainActor in
-      ServerManager.shared.writeConfig(databasePath: databasePath.string, enabled: true)
+      let enabled = ServerManager.shared.status == .enabled
+      ServerManager.shared.writeConfig(databasePath: databasePath.string, enabled: enabled)
     }
   }
 
-  func applicationWillTerminate(_ notification: Notification) {
-    ServerManager.shared.writeConfig(databasePath: databasePath.string, enabled: false)
-  }
-  
+
   var menuItems: [NSMenuItem] {
     return profiles.map { profile in
       let item = NSMenuItem(title: profile.name, action: #selector(tappedButton), keyEquivalent: "")

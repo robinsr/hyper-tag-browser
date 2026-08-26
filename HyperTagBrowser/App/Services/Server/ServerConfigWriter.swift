@@ -25,7 +25,7 @@ enum ServerConfigWriter {
             appropriateFor: nil,
             create: true
         )
-        let dir = support.appendingPathComponent("com.robinsr.taggedfilebrowser")
+        let dir = support.appendingPathComponent("com.hypertag.server")
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir
     }

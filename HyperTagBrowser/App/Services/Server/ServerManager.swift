@@ -11,7 +11,7 @@ final class ServerManager: ObservableObject {
     static let shared = ServerManager()
 
     private let service = SMAppService.agent(
-        plistName: "com.robinsr.taggedfilebrowser.server.plist"
+        plistName: "com.hypertag.server.plist"
     )
 
     @Published private(set) var isEnabled: Bool = false
