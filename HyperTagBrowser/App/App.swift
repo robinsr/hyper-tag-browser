@@ -112,10 +112,21 @@ struct MainEntryPoint {
       return
     }
 
+    let runFlags = RunFlags()
+
+    #if DEBUG
+    UITestLaunchHandler.configure(flags: runFlags)
+    #endif
+
     let indexer = IndexerContainer.shared.indexService()
-    
+
     do {
       try indexer.runMigrations()
+
+      #if DEBUG
+      try UITestLaunchHandler.seed(service: indexer, flags: runFlags)
+      #endif
+
       TaggedFileBrowserApp.main()
     } catch {
       fatalError("Failed to start app: \(error.legibleDescription)")
