@@ -1,13 +1,5 @@
 import XCTest
 
-// TODO: This test requires the app to automatically index the --LaunchFolderPath directory on
-// startup when --LiveIndex is passed. Currently the app does not consume launchFolderPath for
-// triggering live indexing — it only uses it to set the database path (UITestLaunchHandler.configure)
-// and seed fixture data (UITestLaunchHandler.seed, which is skipped when liveIndex=true).
-// Normal indexing is triggered via user action (AppViewModel.doIndexDirectory). Until the app
-// gains a startup code path that detects --LiveIndex + --LaunchFolderPath and auto-indexes the
-// specified folder, this test will time out waiting for the grid to populate.
-
 final class FolderLoadTests: BaseUITest {
 
     override func setUpWithError() throws {
