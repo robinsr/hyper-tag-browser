@@ -266,7 +266,7 @@ extension GRDBIndexerServiceTests {
         let indxId = result.index.contentId
         let tagCount = result.tagCount
         let tagValues = result.tagValues
-        let tagIds = result.tagValues.map(\.id)
+        let tagIds = result.tagValues.map(\.tagId)
         
         expect(result).notTo(beNil())
         

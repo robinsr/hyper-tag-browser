@@ -257,6 +257,7 @@ struct GRDBTagAssociationsTest {
       
       let filter = IndxRequestParams(
         root: URL.temporaryDirectory.filepath,
+        mode: .recursive(),
         visibility: .hidden
       )
       
@@ -453,6 +454,7 @@ struct GRDBTagAssociationsTest {
     func test_rename_tag_with_value_to_matching() async throws {
       let params = IndxRequestParams(
         root: URL.temporaryDirectory.filepath,
+        mode: .recursive(),
         tagsMatching: FilteringTagMultiParam([Food.waffles.asFilter.asInclusive], operator: .and)
       )
 
