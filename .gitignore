@@ -130,6 +130,7 @@ Temporary Items
 # Logs
 *.log
 logs/
+.derived-data-log-*
 
 # Runtime data
 pids

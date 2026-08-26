@@ -14,7 +14,7 @@
 			<key>CFBundleURLIconFile</key>
 			<string>app-icon-256px</string>
 			<key>CFBundleURLName</key>
-			<string>com.robinsr.taggedfilebrowser</string>
+			<string>com.robinsr.HyperTagBrowser</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>tfb</string>
@@ -23,7 +23,7 @@
 	</array>
 	<key>JK_OSLogPreferences</key>
 	<dict>
-		<key>com.TaggedFileBrowser</key>
+		<key>com.HyperTagBrowser</key>
 		<dict>
 			<key>FilePathInput</key>
 			<dict>
@@ -63,7 +63,7 @@
 			<key>UTTypeIcons</key>
 			<dict/>
 			<key>UTTypeIdentifier</key>
-			<string>com.taggedfilebrowser.filteringtag</string>
+			<string>com.hypertag.filteringtag</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
@@ -104,7 +104,7 @@
 			<key>UTTypeIcons</key>
 			<dict/>
 			<key>UTTypeIdentifier</key>
-			<string>com.taggedfilebrowser.contentpointer</string>
+			<string>com.hypertag.contentpointer</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
@@ -123,7 +123,7 @@
 			<key>UTTypeIcons</key>
 			<dict/>
 			<key>UTTypeIdentifier</key>
-			<string>com.taggedfilebrowser.content-item</string>
+			<string>com.hypertag.content-item</string>
 			<key>UTTypeTagSpecification</key>
 			<dict/>
 		</dict>

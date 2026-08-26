@@ -171,8 +171,6 @@
 		94C1237B2D1218650069304C /* versioning.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = versioning.xcconfig; sourceTree = "<group>"; };
 		94C1237C2D121A690069304C /* versioning.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = versioning.sh; sourceTree = "<group>"; };
 		94CF1CC02DC067AA006B34BD /* Testing.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Testing.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/Testing.framework; sourceTree = DEVELOPER_DIR; };
-		94DC2A1A2D82307C0007A356 /* identifiers.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = identifiers.plist; sourceTree = "<group>"; };
-		94DF6D492CB9229A008721B4 /* fileid_scripts.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = fileid_scripts.sh; sourceTree = "<group>"; };
 		94EBA53E2C865BE700CA40A0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		94F14E052C81874800FBCD0B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
 		94F2F3E92D55EBCC00E5B626 /* HyperTagBrowser.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = HyperTagBrowser.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -317,8 +315,6 @@
 				94C1237C2D121A690069304C /* versioning.sh */,
 				94C1237B2D1218650069304C /* versioning.xcconfig */,
 				940FF1CD2D0B7BA3001435F0 /* UnitTestsOnly.xctestplan */,
-				94DF6D492CB9229A008721B4 /* fileid_scripts.sh */,
-				94DC2A1A2D82307C0007A356 /* identifiers.plist */,
 				94EBA53E2C865BE700CA40A0 /* .gitignore */,
 				947341C32C7EADB70047C718 /* Products */,
 				94F14E052C81874800FBCD0B /* README.md */,
