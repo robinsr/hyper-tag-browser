@@ -41,42 +41,42 @@ extension GRDBIndexService: SavedQueryAccess {
   
   func updateSavedQuery(withId id: SavedQueryRecord.ID, using query: BrowseFilters) throws -> SavedQueryRecord {
     try dbWriter.write { db in
-      guard var record = try getSavedQuery(withId: id) else {
+      guard var record = try SavedQueryRecord.filter(Columns.id.equals(id)).fetchOne(db) else {
         throw IndexerServiceError.DataIntegrityError("Expected to find SavedQuery with id \(id.quoted)")
       }
-      
+
       record.query = query
       record.updatedAt = Date.now
-      
+
       try record.update(db)
-      
+
       return record
     }
   }
-  
-  
+
+
   func renameSavedQuery(withId: SavedQueryRecord.ID, to: String) throws -> SavedQueryRecord {
     try dbWriter.write { db in
-      guard var record = try getSavedQuery(withId: withId) else {
+      guard var record = try SavedQueryRecord.filter(Columns.id.equals(withId)).fetchOne(db) else {
         throw IndexerServiceError.DataIntegrityError("Expected to find SavedQuery with id \(withId.quoted)")
       }
-      
+
       record.name = to
       record.updatedAt = Date.now
-      
+
       try record.update(db)
-      
+
       return record
     }
   }
-  
-  
+
+
   func deleteSavedQuery(withId: SavedQueryRecord.ID) throws -> Bool {
     try dbWriter.write { db in
-      guard let record = try getSavedQuery(withId: withId) else {
+      guard let record = try SavedQueryRecord.filter(Columns.id.equals(withId)).fetchOne(db) else {
         throw IndexerServiceError.DataIntegrityError("Expected to find SavedQuery with id \(withId.quoted)")
       }
-      
+
       try record.delete(db)
       return true
     }
