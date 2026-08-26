@@ -185,9 +185,18 @@ final class AppViewModel {
         Container.shared.dispatcher().dispatch(.setItemLimit(to: value))
       }
     }
-    
+
+    #if DEBUG
+    if let queryId = UserDefaults.standard.string(forKey: UITestLaunchHandler.uitestLoadSavedQueryKey) {
+      Task { @MainActor [self] in
+        self.doApplySavedQuery(id: queryId)
+        UserDefaults.standard.removeObject(forKey: UITestLaunchHandler.uitestLoadSavedQueryKey)
+      }
+    }
+    #endif
+
     let cont = Continuator()
-    
+
     Task { @MainActor in
       cont.withContinousObservation(of: self.navigationPath) { [self] navStack in
         Task {
@@ -197,7 +206,7 @@ final class AppViewModel {
           }
         }
       }
-      
+
       cont.withContinousObservation(of: self.query) { [self] filters in
         logger.emit(.debug, "Filters changed: \(filters)")
         self._onQueryChange(filters)

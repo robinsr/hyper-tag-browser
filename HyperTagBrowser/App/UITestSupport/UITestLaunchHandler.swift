@@ -89,6 +89,9 @@ struct UITestFixtureSeeder {
 
 struct UITestLaunchHandler {
 
+    /// `UserDefaults` key used to communicate a saved-query ID from `configure` to `AppViewModel`.
+    static let uitestLoadSavedQueryKey = "UITestLoadSavedQueryId"
+
     static func configure(flags: RunFlags) {
         guard flags.uiTestMode, let folderPath = flags.launchFolderPath else { return }
 
@@ -96,6 +99,13 @@ struct UITestLaunchHandler {
         let dbPath = FilePath(tempDir.appendingPathComponent(".hypertag-uitest.sqlite").path)
 
         IndexerContainer.shared.databasePath.register { dbPath }
+
+        // Store the saved-query ID so AppViewModel can apply it after the indexer is ready.
+        if let queryId = flags.loadSavedQuery {
+            UserDefaults.standard.set(queryId, forKey: uitestLoadSavedQueryKey)
+        } else {
+            UserDefaults.standard.removeObject(forKey: uitestLoadSavedQueryKey)
+        }
     }
 
     static func seed(service: GRDBIndexService, flags: RunFlags) throws {

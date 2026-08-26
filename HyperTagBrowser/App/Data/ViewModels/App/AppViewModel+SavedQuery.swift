@@ -15,7 +15,12 @@ extension AppViewModel {
           messages.send(reject: "Saved query with ID \(id) not found")
           return
         }
-        
+
+        await MainActor.run {
+          self.query = savedQueryRecord.query
+          self.dbSavedId = savedQueryRecord.id
+        }
+
         messages.send(ok: "Applied filters from \(savedQueryRecord.name.quoted)")
       } catch {
         messages.send(ErrorMsg("Error applying saved query", error))
