@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		103A361BA8886D6CE8A3CC7C /* uitest-image-gamma.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 61AF2EF17A2CB189114A98E5 /* uitest-image-gamma.jpg */; };
 		1B695FA2C9B5B00B98776364 /* uitest-image-beta.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7B77BF6B298BEF7C4772A947 /* uitest-image-beta.jpg */; };
+		2C76E717E5C216D2C6E2C3A3 /* UITestEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C90778346049F38313C76A5 /* UITestEnvironment.swift */; };
 		9404EB6C2DC31813009B0D3A /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9404EB6B2DC31813009B0D3A /* AVKit.framework */; };
 		9405650C2CD2024500648DD5 /* LegibleError in Frameworks */ = {isa = PBXBuildFile; productRef = 9405650B2CD2024500648DD5 /* LegibleError */; };
 		9406C35E2D0FA899008E4AC3 /* Difference in Frameworks */ = {isa = PBXBuildFile; productRef = 9406C35D2D0FA899008E4AC3 /* Difference */; };
@@ -105,6 +106,8 @@
 		94FEA88C2D50207E00288A21 /* ResourceExtension in Frameworks */ = {isa = PBXBuildFile; productRef = 94FEA88B2D50207E00288A21 /* ResourceExtension */; };
 		94FEA88E2D50207E00288A21 /* StdoutExporter in Frameworks */ = {isa = PBXBuildFile; productRef = 94FEA88D2D50207E00288A21 /* StdoutExporter */; };
 		94FEA8902D50275000288A21 /* SwiftMetricsShim in Frameworks */ = {isa = PBXBuildFile; productRef = 94FEA88F2D50275000288A21 /* SwiftMetricsShim */; };
+		95DD8BBB250189A362FF6648 /* BaseUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B723EDFB408596045D3110E /* BaseUITest.swift */; };
+		AB7C0F5FDD107D27391765DF /* UITestFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB4185DD6F12106797B362D /* UITestFixtures.swift */; };
 		B90F971D40C0E7749206BAFF /* uitest-image-alpha.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 249342D3FD70472608C09511 /* uitest-image-alpha.jpg */; };
 /* End PBXBuildFile section */
 
@@ -169,7 +172,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1C90778346049F38313C76A5 /* UITestEnvironment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UITestEnvironment.swift; sourceTree = "<group>"; };
 		249342D3FD70472608C09511 /* uitest-image-alpha.jpg */ = {isa = PBXFileReference; includeInIndex = 1; path = "uitest-image-alpha.jpg"; sourceTree = "<group>"; };
+		2B723EDFB408596045D3110E /* BaseUITest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BaseUITest.swift; sourceTree = "<group>"; };
 		61AF2EF17A2CB189114A98E5 /* uitest-image-gamma.jpg */ = {isa = PBXFileReference; includeInIndex = 1; path = "uitest-image-gamma.jpg"; sourceTree = "<group>"; };
 		7B77BF6B298BEF7C4772A947 /* uitest-image-beta.jpg */ = {isa = PBXFileReference; includeInIndex = 1; path = "uitest-image-beta.jpg"; sourceTree = "<group>"; };
 		9404EB6B2DC31813009B0D3A /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
@@ -191,6 +196,7 @@
 		94EBA53E2C865BE700CA40A0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		94F14E052C81874800FBCD0B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
 		94F2F3E92D55EBCC00E5B626 /* HyperTagBrowser.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = HyperTagBrowser.xcodeproj; sourceTree = SOURCE_ROOT; };
+		CEB4185DD6F12106797B362D /* UITestFixtures.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UITestFixtures.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -488,6 +494,9 @@
 				947341E12C7EADB80047C718 /* HyperTagBrowserUITests.swift */,
 				947341E32C7EADB80047C718 /* HyperTagBrowserUITestsLaunchTests.swift */,
 				B9085F461F6C313FD8846494 /* TestFixtures */,
+				CEB4185DD6F12106797B362D /* UITestFixtures.swift */,
+				1C90778346049F38313C76A5 /* UITestEnvironment.swift */,
+				2B723EDFB408596045D3110E /* BaseUITest.swift */,
 			);
 			path = HyperTagBrowserUITests;
 			sourceTree = "<group>";
@@ -835,6 +844,9 @@
 				947341E22C7EADB80047C718 /* HyperTagBrowserUITests.swift in Sources */,
 				947341E42C7EADB80047C718 /* HyperTagBrowserUITestsLaunchTests.swift in Sources */,
 				94AB88022CEB2AE600413C2C /* BrowseScreenUITest.swift in Sources */,
+				AB7C0F5FDD107D27391765DF /* UITestFixtures.swift in Sources */,
+				2C76E717E5C216D2C6E2C3A3 /* UITestEnvironment.swift in Sources */,
+				95DD8BBB250189A362FF6648 /* BaseUITest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
