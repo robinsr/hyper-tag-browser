@@ -34,6 +34,7 @@ struct BookmarksList: View {
           .id(bookmark.id)
       }
     }
+    .accessibilityIdentifier("bookmarks-list")
   }
 }
 

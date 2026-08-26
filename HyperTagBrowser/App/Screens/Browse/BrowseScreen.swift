@@ -125,6 +125,7 @@ struct BrowseScreen: View {
       .scenePadding()
     }
     .scrollIndicators(.never)
+    .accessibilityIdentifier("browse-sidebar")
   }
 
   var StatusBarContent: some View {

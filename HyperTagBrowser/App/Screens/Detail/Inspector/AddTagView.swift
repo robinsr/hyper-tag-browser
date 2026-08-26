@@ -94,6 +94,7 @@ struct AddTagView: View {
       .onChange(of: isFocused) {
         textFieldFocus.focused.toggleExistence(Self.textFieldId, shouldExist: isFocused)
       }
+      .accessibilityIdentifier("tag-search-field")
   }
   
   var TagSuggestionResults: some View {

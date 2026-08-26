@@ -181,6 +181,7 @@ struct PhotoGridView: View {
           .id(item.id.value)
       }
     }
+    .accessibilityIdentifier("photo-grid")
   }
   
   

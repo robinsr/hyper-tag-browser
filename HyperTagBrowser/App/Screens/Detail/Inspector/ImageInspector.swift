@@ -63,12 +63,13 @@ struct ImageInspector: View {
         contentItem: .constant(content),
         domains: .constant([.descriptive])
       )
-      
+
       CurrentTagsView(
         contentItem: .constant(content),
         domains: .constant([.queue])
       )
     }
+    .accessibilityIdentifier("applied-tags-view")
     
     Divider()
     
