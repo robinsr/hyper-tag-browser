@@ -61,7 +61,7 @@
      */
     public var appPreferences: Factory<UserDefaults> {
       self {
-        self.getSuite(id: self.appPrefsKey())
+        self.getSuite(key: self.appPrefsKey())
       }
       .scope(.cached)
     }
@@ -74,7 +74,7 @@
         let stage = EnvContainer.shared.stage()
         let timestamp = DateFormatter.iso8601.string(from: .now)
         
-        let suite = self.getSuite(id: self.userPrefsKey())
+        let suite = self.getSuite(key: self.userPrefsKey())
         
         suite.set(stage.id, forKey: "tfb-stage-name")
         suite.set(timestamp, forKey: "tfb-last-opened")
@@ -210,7 +210,7 @@
         if
           let profileName = self.getSuite(id: profileId).string(forKey: profileNameKey),
           profileName == name {
-          return profileName
+          return profileId
         }
       }
       
