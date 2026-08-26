@@ -14,6 +14,10 @@ struct RunFlags: Encodable {
     case profileId = "--profile"
     case profileName = "--profile-name"
     case emitMetrics = "--emit-metrics"
+    case uiTestMode = "--UITestMode"
+    case liveIndex = "--LiveIndex"
+    case launchFolderPath = "--LaunchFolderPath"
+    case loadSavedQuery = "--LoadSavedQuery"
   }
 
   var args: [String] {
@@ -39,7 +43,23 @@ struct RunFlags: Encodable {
   var emitMetrics: Bool {
     getRuntimeValue(forKey: CodingKeys.emitMetrics.rawValue) != nil
   }
-  
+
+  var uiTestMode: Bool {
+    hasRuntimeArgument(CodingKeys.uiTestMode.rawValue)
+  }
+
+  var liveIndex: Bool {
+    hasRuntimeArgument(CodingKeys.liveIndex.rawValue)
+  }
+
+  var launchFolderPath: String? {
+    getRuntimeValue(forKey: CodingKeys.launchFolderPath.rawValue)
+  }
+
+  var loadSavedQuery: String? {
+    getRuntimeValue(forKey: CodingKeys.loadSavedQuery.rawValue)
+  }
+
     /// Find the argument that starts with the specified key/
   func getRuntimeValue(forKey key: String) -> String? {
     args
@@ -55,9 +75,13 @@ struct RunFlags: Encodable {
   
   func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
-    
+
     try container.encodeIfPresent(profileId, forKey: .profileId)
     try container.encodeIfPresent(profileName, forKey: .profileName)
     try container.encodeIfPresent(emitMetrics, forKey: .emitMetrics)
+    try container.encodeIfPresent(uiTestMode, forKey: .uiTestMode)
+    try container.encodeIfPresent(liveIndex, forKey: .liveIndex)
+    try container.encodeIfPresent(launchFolderPath, forKey: .launchFolderPath)
+    try container.encodeIfPresent(loadSavedQuery, forKey: .loadSavedQuery)
   }
 }
