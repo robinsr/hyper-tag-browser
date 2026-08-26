@@ -1,0 +1,199 @@
+# server/graph/schema.graphqls
+scalar DateTime
+
+directive @goField(forceResolver: Boolean, name: String, omittable: Boolean) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+
+enum TagType {
+  TAG
+  ARTIST
+  CREATOR
+  CONTRIBUTOR
+  OWNER
+  QUEUE
+  RELATED
+  CREATED_BEFORE
+  CREATED_ON_OR_BEFORE
+  CREATED_ON
+  CREATED_ON_OR_AFTER
+  CREATED_AFTER
+}
+
+enum TagDomain { DESCRIPTIVE  ATTRIBUTION  QUEUE  UNLABELED  CREATION }
+enum TagEntryType { NORMAL  ALIAS }
+enum TagFilterEffect { INCLUSIVE  EXCLUSIVE }
+enum FilterOperator { ALL  ANY }
+
+enum ContentTypeGroup {
+  FOLDERS  IMAGES  VIDEO  DATABASE  USER  NON_USER  CONTENT  ALL  EMPTY
+}
+
+enum FileVisibility  { NORMAL  HIDDEN  LOST }
+enum VisibilityFilter { NORMAL  HIDDEN  LOST  ANY }
+enum TraversalMode { RECURSIVE  FLAT }
+
+enum SortOrder {
+  NAME_ASC  NAME_DESC
+  CREATED_ASC  CREATED_DESC
+  MODIFIED_ASC  MODIFIED_DESC
+  SIZE_ASC  SIZE_DESC
+}
+
+enum HistoryColumn { NAME  LOCATION }
+enum FsStatus { PENDING  SYNCED  FAILED }
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type FileEdge {
+  cursor: String!
+  node: File!
+}
+
+type FileConnection {
+  edges: [FileEdge!]!
+  nodes: [File!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type File {
+  id: ID!
+  name: String!
+  location: String!
+  type: String!
+  size: Int!
+  created: DateTime!
+  modified: DateTime!
+  comment: String!
+  volume: String!
+  visibility: FileVisibility!
+  tags: [Tag!]! @goField(forceResolver: true)
+  tagCount: Int! @goField(forceResolver: true)
+  bookmarked: Boolean! @goField(forceResolver: true)
+  queues: [Queue!]! @goField(forceResolver: true)
+  history: [FileHistoryEntry!]! @goField(forceResolver: true)
+}
+
+type Tag {
+  id: ID!
+  tagValue: String!
+  tagType: TagType!
+  domain: TagDomain! @goField(forceResolver: true)
+  entryType: TagEntryType!
+  aliases: [Tag!]! @goField(forceResolver: true)
+  parent: Tag @goField(forceResolver: true)
+  fileCount: Int! @goField(forceResolver: true)
+  files(first: Int, after: String): FileConnection! @goField(forceResolver: true)
+}
+
+type Queue {
+  id: ID!
+  name: String!
+  created: DateTime!
+  itemCount: Int!
+  items: [QueueItem!]!
+}
+
+type QueueItem {
+  id: ID!
+  file: File!
+  addedAt: DateTime!
+  completed: Boolean!
+}
+
+type Bookmark {
+  id: ID!
+  file: File!
+  createdAt: DateTime!
+}
+
+type FileHistoryEntry {
+  id: ID!
+  timestamp: DateTime!
+  column: HistoryColumn!
+  oldValue: String!
+  newValue: String!
+  fsStatus: FsStatus!
+  indexType: String
+}
+
+type TagCriterion {
+  effect: TagFilterEffect!
+  tagType: TagType!
+  tagValue: String!
+}
+
+type TagsFilter {
+  enabled: Boolean!
+  operator: FilterOperator!
+  criteria: [TagCriterion!]!
+}
+
+type NameFilter {
+  operator: FilterOperator!
+  values: [String!]!
+}
+
+type FileFilter {
+  root: String
+  traversal: TraversalMode
+  sortBy: SortOrder
+  visibility: VisibilityFilter
+  types: [ContentTypeGroup!]
+  nameMatching: NameFilter
+  excludeContent: NameFilter
+  tagsMatching: TagsFilter
+}
+
+type SavedQuery {
+  id: ID!
+  name: String!
+  filter: FileFilter!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input TagCriterionInput {
+  effect: TagFilterEffect!
+  tagType: TagType!
+  tagValue: String!
+}
+
+input TagsMatchingInput {
+  enabled: Boolean!
+  operator: FilterOperator!
+  criteria: [TagCriterionInput!]!
+}
+
+input NameMatchingInput {
+  operator: FilterOperator!
+  values: [String!]!
+}
+
+input FileFilterInput {
+  root: String
+  traversal: TraversalMode
+  sortBy: SortOrder
+  visibility: VisibilityFilter
+  types: [ContentTypeGroup!]
+  nameMatching: NameMatchingInput
+  excludeContent: NameMatchingInput
+  tagsMatching: TagsMatchingInput
+}
+
+type Query {
+  file(id: ID!): File
+  files(filter: FileFilterInput, first: Int, after: String): FileConnection!
+  tag(id: ID!): Tag
+  tags(domain: TagDomain, type: TagType): [Tag!]!
+  savedQuery(id: ID!): SavedQuery
+  savedQueries: [SavedQuery!]!
+  savedQueryResults(id: ID!, first: Int, after: String): FileConnection!
+  bookmarks: [Bookmark!]!
+  queue(id: ID!): Queue
+  queues: [Queue!]!
+}

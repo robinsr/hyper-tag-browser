@@ -170,6 +170,9 @@
     "Eject" : {
 
     },
+    "Enable GraphQL Server" : {
+
+    },
     "Enable request and/or response logging for %@ queries" : {
 
     },
@@ -207,6 +210,9 @@
 
     },
     "General" : {
+
+    },
+    "GraphQL Server" : {
 
     },
     "Grid Item Spacing" : {
@@ -453,6 +459,9 @@
 
     },
     "Select All" : {
+
+    },
+    "Serving on http://127.0.0.1:8765/" : {
 
     },
     "Settings for profile'%@'" : {

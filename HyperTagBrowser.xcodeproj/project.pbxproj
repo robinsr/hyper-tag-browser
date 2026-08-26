@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 73;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -81,6 +81,7 @@
 		94AB88052CEB2BAD00413C2C /* Nimble in Frameworks */ = {isa = PBXBuildFile; productRef = 94AB88042CEB2BAD00413C2C /* Nimble */; };
 		94AB88072CEB2BDE00413C2C /* Quick in Frameworks */ = {isa = PBXBuildFile; productRef = 94AB88062CEB2BDE00413C2C /* Quick */; };
 		94AB880A2CEB2BF000413C2C /* Nimble in Frameworks */ = {isa = PBXBuildFile; productRef = 94AB88092CEB2BF000413C2C /* Nimble */; };
+		94AE67FE303E666200A92C89 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94AE67FD303E666200A92C89 /* ServiceManagement.framework */; };
 		94C5E10A2DC082EB00038C72 /* ObjcExceptionBridging in Frameworks */ = {isa = PBXBuildFile; productRef = 94C5E1092DC082EB00038C72 /* ObjcExceptionBridging */; };
 		94C5E10C2DC082EB00038C72 /* XCGLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 94C5E10B2DC082EB00038C72 /* XCGLogger */; };
 		94CE71A22CBF45B500F35581 /* Regex in Frameworks */ = {isa = PBXBuildFile; productRef = 94CE71A12CBF45B500F35581 /* Regex */; };
@@ -143,6 +144,15 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		94AE67FA303E64D700A92C89 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/LaunchAgents;
+			dstSubfolderSpec = 1;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		94FC08C72D30548B008AB8D7 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -168,6 +178,7 @@
 		947341E12C7EADB80047C718 /* HyperTagBrowserUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HyperTagBrowserUITests.swift; sourceTree = "<group>"; };
 		947341E32C7EADB80047C718 /* HyperTagBrowserUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HyperTagBrowserUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		94AB87F72CEB2AE600413C2C /* BrowseScreenUITest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseScreenUITest.swift; sourceTree = "<group>"; };
+		94AE67FD303E666200A92C89 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		94C1237B2D1218650069304C /* versioning.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = versioning.xcconfig; sourceTree = "<group>"; };
 		94C1237C2D121A690069304C /* versioning.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = versioning.sh; sourceTree = "<group>"; };
 		94CF1CC02DC067AA006B34BD /* Testing.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Testing.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/Testing.framework; sourceTree = DEVELOPER_DIR; };
@@ -186,11 +197,23 @@
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		94AE67FC303E650C00A92C89 /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 94AE67FA303E64D700A92C89 /* CopyFiles */;
+			membershipExceptions = (
+				LaunchAgents/com.hypertag.server.plist,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		941C17A82D4407C9002C15D5 /* Resources */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Resources; sourceTree = "<group>"; };
+		941C17A82D4407C9002C15D5 /* Resources */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (94AE67FC303E650C00A92C89 /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Resources; sourceTree = "<group>"; };
 		946094642CD0235D00CFA9A1 /* App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = App; sourceTree = "<group>"; };
 		9471A2812C993CE30005FC58 /* App */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (94EEC0672C9D392F004E3AF7 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = App; sourceTree = "<group>"; };
 		9471A2B12C993CE60005FC58 /* Extensions */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Extensions; sourceTree = "<group>"; };
+		947DAF6A303E534C004B03D3 /* scripts */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = scripts; sourceTree = "<group>"; };
+		947DD45B303E534C004B03D3 /* server */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = server; sourceTree = "<group>"; };
 		948399062D0E96D200A2A091 /* TestSupport */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TestSupport; sourceTree = "<group>"; };
 		94CF1CB52DC064E6006B34BD /* Extensions */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Extensions; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -201,6 +224,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				944226532FBACEE200CE29B7 /* GRDB in Frameworks */,
+				94AE67FE303E666200A92C89 /* ServiceManagement.framework in Frameworks */,
 				94DDF14A2DF372D2009391C2 /* PrometheusExporter in Frameworks */,
 				9404EB6C2DC31813009B0D3A /* AVKit.framework in Frameworks */,
 				94E626972D66DBD500F4FD88 /* Files in Frameworks */,
@@ -316,6 +340,8 @@
 				94C1237B2D1218650069304C /* versioning.xcconfig */,
 				940FF1CD2D0B7BA3001435F0 /* UnitTestsOnly.xctestplan */,
 				94EBA53E2C865BE700CA40A0 /* .gitignore */,
+				947DD45B303E534C004B03D3 /* server */,
+				947DAF6A303E534C004B03D3 /* scripts */,
 				947341C32C7EADB70047C718 /* Products */,
 				94F14E052C81874800FBCD0B /* README.md */,
 				947341C42C7EADB70047C718 /* HyperTagBrowser */,
@@ -396,6 +422,7 @@
 		94AB88082CEB2BF000413C2C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				94AE67FD303E666200A92C89 /* ServiceManagement.framework */,
 				9404EB6B2DC31813009B0D3A /* AVKit.framework */,
 				94CF1CC02DC067AA006B34BD /* Testing.framework */,
 			);
@@ -415,10 +442,12 @@
 			buildConfigurationList = 947341E72C7EADB80047C718 /* Build configuration list for PBXNativeTarget "HyperTagBrowser" */;
 			buildPhases = (
 				947341BE2C7EADB70047C718 /* Sources */,
+				947DAF68303E528B004B03D3 /* ShellScript */,
 				947341BF2C7EADB70047C718 /* Frameworks */,
 				947341C02C7EADB70047C718 /* Resources */,
 				94FC08C72D30548B008AB8D7 /* Embed Frameworks */,
 				943264E32D5C4FDA0067933D /* Embed Foundation Extensions */,
+				94AE67FA303E64D700A92C89 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -555,7 +584,6 @@
 				};
 			};
 			buildConfigurationList = 947341BD2C7EADB70047C718 /* Build configuration list for PBXProject "HyperTagBrowser" */;
-			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -606,6 +634,7 @@
 				944226422FBABE4D00CE29B7 /* XCRemoteSwiftPackageReference "FileMonitor" */,
 				9442264F2FBAC89900CE29B7 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 			);
+			preferredProjectObjectVersion = 56;
 			productRefGroup = 947341C32C7EADB70047C718 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
@@ -649,6 +678,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		947DAF68303E528B004B03D3 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "$SRCROOT/scripts/build-server.sh\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		947341BE2C7EADB70047C718 /* Sources */ = {
@@ -782,6 +831,7 @@
 				ENABLE_MODULE_VERIFIER = YES;
 				ENABLE_ON_DEMAND_RESOURCES = NO;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HyperTagBrowser/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "";
@@ -994,6 +1044,7 @@
 				ENABLE_MODULE_VERIFIER = YES;
 				ENABLE_ON_DEMAND_RESOURCES = NO;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HyperTagBrowser/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "";
@@ -1034,6 +1085,7 @@
 				ENABLE_MODULE_VERIFIER = YES;
 				ENABLE_ON_DEMAND_RESOURCES = NO;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HyperTagBrowser/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "";
