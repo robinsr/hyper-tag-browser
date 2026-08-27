@@ -53,3 +53,4 @@ Test plan: `UnitTestsOnly.xctestplan` (unit only). Pass `--profile-name=unit_tes
 ## Entitlements & Permissions
 
 Full Disk Access is required for file indexing (`HyperTagBrowser.entitlements`). The app registers a custom URL scheme (`tfb://`) and custom UTTypes for `FilteringTag`, `ContentPointer`, and SQLite database files (see `Info.plist`).
+- If using XcodeBuildMCP, use the installed XcodeBuildMCP skill before calling XcodeBuildMCP tools.
