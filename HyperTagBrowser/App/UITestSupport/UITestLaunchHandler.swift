@@ -37,6 +37,12 @@ struct UITestFixtureSeeder {
                 location: FilePath(tempDir.deletingLastPathComponent().path),
                 type: UTType.folder,
                 date: now),
+            makeIndexRecord(
+                id: "content:uitest-subfolder",
+                name: "uitest-subfolder",
+                location: dir,
+                type: UTType.folder,
+                date: now),
         ]
     }
 
@@ -44,6 +50,12 @@ struct UITestFixtureSeeder {
         [
             TagRecord(id: "tag:uitest-red",  tagValue: "red",  tagType: .tag),
             TagRecord(id: "tag:uitest-blue", tagValue: "blue", tagType: .tag),
+        ]
+    }
+
+    static var bookmarkRecords: [BookmarkRecord] {
+        [
+            BookmarkRecord(contentId: ContentId(existing: "content:uitest-folder")),
         ]
     }
 
@@ -92,6 +104,9 @@ struct UITestLaunchHandler {
     /// `UserDefaults` key used to communicate a saved-query ID from `configure` to `AppViewModel`.
     static let uitestLoadSavedQueryKey = "UITestLoadSavedQueryId"
 
+    /// `UserDefaults` key used to communicate which `AppPanels` to open on launch (comma-separated raw values).
+    static let uitestOpenPanelsKey = "UITestOpenPanels"
+
     static func configure(flags: RunFlags) {
         guard flags.uiTestMode, let folderPath = flags.launchFolderPath else { return }
 
@@ -100,12 +115,22 @@ struct UITestLaunchHandler {
 
         IndexerContainer.shared.databasePath.register { dbPath }
 
+        // Override the starting location factory so AppViewModel initialises its
+        // navigation path (and initial query root) to tempDir.  This makes the
+        // seeded IndexRecords — which are all stored under tempDir — immediately
+        // visible in the grid on launch, without permanently altering UserDefaults.
+        let tempDirPath = FilePath(tempDir.path)
+        PreferencesContainer.shared.startingLocation.register { tempDirPath }
+
         // Store the saved-query ID so AppViewModel can apply it after the indexer is ready.
         if let queryId = flags.loadSavedQuery {
             UserDefaults.standard.set(queryId, forKey: uitestLoadSavedQueryKey)
         } else {
             UserDefaults.standard.removeObject(forKey: uitestLoadSavedQueryKey)
         }
+
+        // Pre-open sidebar and bookmarks panels so XCUITest can find the bookmarks list.
+        UserDefaults.standard.set("sidebar,bookmarks", forKey: uitestOpenPanelsKey)
     }
 
     static func seed(service: GRDBIndexService, flags: RunFlags) throws {
@@ -128,6 +153,9 @@ struct UITestLaunchHandler {
                 try record.insert(conn)
             }
             for record in UITestFixtureSeeder.savedQueryRecords {
+                try record.insert(conn)
+            }
+            for record in UITestFixtureSeeder.bookmarkRecords {
                 try record.insert(conn)
             }
         }

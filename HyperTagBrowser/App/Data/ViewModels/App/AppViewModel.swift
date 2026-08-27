@@ -193,6 +193,20 @@ final class AppViewModel {
         UserDefaults.standard.removeObject(forKey: UITestLaunchHandler.uitestLoadSavedQueryKey)
       }
     }
+
+    // Check both UserDefaults and process args for initial panels to open.
+    // We use process args as a fallback because UserDefaults may not be synchronised
+    // before init() reads them in some launch sequences.
+    let panelListUD = UserDefaults.standard.string(forKey: UITestLaunchHandler.uitestOpenPanelsKey)
+    let panelListArg = ProcessInfo.processInfo.arguments
+      .first(where: { $0.hasPrefix("--OpenPanels=") })
+      .flatMap { $0.split(separator: "=").last.map(String.init) }
+
+    if let panelList = panelListUD ?? panelListArg {
+      let panels = panelList.split(separator: ",").compactMap { AppPanels(rawValue: String($0)) }
+      activeAppPanels = Set(panels)
+      UserDefaults.standard.removeObject(forKey: UITestLaunchHandler.uitestOpenPanelsKey)
+    }
     #endif
 
     let cont = Continuator()

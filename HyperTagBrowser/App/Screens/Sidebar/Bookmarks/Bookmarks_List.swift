@@ -17,6 +17,7 @@ struct BookmarksList: View {
     } label: {
       Text("Bookmarks")
         .accessibilityLabel("Show bookmarks")
+        .accessibilityIdentifier("bookmarks-section-header")
     }
   }
   

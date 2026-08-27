@@ -53,6 +53,7 @@ struct NavigationToolbarView: View {
       }
     }
     .buttonStyle(.toolbarIcon)
+    .accessibilityIdentifier("bookmark-location-button")
   }
   
   var NavigateBackButton: some View {

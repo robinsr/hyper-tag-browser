@@ -33,6 +33,7 @@ struct UITestEnvironment {
         var args = [
             "--UITestMode",
             "--LaunchFolderPath=\(tempDir.path)",
+            "--OpenPanels=sidebar,bookmarks",
         ]
         if liveIndex { args.append("--LiveIndex") }
         if let queryId = loadSavedQuery { args.append("--LoadSavedQuery=\(queryId)") }
