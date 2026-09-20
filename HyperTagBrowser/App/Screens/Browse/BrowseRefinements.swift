@@ -15,7 +15,7 @@ struct BrowseRefinements: View {
 
   @State var newTagText = TextFieldModel(validate: [.presence])
   @State var numSuggestions: Int = 12
-  @State var suggestedItems: [(Int, TagSuggestions.Suggestion)] = []
+  @State var suggestedItems: [(Int, CountedTagRecord)] = []
   @State var filteringEnabled: Bool = true
 
   @Query(GetSavedQueriesRequest(id: nil)) var savedQuery: SavedQueryRecord?

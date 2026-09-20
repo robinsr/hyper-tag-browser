@@ -7,18 +7,17 @@ import SwiftUI
 
 
 struct TagSuggestions<Content: View>: View {
-  typealias Suggestion = CountedTagRecord
   
   private var logger = EnvContainer.shared.logger("TagSuggestions")
   
   @Binding var searchText: String
   @Binding var selectedItems: [ContentId]
   @Binding var excludedTags: [FilteringTag]
-  @Binding var bindTo: [(Int, Suggestion)]
+  @Binding var bindTo: [(Int, CountedTagRecord)]
   @Binding var numSuggestions: Int
   var searchDomains: [FilteringTag.TagDomain]
   var minTextNeeded: Int
-  @ViewBuilder var content: (Int, Suggestion) -> Content
+  @ViewBuilder var content: (Int, CountedTagRecord) -> Content
   
   @State var model = SuggestionViewModel()
   
@@ -38,11 +37,11 @@ struct TagSuggestions<Content: View>: View {
     searchText: Binding<String>,
     selectedItems: Binding<[ContentId]> = .constant([]),
     excludedTags: Binding<[FilteringTag]> = .constant([]),
-    bindTo: Binding<[(Int, Suggestion)]> = .constant([]),
+    bindTo: Binding<[(Int, CountedTagRecord)]> = .constant([]),
     numSuggestions: Binding<Int> = .constant(5),
     minTextNeeded: Int = 2,
     searchDomains: [FilteringTag.TagDomain] = [.attribution, .descriptive],
-    @ViewBuilder content: @escaping (Int, Suggestion) -> Content
+    @ViewBuilder content: @escaping (Int, CountedTagRecord) -> Content
   ) {
     self._searchText = searchText
     self._selectedItems = selectedItems

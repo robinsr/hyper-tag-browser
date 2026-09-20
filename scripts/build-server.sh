@@ -15,21 +15,43 @@ mkdir -p "$(dirname "$OUTPUT")"
 # Build a universal binary when both architectures are requested (e.g. Archive).
 if echo "${ARCHS:-}" | grep -q "arm64" && echo "${ARCHS:-}" | grep -q "x86_64"; then
     TMP="$(mktemp -d)"
-    GOOS=darwin GOARCH=arm64 go build -o "$TMP/server-arm64" "$SERVER_DIR"
-    GOOS=darwin GOARCH=amd64 go build -o "$TMP/server-amd64" "$SERVER_DIR"
-    lipo -create -output "$OUTPUT" "$TMP/server-arm64" "$TMP/server-amd64"
-    rm -rf "$TMP"
+    trap 'rm -rf "$TMP"' EXIT
+    
+    GOOS=darwin GOARCH=arm64 /opt/homebrew/bin/go -C "$SERVER_DIR" build \
+      -o "$TMP/server-arm64" .
+      
+    GOOS=darwin GOARCH=amd64 /opt/homebrew/bin/go -C "$SERVER_DIR" build \
+      -o "$TMP/server-amd64" .
+      
+    lipo -create \
+      -output "$OUTPUT" \
+      "$TMP/server-arm64" \
+      "$TMP/server-amd64"
+
     echo "Built universal binary at $OUTPUT"
-    exit 0
-fi
-
-# Single-architecture build.
-if echo "${ARCHS:-}" | grep -q "arm64"; then
-    GOARCH="arm64"
 else
-    GOARCH="amd64"
+  # Single-architecture build.
+  if echo "${ARCHS:-}" | grep -q "arm64"; then
+      GOARCH="arm64"
+  else
+      GOARCH="amd64"
+  fi
+
+  GOOS=darwin GOARCH="$GOARCH" /opt/homebrew/bin/go -C "$SERVER_DIR" build \
+    -o "$OUTPUT" .
+
+  echo "Built $GOARCH binary at $OUTPUT"
 fi
 
-cd $SERVER_DIR
-GOOS=darwin GOARCH="$GOARCH" /opt/homebrew/bin/go build -o "$OUTPUT"
-echo "Built $GOARCH binary at $OUTPUT"
+# Sign the nested executable before Xcode signs the enclosing app.
+if [[ "${CODE_SIGNING_ALLOWED:-NO}" == "YES" ]]; then
+    SIGNING_IDENTITY="${EXPANDED_CODE_SIGN_IDENTITY:--}"
+    [[ -n "$SIGNING_IDENTITY" ]] || SIGNING_IDENTITY="-"
+
+    /usr/bin/codesign \
+        --force \
+        --sign "$SIGNING_IDENTITY" \
+        --options runtime \
+        --timestamp=none \
+        "$OUTPUT"
+fi

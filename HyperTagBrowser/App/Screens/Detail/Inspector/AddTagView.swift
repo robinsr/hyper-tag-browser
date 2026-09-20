@@ -34,7 +34,7 @@ struct AddTagView: View {
   @State var evtHandleStore = EventHandlerObservable()
   @State var newTagText = TextFieldModel(validate: [.presence])
   @State var topNumTags = 10
-  @State var suggestions: [(Int, TagSuggestions.Suggestion)] = []
+  @State var suggestions: [(Int, CountedTagRecord)] = []
   @State var suggestionsCursorIndex: Int = -1
   
   

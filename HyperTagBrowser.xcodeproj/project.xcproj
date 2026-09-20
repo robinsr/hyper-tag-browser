@@ -1,0 +1,975 @@
+{
+  "default-configuration": "Release",
+  "configurations": [
+    { "name": "Alpha", "file": "versioning.xcconfig" },
+    { "name": "Beta", "file": "versioning.xcconfig" },
+    { "name": "Release", "file": "versioning.xcconfig" },
+  ],
+  "localizations": {
+    "development": "en",
+    "supported": [
+      "Base",
+    ],
+  },
+  "packages": [
+    {
+      "kind": "remote",
+      "repository": "https://github.com/apple/swift-collections.git",
+      "version": {
+        "version": "1.1.3",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/hmlongco/Factory.git",
+      "version": {
+        "version": "2.4.12",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/TimurKhay/MacSettings.git",
+      "version": {
+        "version": "0.1.1",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/tevelee/SwiftUI-Flow.git",
+      "version": {
+        "version": "3.1.1",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/pointfreeco/swift-identified-collections.git",
+      "version": {
+        "version": "1.1.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/pointfreeco/swift-custom-dump.git",
+      "version": {
+        "version": "1.3.3",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/DenDmitriev/DominantColors.git",
+      "version": {
+        "version": "1.2.1",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/inket/FullDiskAccess.git",
+      "version": {
+        "version": "1.0.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "git@github.com:sindresorhus/Defaults.git",
+      "version": {
+        "version": "9.0.6",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/jozefizso/swift-xattr.git",
+      "version": {
+        "version": "3.0.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/groue/GRDBQuery.git",
+      "version": {
+        "version": "0.10.1",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/sharplet/Regex.git",
+      "version": {
+        "version": "2.1.1",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/sbooth/JulianDayNumber.git",
+      "version": {
+        "version": "0.6.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/Tunous/DebouncedOnChange.git",
+      "version": {
+        "version": "2.0.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/mxcl/legibleerror.git",
+      "version": {
+        "version": "1.0.6",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/Quick/Quick.git",
+      "version": {
+        "version": "7.6.2",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/Quick/Nimble.git",
+      "version": {
+        "version": "14.0.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/iwill/generic-json-swift.git",
+      "version": {
+        "version": "2.0.2",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/cocoatoucher/StyledMarkdown.git",
+      "version": {
+        "version": "0.0.6",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/appstefan/HighlightSwift.git",
+      "version": {
+        "version": "1.0.9",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/SwifterSwift/SwifterSwift.git",
+      "version": {
+        "version": "7.0.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/sindresorhus/Percentage.git",
+      "version": {
+        "version": "1.2.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/siteline/SwiftUI-Introspect.git",
+      "version": {
+        "version": "1.3.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/abdel-17/swift-rational.git",
+      "version": {
+        "version": "1.0.1",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/open-telemetry/opentelemetry-swift",
+      "version": {
+        "version": "2.3.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/apple/swift-metrics.git",
+      "version": {
+        "version": "2.7.1",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/ChimeHQ/Outline",
+      "version": {
+        "revision": "a432a003a6f6cdf286dff68c66919bc17c9de0bc",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/JohnSundell/Files.git",
+      "version": {
+        "version": "4.2.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/hyperoslo/Cache.git",
+      "version": {
+        "version": "7.4.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/SDWebImage/SDWebImageSwiftUI.git",
+      "version": {
+        "version": "3.1.3",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/Cosmo/GrammaticalNumber.git",
+      "version": {
+        "version": "0.0.3",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/krzysztofzablocki/Difference.git",
+      "version": {
+        "version": "1.1.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/DaveWoodCom/XCGLogger.git",
+      "version": {
+        "version": "7.1.5",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/capnslipp/with.git",
+      "version": {
+        "version": "1.2.1",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/FlineDev/ErrorKit.git",
+      "version": {
+        "version": "1.0.1",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/ZipArchive/ZipArchive.git",
+      "version": {
+        "version": "2.6.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "git@github.com:Nosrac/KBar.git",
+      "version": {
+        "revision": "56bc79c723da897ec5370013c8e2beb96144f280",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/open-telemetry/opentelemetry-swift-core.git",
+      "version": {
+        "version": "2.3.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/malcommac/SwiftDate.git",
+      "version": {
+        "version": "7.0.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/aus-der-Technik/FileMonitor.git",
+      "version": {
+        "version": "1.2.1",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/groue/GRDB.swift.git",
+      "version": {
+        "version": "7.9.0",
+      },
+    },
+  ],
+  "files": [
+    { "path": "<PROJECT>/HyperTagBrowser.xcodeproj" },
+    { "path": "versioning.sh" },
+    { "path": "versioning.xcconfig" },
+    { "path": "UnitTestsOnly.xctestplan" },
+    { "path": ".gitignore" },
+    { "kind": "folder", "path": "server" },
+    { "kind": "folder", "path": "scripts" },
+    {
+      "kind": "group",
+      "name": "Products",
+      "children": [
+        { "path": "<PRODUCTS>/HyperTagBrowser.app", "id": "947341C22C7EADB70047C718", "type": "wrapper.application", "index": false },
+        { "path": "<PRODUCTS>/HyperTagBrowserTests.xctest", "id": "947341D32C7EADB80047C718", "type": "wrapper.cfbundle", "index": false },
+        { "path": "<PRODUCTS>/HyperTagBrowserUITests.xctest", "id": "947341DD2C7EADB80047C718", "type": "wrapper.cfbundle", "index": false },
+      ],
+    },
+    { "path": "README.md" },
+    {
+      "kind": "group",
+      "path": "HyperTagBrowser",
+      "children": [
+        {
+          "kind": "folder",
+          "path": "Resources",
+          "target-membership": [
+            "HyperTagBrowser",
+          ],
+          "membership-exceptions": [
+            {
+              "build-phase": "HyperTagBrowser/copy/Copy Files",
+              "inclusions": [
+                "LaunchAgents/com.hypertag.server.plist",
+              ],
+            },
+          ],
+        },
+        { "kind": "folder", "path": "Extensions", "target-membership": [ "HyperTagBrowser" ] },
+        {
+          "kind": "folder",
+          "path": "App",
+          "target-membership": [
+            "HyperTagBrowser",
+          ],
+          "membership-exceptions": [
+            {
+              "target": "HyperTagBrowser",
+              "exclusions": [
+                "Utilities/Watchdog.swift",
+              ],
+            },
+          ],
+        },
+        { "path": "Assets.xcassets", "target-membership": [ "HyperTagBrowser/resources" ] },
+        { "path": "Media.xcassets", "target-membership": [ "HyperTagBrowser/resources" ] },
+        { "path": "HyperTagBrowser.entitlements" },
+        {
+          "kind": "group",
+          "path": "Preview Content",
+          "children": [
+            { "path": "Preview Assets.xcassets", "target-membership": [ "HyperTagBrowser/resources" ] },
+          ],
+        },
+      ],
+    }, {
+      "kind": "group",
+      "path": "HyperTagBrowserTests",
+      "children": [
+        { "kind": "folder", "path": "TestSupport", "target-membership": [ "HyperTagBrowserTests" ] },
+        { "kind": "folder", "path": "App", "target-membership": [ "HyperTagBrowserTests" ] },
+        { "kind": "folder", "path": "Extensions", "target-membership": [ "HyperTagBrowserTests" ] },
+      ],
+    }, {
+      "kind": "group",
+      "path": "HyperTagBrowserUITests",
+      "children": [
+        {
+          "kind": "group",
+          "path": "Screens",
+          "children": [
+            { "path": "BrowseScreen.swift", "index": true, "target-membership": [ "HyperTagBrowserUITests/compile-sources" ] },
+            { "path": "DetailScreen.swift", "index": true, "target-membership": [ "HyperTagBrowserUITests/compile-sources" ] },
+          ],
+        },
+        { "path": "HyperTagBrowserUITests.swift", "target-membership": [ "HyperTagBrowserUITests/compile-sources" ] },
+        { "path": "HyperTagBrowserUITestsLaunchTests.swift", "target-membership": [ "HyperTagBrowserUITests/compile-sources" ] },
+        {
+          "kind": "group",
+          "path": "TestFixtures",
+          "children": [
+            {
+              "kind": "group",
+              "path": "Files",
+              "children": [
+                { "path": "uitest-image-alpha.jpg", "index": true, "target-membership": [ "HyperTagBrowserUITests/resources" ] },
+                { "path": "uitest-image-beta.jpg", "index": true, "target-membership": [ "HyperTagBrowserUITests/resources" ] },
+                { "path": "uitest-image-gamma.jpg", "index": true, "target-membership": [ "HyperTagBrowserUITests/resources" ] },
+              ],
+            },
+          ],
+        },
+        { "path": "UITestFixtures.swift", "index": true, "target-membership": [ "HyperTagBrowserUITests/compile-sources" ] },
+        { "path": "UITestEnvironment.swift", "index": true, "target-membership": [ "HyperTagBrowserUITests/compile-sources" ] },
+        { "path": "BaseUITest.swift", "index": true, "target-membership": [ "HyperTagBrowserUITests/compile-sources" ] },
+        {
+          "kind": "group",
+          "path": "Scenarios",
+          "children": [
+            { "path": "AppLaunchTests.swift", "index": true, "target-membership": [ "HyperTagBrowserUITests/compile-sources" ] },
+            { "path": "FolderLoadTests.swift", "index": true, "target-membership": [ "HyperTagBrowserUITests/compile-sources" ] },
+            { "path": "TaggingTests.swift", "index": true, "target-membership": [ "HyperTagBrowserUITests/compile-sources" ] },
+            { "path": "SavedQueryTests.swift", "index": true, "target-membership": [ "HyperTagBrowserUITests/compile-sources" ] },
+            { "path": "BookmarkTests.swift", "index": true, "target-membership": [ "HyperTagBrowserUITests/compile-sources" ] },
+          ],
+        },
+      ],
+    }, {
+      "kind": "group",
+      "name": "Frameworks",
+      "children": [
+        { "path": "<SDK>/System/Library/Frameworks/ServiceManagement.framework", "target-membership": [ "HyperTagBrowser/frameworks" ] },
+        { "path": "<SDK>/System/Library/Frameworks/AVKit.framework", "target-membership": [ "HyperTagBrowser/frameworks" ] },
+        {
+          "path": "<DEVELOPER>/Platforms/MacOSX.platform/Developer/Library/Frameworks/Testing.framework",
+          "target-membership": [
+            "HyperTagBrowserTests/frameworks",
+            { "build-phase": "HyperTagBrowserTests/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+          ],
+        },
+      ],
+    },
+  ],
+  "targets": [
+    {
+      "name": "HyperTagBrowser",
+      "id": "947341C12C7EADB70047C718",
+      "product": "Products/HyperTagBrowser.app",
+      "product-type": "application",
+      "specialized-configurations": [
+        { "name": "Alpha", "file": "versioning.xcconfig" },
+        { "name": "Beta", "file": "versioning.xcconfig" },
+        { "name": "Release", "file": "versioning.xcconfig" },
+      ],
+      "build-phases": [
+        "compile-sources",
+        {
+          "kind": "script",
+          "name": "Run Script",
+          "log-environment-variables": true,
+          "shell": "/bin/zsh",
+          "script": "$SRCROOT/scripts/build-server.sh\n",
+        },
+        "frameworks",
+        "resources",
+        {
+          "kind": "copy",
+          "name": "Embed Frameworks",
+          "bundle-base-path": "frameworks-directory",
+        }, {
+          "kind": "copy",
+          "name": "Embed Foundation Extensions",
+          "bundle-base-path": "plugins-directory",
+        }, {
+          "kind": "copy",
+          "name": "Copy Files",
+          "bundle-base-path": "root",
+          "relative-path": "Contents/Library/LaunchAgents",
+        },
+      ],
+      "package-product-members": [
+        {
+          "package": "Cache",
+          "product-name": "Cache",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "DebouncedOnChange",
+          "product-name": "DebouncedOnChange",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Defaults",
+          "product-name": "Defaults",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "DominantColors",
+          "product-name": "DominantColors",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "ErrorKit",
+          "product-name": "ErrorKit",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Factory",
+          "product-name": "Factory",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "FileMonitor",
+          "product-name": "FileMonitor",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Files",
+          "product-name": "Files",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "FullDiskAccess",
+          "product-name": "FullDiskAccess",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "GRDB.swift",
+          "product-name": "GRDB",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "GRDBQuery",
+          "product-name": "GRDBQuery",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "GrammaticalNumber",
+          "product-name": "GrammaticalNumber",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "HighlightSwift",
+          "product-name": "HighlightSwift",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "JulianDayNumber",
+          "product-name": "JulianDayNumber",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "KBar",
+          "product-name": "KBar",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "MacSettings",
+          "product-name": "MacSettings",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Outline",
+          "product-name": "Outline",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Percentage",
+          "product-name": "Percentage",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Regex",
+          "product-name": "Regex",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "SDWebImageSwiftUI",
+          "product-name": "SDWebImageSwiftUI",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "StyledMarkdown",
+          "product-name": "StyledMarkdown",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "SwiftDate",
+          "product-name": "SwiftDate",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "SwiftUI-Flow",
+          "product-name": "Flow",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "SwiftUI-Introspect",
+          "product-name": "SwiftUIIntrospect",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "SwifterSwift",
+          "product-name": "SwifterSwift",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "XCGLogger",
+          "product-name": "ObjcExceptionBridging",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "XCGLogger",
+          "product-name": "XCGLogger",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "ZipArchive",
+          "product-name": "ZipArchive",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "generic-json-swift",
+          "product-name": "GenericJSON",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "legibleerror",
+          "product-name": "LegibleError",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "opentelemetry-swift",
+          "product-name": "OTelSwiftLog",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "opentelemetry-swift",
+          "product-name": "OpenTelemetryApi",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "opentelemetry-swift",
+          "product-name": "OpenTelemetrySdk",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "opentelemetry-swift",
+          "product-name": "PrometheusExporter",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "opentelemetry-swift",
+          "product-name": "ResourceExtension",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "opentelemetry-swift",
+          "product-name": "SignPostIntegration",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "opentelemetry-swift",
+          "product-name": "StdoutExporter",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "opentelemetry-swift",
+          "product-name": "SwiftMetricsShim",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "opentelemetry-swift-core",
+          "product-name": "OpenTelemetryApi",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "opentelemetry-swift-core",
+          "product-name": "OpenTelemetryConcurrency",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "opentelemetry-swift-core",
+          "product-name": "OpenTelemetrySdk",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "opentelemetry-swift-core",
+          "product-name": "StdoutExporter",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "swift-collections",
+          "product-name": "DequeModule",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "swift-collections",
+          "product-name": "OrderedCollections",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "swift-custom-dump",
+          "product-name": "CustomDump",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "swift-identified-collections",
+          "product-name": "IdentifiedCollections",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "swift-metrics",
+          "product-name": "Metrics",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "swift-rational",
+          "product-name": "RationalModule",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "swift-xattr",
+          "product-name": "XAttr",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "with",
+          "product-name": "With",
+          "build-phase": { "build-phase": "frameworks" },
+        },
+      ],
+      "build-settings": {
+        "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
+        "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME": "AccentColor",
+        "CODE_SIGN_ENTITLEMENTS": "HyperTagBrowser/HyperTagBrowser.entitlements",
+        "CODE_SIGN_IDENTITY[sdk=macosx*]": "Apple Development",
+        "CODE_SIGN_STYLE": "Automatic",
+        "COMBINE_HIDPI_IMAGES": "YES",
+        "CURRENT_PROJECT_VERSION": "$(BUILD_NUMBER)",
+        "DEAD_CODE_STRIPPING": "YES",
+        "DEFINES_MODULE": "YES",
+        "DEVELOPMENT_ASSET_PATHS": "\"HyperTagBrowser/Preview Content\"",
+        "EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE": "YES",
+        "ENABLE_HARDENED_RUNTIME": "YES",
+        "ENABLE_MODULE_VERIFIER": "YES",
+        "ENABLE_ON_DEMAND_RESOURCES": "NO",
+        "ENABLE_PREVIEWS": "YES",
+        "ENABLE_USER_SCRIPT_SANDBOXING": "NO",
+        "GENERATE_INFOPLIST_FILE": "YES",
+        "INFOPLIST_FILE": "HyperTagBrowser/Info.plist",
+        "INFOPLIST_KEY_CFBundleDisplayName": "",
+        "INFOPLIST_KEY_LSApplicationCategoryType": "public.app-category.photography",
+        "INFOPLIST_KEY_NSHumanReadableCopyright": "",
+        "LD_RUNPATH_SEARCH_PATHS": [
+          "$(inherited)",
+          "@executable_path/../Frameworks",
+        ],
+        "MACOSX_DEPLOYMENT_TARGET": "15.0",
+        "MARKETING_VERSION": "2.0.0",
+        "MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS": "gnu17 gnu++20",
+        "PRODUCT_BUNDLE_IDENTIFIER": "com.robinsr.HyperTagBrowser",
+        "PRODUCT_NAME": "$(TARGET_NAME)",
+        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Alpha]": "$(inherited)",
+        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Beta]": "TEST $(inherited)",
+        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Release]": "$(inherited)",
+        "SWIFT_EMIT_LOC_STRINGS": "YES",
+        "SWIFT_REFLECTION_METADATA_LEVEL": "all",
+        "SWIFT_VERSION": "6.0",
+      },
+    }, {
+      "name": "HyperTagBrowserTests",
+      "id": "947341D22C7EADB80047C718",
+      "product": "Products/HyperTagBrowserTests.xctest",
+      "product-type": "bundle.unit-test",
+      "test-host-target": "HyperTagBrowser",
+      "dependencies": [
+        "HyperTagBrowser",
+      ],
+      "build-phases": [
+        "compile-sources",
+        "frameworks",
+        "resources",
+        {
+          "kind": "copy",
+          "name": "Embed Frameworks",
+          "bundle-base-path": "frameworks-directory",
+        },
+      ],
+      "package-product-members": [
+        {
+          "package": "Defaults",
+          "product-name": "Defaults",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Difference",
+          "product-name": "Difference",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Difference",
+          "product-name": "Difference",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Difference",
+          "product-name": "Difference",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Factory",
+          "product-name": "Factory",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Factory",
+          "product-name": "FactoryTesting",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Files",
+          "product-name": "Files",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "GRDB.swift",
+          "product-name": "GRDB",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "GRDBQuery",
+          "product-name": "GRDBQuery",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "HighlightSwift",
+          "product-name": "HighlightSwift",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "JulianDayNumber",
+          "product-name": "JulianDayNumber",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Nimble",
+          "product-name": "Nimble",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Nimble",
+          "product-name": "Nimble",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Percentage",
+          "product-name": "Percentage",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Quick",
+          "product-name": "Quick",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Quick",
+          "product-name": "Quick",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Regex",
+          "product-name": "Regex",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "SwifterSwift",
+          "product-name": "SwifterSwift",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "XCGLogger",
+          "product-name": "ObjcExceptionBridging",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "XCGLogger",
+          "product-name": "XCGLogger",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "XCGLogger",
+          "product-name": "XCGLogger",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "swift-custom-dump",
+          "product-name": "CustomDump",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "swift-metrics",
+          "product-name": "CoreMetrics",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "swift-metrics",
+          "product-name": "Metrics",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "swift-metrics",
+          "product-name": "MetricsTestKit",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "swift-rational",
+          "product-name": "RationalModule",
+          "build-phase": { "build-phase": "frameworks" },
+        },
+      ],
+      "build-settings": {
+        "BUNDLE_LOADER": "$(TEST_HOST)",
+        "CODE_SIGN_STYLE": "Automatic",
+        "CURRENT_PROJECT_VERSION": "1",
+        "DEAD_CODE_STRIPPING": "YES",
+        "GENERATE_INFOPLIST_FILE": "YES",
+        "MACOSX_DEPLOYMENT_TARGET": "15.0",
+        "MARKETING_VERSION": "1.0",
+        "PRODUCT_BUNDLE_IDENTIFIER": "org.github.robinsr.HyperTagBrowserTests",
+        "PRODUCT_NAME": "$(TARGET_NAME)",
+        "SWIFT_EMIT_LOC_STRINGS": "NO",
+        "SWIFT_VERSION": "5.0",
+        "TEST_HOST": "$(BUILT_PRODUCTS_DIR)/HyperTagBrowser.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HyperTagBrowser",
+      },
+    }, {
+      "name": "HyperTagBrowserUITests",
+      "id": "947341DC2C7EADB80047C718",
+      "product": "Products/HyperTagBrowserUITests.xctest",
+      "product-type": "bundle.ui-testing",
+      "test-host-target": "HyperTagBrowser",
+      "dependencies": [
+        "HyperTagBrowser",
+      ],
+      "build-phases": [
+        "compile-sources",
+        "frameworks",
+        "resources",
+      ],
+      "package-product-members": [
+        {
+          "package": "Difference",
+          "product-name": "Difference",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "GRDBQuery",
+          "product-name": "GRDBQuery",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Nimble",
+          "product-name": "Nimble",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Quick",
+          "product-name": "Quick",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "Quick",
+          "product-name": "Quick",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "SDWebImageSwiftUI",
+          "product-name": "SDWebImageSwiftUI",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "XCGLogger",
+          "product-name": "XCGLogger",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "ZipArchive",
+          "product-name": "ZipArchive",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "swift-custom-dump",
+          "product-name": "CustomDump",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "swift-rational",
+          "product-name": "RationalModule",
+          "build-phase": { "build-phase": "frameworks" },
+        },
+      ],
+      "build-settings": {
+        "CODE_SIGN_STYLE": "Automatic",
+        "CURRENT_PROJECT_VERSION": "1",
+        "DEAD_CODE_STRIPPING": "YES",
+        "FRAMEWORK_SEARCH_PATHS": "$(inherited)",
+        "GENERATE_INFOPLIST_FILE": "YES",
+        "MACOSX_DEPLOYMENT_TARGET": "15.0",
+        "MARKETING_VERSION": "1.0",
+        "PRODUCT_BUNDLE_IDENTIFIER": "org.github.robinsr.HyperTagBrowserUITests",
+        "PRODUCT_NAME": "$(TARGET_NAME)",
+        "SWIFT_EMIT_LOC_STRINGS": "NO",
+        "SWIFT_INCLUDE_PATHS": "$(inherited)",
+        "SWIFT_VERSION": "5.0",
+        "TEST_TARGET_NAME": "HyperTagBrowser",
+      },
+    },
+  ],
+  "build-settings": {
+    "ALWAYS_SEARCH_USER_PATHS": "NO",
+    "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
+    "CLANG_ANALYZER_NONNULL": "YES",
+    "CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION": "YES_AGGRESSIVE",
+    "CLANG_CXX_LANGUAGE_STANDARD": "gnu++20",
+    "CLANG_ENABLE_MODULES": "YES",
+    "CLANG_ENABLE_OBJC_ARC": "YES",
+    "CLANG_ENABLE_OBJC_WEAK": "YES",
+    "CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING": "YES",
+    "CLANG_WARN_BOOL_CONVERSION": "YES",
+    "CLANG_WARN_COMMA": "YES",
+    "CLANG_WARN_CONSTANT_CONVERSION": "YES",
+    "CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS": "YES",
+    "CLANG_WARN_DIRECT_OBJC_ISA_USAGE": "YES_ERROR",
+    "CLANG_WARN_DOCUMENTATION_COMMENTS": "YES",
+    "CLANG_WARN_EMPTY_BODY": "YES",
+    "CLANG_WARN_ENUM_CONVERSION": "YES",
+    "CLANG_WARN_INFINITE_RECURSION": "YES",
+    "CLANG_WARN_INT_CONVERSION": "YES",
+    "CLANG_WARN_NON_LITERAL_NULL_CONVERSION": "YES",
+    "CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF": "YES",
+    "CLANG_WARN_OBJC_LITERAL_CONVERSION": "YES",
+    "CLANG_WARN_OBJC_ROOT_CLASS": "YES_ERROR",
+    "CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER": "YES",
+    "CLANG_WARN_RANGE_LOOP_ANALYSIS": "YES",
+    "CLANG_WARN_STRICT_PROTOTYPES": "YES",
+    "CLANG_WARN_SUSPICIOUS_MOVE": "YES",
+    "CLANG_WARN_UNGUARDED_AVAILABILITY": "YES_AGGRESSIVE",
+    "CLANG_WARN_UNREACHABLE_CODE": "YES",
+    "CLANG_WARN__DUPLICATE_METHOD_MATCH": "YES",
+    "COPY_PHASE_STRIP": "NO",
+    "CURRENT_PROJECT_VERSION": "1",
+    "DEAD_CODE_STRIPPING": "YES",
+    "DEBUG_INFORMATION_FORMAT[config=Alpha]": "dwarf",
+    "DEBUG_INFORMATION_FORMAT[config=Beta]": "dwarf",
+    "DEBUG_INFORMATION_FORMAT[config=Release]": "dwarf-with-dsym",
+    "DEVELOPMENT_TEAM": "CE93YF6YSF",
+    "ENABLE_NS_ASSERTIONS[config=Release]": "NO",
+    "ENABLE_STRICT_OBJC_MSGSEND": "YES",
+    "ENABLE_TESTABILITY[config=Alpha]": "YES",
+    "ENABLE_TESTABILITY[config=Beta]": "YES",
+    "ENABLE_USER_SCRIPT_SANDBOXING": "YES",
+    "GCC_C_LANGUAGE_STANDARD": "gnu17",
+    "GCC_DYNAMIC_NO_PIC[config=Alpha]": "NO",
+    "GCC_DYNAMIC_NO_PIC[config=Beta]": "NO",
+    "GCC_NO_COMMON_BLOCKS": "YES",
+    "GCC_OPTIMIZATION_LEVEL[config=Alpha]": "0",
+    "GCC_OPTIMIZATION_LEVEL[config=Beta]": "0",
+    "GCC_PREPROCESSOR_DEFINITIONS[config=Alpha]": [
+      "DEBUG=1",
+      "$(inherited)",
+    ],
+    "GCC_PREPROCESSOR_DEFINITIONS[config=Beta]": [
+      "DEBUG=1",
+      "$(inherited)",
+    ],
+    "GCC_WARN_64_TO_32_BIT_CONVERSION": "YES",
+    "GCC_WARN_ABOUT_RETURN_TYPE": "YES_ERROR",
+    "GCC_WARN_UNDECLARED_SELECTOR": "YES",
+    "GCC_WARN_UNINITIALIZED_AUTOS": "YES_AGGRESSIVE",
+    "GCC_WARN_UNUSED_FUNCTION": "YES",
+    "GCC_WARN_UNUSED_VARIABLE": "YES",
+    "LOCALIZATION_PREFERS_STRING_CATALOGS": "YES",
+    "MACOSX_DEPLOYMENT_TARGET": "14.5",
+    "MTL_ENABLE_DEBUG_INFO[config=Alpha]": "INCLUDE_SOURCE",
+    "MTL_ENABLE_DEBUG_INFO[config=Beta]": "INCLUDE_SOURCE",
+    "MTL_ENABLE_DEBUG_INFO[config=Release]": "NO",
+    "MTL_FAST_MATH": "YES",
+    "ONLY_ACTIVE_ARCH[config=Alpha]": "YES",
+    "ONLY_ACTIVE_ARCH[config=Beta]": "YES",
+    "OTHER_SWIFT_FLAGS[config=Alpha]": "",
+    "OTHER_SWIFT_FLAGS[config=Alpha][arch=*]": "-Xfrontend -warn-long-expression-type-checking=10000",
+    "OTHER_SWIFT_FLAGS[config=Beta]": "",
+    "OTHER_SWIFT_FLAGS[config=Beta][arch=*]": "-Xfrontend -warn-long-expression-type-checking=10000",
+    "OTHER_SWIFT_FLAGS[config=Release]": "",
+    "SDKROOT": "macosx",
+    "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Alpha]": "DEBUG $(inherited)",
+    "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Beta]": "TEST",
+    "SWIFT_COMPILATION_MODE[config=Release]": "wholemodule",
+    "SWIFT_EMIT_LOC_STRINGS": "YES",
+    "SWIFT_OPTIMIZATION_LEVEL[config=Alpha]": "-Onone",
+    "SWIFT_OPTIMIZATION_LEVEL[config=Beta]": "-Onone",
+    "SWIFT_UPCOMING_FEATURE_INFER_SENDABLE_FROM_CAPTURES": "YES",
+    "SWIFT_VERSION": "5.0",
+  },
+  "last-upgrade": "16.3",
+  "last-swift-update": "16.2",
+}

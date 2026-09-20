@@ -119,7 +119,7 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "--profile=default"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--profile=ONYJDTOI3R"
