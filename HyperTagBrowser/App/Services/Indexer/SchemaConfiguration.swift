@@ -20,18 +20,25 @@ struct SchemaConfiguration {
     TagRecord.self,
     TagstringRecord.self,
   ]
-  
+
   static let views: [any DatabaseView.Type] = [
     IndexTagValueRecord.self,
     IndexTagCountRecord.self,
     TagstringRecord.self,
   ]
-  
+
   static var tableNames: [String] {
     tables.map { $0.databaseTableName }
   }
-  
+
   static var viewNames: [String] {
     views.map { $0.databaseTableName }
+  }
+
+  /// Table names excluding views. Use for anything that scans every table, e.g. row counts,
+  /// since counting a view runs its joins.
+  static var baseTableNames: [String] {
+    let views = Set(viewNames)
+    return tableNames.filter { !views.contains($0) }
   }
 }
