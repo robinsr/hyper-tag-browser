@@ -67,7 +67,7 @@ enum FilesDBFunctions: String, DbFuncDefinition, CaseIterable {
   }
 
   static let execFileExists: DbFuncExec = { values in
-    measureExecutionTime {
+    Container.shared.metricsRecorder().time("dbfn.fileExists") {
       guard let fileURL = values[0] as? URL else { return nil }
 
       let exists = FileManager.default.fileExists(at: fileURL)
@@ -79,7 +79,7 @@ enum FilesDBFunctions: String, DbFuncDefinition, CaseIterable {
   }
 
   static let execFileExistsIn: DbFuncExec = { values in
-    measureExecutionTime {
+    Container.shared.metricsRecorder().time("dbfn.fileExistsIn") {
       guard let folderURL = values[0] as? URL else { return nil }
       guard let filename = values[1] as? String else { return nil }
 
@@ -94,7 +94,7 @@ enum FilesDBFunctions: String, DbFuncDefinition, CaseIterable {
   }
 
   static let execFileSize: DbFuncExec = { values in
-    return measureExecutionTime {
+    return Container.shared.metricsRecorder().time("dbfn.fileSize") {
       guard let fileURL = values[0] as? URL else { return nil }
       guard FileManager.default.fileExists(at: fileURL) else { return nil }
 
@@ -103,14 +103,14 @@ enum FilesDBFunctions: String, DbFuncDefinition, CaseIterable {
   }
 
   static let execFileContentType: DbFuncExec = { values in
-    return measureExecutionTime {
+    return Container.shared.metricsRecorder().time("dbfn.fileContentType") {
       guard let fileURL = values[0] as? URL else { return nil }
       return fileURL.contentType
     }
   }
 
   static let execConformsTo: DbFuncExec = { values in
-    return measureExecutionTime {
+    return Container.shared.metricsRecorder().time("dbfn.conformsTo") {
       guard let uttype1 = values[0] as? UTType else { return nil }
       guard let uttype2 = values[1] as? UTType else { return nil }
 
@@ -124,7 +124,7 @@ enum FilesDBFunctions: String, DbFuncDefinition, CaseIterable {
   }
 
   static let execFileConformsTo: DbFuncExec = { values in
-    return measureExecutionTime {
+    return Container.shared.metricsRecorder().time("dbfn.fileConformsTo") {
       guard let fileURL = values[0] as? URL else { return nil }
       guard let uttype = values[1] as? UTType else { return nil }
 

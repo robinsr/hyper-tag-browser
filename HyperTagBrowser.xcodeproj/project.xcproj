@@ -158,12 +158,6 @@
       },
     }, {
       "kind": "remote",
-      "repository": "https://github.com/open-telemetry/opentelemetry-swift",
-      "version": {
-        "version": "2.3.0",
-      },
-    }, {
-      "kind": "remote",
       "repository": "https://github.com/apple/swift-metrics.git",
       "version": {
         "version": "2.7.1",
@@ -233,12 +227,6 @@
       "repository": "git@github.com:Nosrac/KBar.git",
       "version": {
         "revision": "56bc79c723da897ec5370013c8e2beb96144f280",
-      },
-    }, {
-      "kind": "remote",
-      "repository": "https://github.com/open-telemetry/opentelemetry-swift-core.git",
-      "version": {
-        "version": "2.3.0",
       },
     }, {
       "kind": "remote",
@@ -549,54 +537,6 @@
         }, {
           "package": "legibleerror",
           "product-name": "LegibleError",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "opentelemetry-swift",
-          "product-name": "OTelSwiftLog",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "opentelemetry-swift",
-          "product-name": "OpenTelemetryApi",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "opentelemetry-swift",
-          "product-name": "OpenTelemetrySdk",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "opentelemetry-swift",
-          "product-name": "PrometheusExporter",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "opentelemetry-swift",
-          "product-name": "ResourceExtension",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "opentelemetry-swift",
-          "product-name": "SignPostIntegration",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "opentelemetry-swift",
-          "product-name": "StdoutExporter",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "opentelemetry-swift",
-          "product-name": "SwiftMetricsShim",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "opentelemetry-swift-core",
-          "product-name": "OpenTelemetryApi",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "opentelemetry-swift-core",
-          "product-name": "OpenTelemetryConcurrency",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "opentelemetry-swift-core",
-          "product-name": "OpenTelemetrySdk",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "opentelemetry-swift-core",
-          "product-name": "StdoutExporter",
           "build-phase": { "build-phase": "frameworks" },
         }, {
           "package": "swift-collections",

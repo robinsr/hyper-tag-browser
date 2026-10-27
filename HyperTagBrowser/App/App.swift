@@ -8,14 +8,13 @@ import MacSettings
 import OSLog
 import SwiftUI
 
-
 @available(macOS 15.0, *)
 struct TaggedFileBrowserApp: App {
-  
+
   private let logger = EnvContainer.shared.logger("App")
-  
+
   @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-  
+
   @Injected(\IndexerContainer.dbReader) var dbReader
   @Injected(\IndexerContainer.dbWriter) var dbWriter
   @Injected(\IndexerContainer.dbContext) var dbContext
@@ -27,17 +26,17 @@ struct TaggedFileBrowserApp: App {
   @Injected(\Container.cursorState) var cursorState
   @Injected(\Container.detailViewModel) var detailState
   @Injected(\Container.colorModel) var colorModel
-  
+
   @Injected(\PreferencesContainer.prefs) var userPrefs
-  
+
   @Default(.devFlags) var devFlags: Set<DevFlags>
-  
+
   init() {}
-  
+
   func onDownloadsChanged(at url: URL) {
     logger.emit(.info, "Downloads folder changed")
   }
-  
+
   var body: some Scene {
     Window(Constants.appDisplayName, id: "\(Constants.appDisplayName).Main") {
       MainScreen()
@@ -72,23 +71,35 @@ struct TaggedFileBrowserApp: App {
     .environment(\.dispatcher) { action in
       dispatcher.dispatch(action)
     }
-    .environment(\.pushState, { route in
-      dispatcher.dispatch(.navigate(to: route, .push))
-    })
-    .environment(\.replaceState, { route in
-      dispatcher.dispatch(.navigate(to: route, .replace))
-    })
-    .environment(\.popState, {
-      dispatcher.dispatch(.popRoute)
-    })
-    .environment(\.notify, { msg in
-      messages.send(msg)
-    })
+    .environment(
+      \.pushState,
+      { route in
+        dispatcher.dispatch(.navigate(to: route, .push))
+      }
+    )
+    .environment(
+      \.replaceState,
+      { route in
+        dispatcher.dispatch(.navigate(to: route, .replace))
+      }
+    )
+    .environment(
+      \.popState,
+      {
+        dispatcher.dispatch(.popRoute)
+      }
+    )
+    .environment(
+      \.notify,
+      { msg in
+        messages.send(msg)
+      }
+    )
     .databaseContext(dbContext)
-    
+
     KeyBindingsScreen()
       .environment(\.enabledFlags, devFlags)
-    
+
     SettingsScreen()
       .environment(appVM)
       .environment(\.colorModel, colorModel)
@@ -96,17 +107,15 @@ struct TaggedFileBrowserApp: App {
       .defaultSize(width: 480, height: 600)
   }
 }
- 
+
 
 @main
 struct MainEntryPoint {
   private static let logger = EnvContainer.shared.logger("App")
-  
+
   static func main() {
-    measurementEnabled = false
-    
     EnvContainer.shared.reset(options: .context)
-    
+
     if AppStage.isUnitTest {
       TestApp.main()
       return
@@ -115,7 +124,7 @@ struct MainEntryPoint {
     let runFlags = RunFlags()
 
     #if DEBUG
-    UITestLaunchHandler.configure(flags: runFlags)
+      UITestLaunchHandler.configure(flags: runFlags)
     #endif
 
     let indexer = IndexerContainer.shared.indexService()
@@ -124,7 +133,7 @@ struct MainEntryPoint {
       try indexer.runMigrations()
 
       #if DEBUG
-      try UITestLaunchHandler.seed(service: indexer, flags: runFlags)
+        try UITestLaunchHandler.seed(service: indexer, flags: runFlags)
       #endif
 
       TaggedFileBrowserApp.main()

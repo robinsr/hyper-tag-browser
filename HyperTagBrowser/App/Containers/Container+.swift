@@ -1,10 +1,10 @@
 // Created on 9/15/24 by robinsr
 
 import Cache
+import Defaults
 import Factory
 import OSLog
 import SwiftUI
-
 
 extension Container {
 
@@ -12,11 +12,11 @@ extension Container {
     EnvContainer.shared.logger("Container")
   }
 
-  
+
   //
   // MARK: - View Models
   //
-  
+
   var appViewModel: Factory<AppViewModel> {
     self { @MainActor in
       AppViewModel()
@@ -27,110 +27,110 @@ extension Container {
       AppViewModel()
     }
   }
-  
+
   var bookmarksStore: Factory<BookmarksStoreModel> {
     self { @MainActor in BookmarksStoreModel() }.scope(.singleton)
   }
-  
+
   var dispatcher: Factory<AppDispatcher> {
     self { @MainActor in
       AppDispatcher()
     }
     .scope(.singleton)
   }
-  
+
   var messagesModel: Factory<MessagesViewModel> {
     self { @MainActor in
       MessagesViewModel()
     }
     .scope(.singleton)
   }
-  
+
   var messageQueue: Factory<AppMessageQueue> {
     self { @MainActor in
       self.messagesModel().messageQueue
     }
     .scope(.cached)
   }
-  
+
   var cursorState: Factory<CursorState> {
     self {
       CursorState()
     }
     .scope(.cached)
   }
-  
+
   var directoryTree: Factory<DirTreeModel> {
     self { @MainActor in
       DirTreeModel(cwd: PreferencesContainer.shared.startingLocation().fileURL)
     }
     .scope(.cached)
   }
-  
+
   var detailViewModel: Factory<DetailScreenViewModel> {
     self { @MainActor in
       DetailScreenViewModel()
     }
     .scope(.cached)
   }
-  
+
   var colorModel: Factory<DominantColorViewModel> {
     self {
       DominantColorViewModel()
     }
     .scope(.cached)
   }
-  
+
   var searchModel: Factory<SearchModel> {
     self { @MainActor in
       SearchModel()
     }
     .scope(.singleton)
   }
-  
+
   var windowObserver: Factory<WindowSizeObserver> {
     self {
       WindowSizeObserver()
     }
     .scope(.cached)
   }
-      
-  
+
+
   //
   // MARK: - Search Properties
   //
-  
+
   var spotlightService: Factory<SpotlightSearchService> {
     self {
       let name = self.spotlightServiceIndexName()
       let domain = self.spotlightDomainIdentifier()
       let profile = PreferencesContainer.shared.userProfileId()
-      
+
       return SpotlightSearchService(indexName: name, domainId: domain, profileId: profile)
     }
     .scope(.cached)
   }
-  
+
   var spotlightDomainIdentifier: Factory<String> {
     self {
       let stage = EnvContainer.shared.stage()
       let profile = PreferencesContainer.shared.userProfileId()
-      
-      return [stage.id, profile].dotPath // eg "release.default" or "beta.testProfile1"
+
+      return [stage.id, profile].dotPath          // eg "release.default" or "beta.testProfile1"
     }
     .onDebug {
       return "default"
     }
     .scope(.cached)
   }
-  
+
   var spotlightServiceIndexName: Factory<String> {
     self {
       let domain = EnvContainer.shared.domain()
       let stage = EnvContainer.shared.stage()
       let profileId = PreferencesContainer.shared.userProfileId()
-      
-      return [ domain, stage.id, profileId, "index" ].dotPath // eg "com.app.release.ABC123.index"
+
+      return [domain, stage.id, profileId, "index"].dotPath          // eg "com.app.release.ABC123.index"
     }
     .context(.arg("useDefaultSearchIndex")) {
       self.logger.emit(.debug, "Overriding spotlightServiceIndexName to 'default'")
@@ -138,95 +138,102 @@ extension Container {
     }
     .scope(.cached)
   }
-  
-  
+
+
   //
   // MARK: - Services/Filesystem
   //
-  
+
   var metadataService: Factory<MetadataService> {
     self {
       MetadataService.shared
     }
     .scope(.cached)
   }
-  
+
   var clipboardService: Factory<ClipboardService> {
     self {
       ClipboardService.shared
     }
     .scope(.cached)
   }
-  
+
   var quicklookService: Factory<QuicklookService> {
     self {
       QuicklookService.shared
     }
     .scope(.cached)
   }
-  
+
   var fileService: Factory<LocalFileService> {
     self { @MainActor in
       LocalFileService(monitoring: true)
     }
     .scope(.cached)
   }
-  
+
   var fileCache: Factory<LocalFileCache> {
     self {
       LocalFileCache()
     }
     .scope(.cached)
   }
-  
+
   var volumesService: Factory<VolumesService> {
     self {
       VolumesService()
     }
     .scope(.cached)
   }
-  
-  
+
+
   //
   // MARK: - Other Properties
   //
-  
+
   var executor: Factory<CommandExecutor> {
     self { @MainActor in
       CommandExecutor()
     }
     .scope(.cached)
   }
-  
+
   var colorTheme: Factory<ColorTheme> {
     self {
       MarianaTheme()
     }
     .scope(.cached)
   }
-  
+
   var themeProvider: Factory<ThemeProvider> {
     self {
       ThemeProvider.shared
     }
     .scope(.cached)
   }
-  
-  
+
+
   //
   // MARK: - Metrics
   //
-  
+
   var metricsRecorder: Factory<any MetricsRecorder> {
     self {
-      NothingMetricsRecorder()
-    }
-    .context(.arg("emitMetrics")) {
-      StdoutMetricsRecorder()
+      // Decided here rather than with .onTest: Factory checks contexts before
+      // registrations, and tests need to register a RecordingMetricsRecorder.
+      if FactoryContext.current.isTest || FactoryContext.current.isPreview {
+        return NoopMetricsRecorder()
+      }
+
+      if Defaults[.devFlags].contains(.metrics_disable) {
+        return NoopMetricsRecorder()
+      }
+
+      return DefaultMetricsRecorder.makeForApp()
     }
     .scope(.cached)
   }
-  
+
   var timer: Factory<SelfTimer> {
     self {
       SelfTimer()

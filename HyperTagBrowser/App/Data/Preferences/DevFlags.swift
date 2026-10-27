@@ -4,19 +4,18 @@ import Defaults
 import GRDB
 import SwiftUI
 
-
 enum DevFlags: String, Defaults.Serializable, CaseIterable {
-  
+
   // Flags available for user preferences
   case enable_obscureContent
   case enable_dominantColor
   case enable_panAndZoom
   case enable_cgImageThumbnail
-  
+
   // Flags related to feature enablement
   case model_logActionDescription
-  
-  
+
+
   // Flags related to SwiftUI views
   case views_debug
   case views_showTestBorders
@@ -24,7 +23,7 @@ enum DevFlags: String, Defaults.Serializable, CaseIterable {
   case views_debugColorScheme
   case views_debugToolbar
   case views_debugSearch
-  
+
   // Flags related to Indexer, file data, SQL issues, etc
   case indexer_debugParameters
   case indexer_enableSqlTrace
@@ -34,103 +33,112 @@ enum DevFlags: String, Defaults.Serializable, CaseIterable {
 
   // Flags related to testing
   case testing_verboselogs
-  
-  
+
+  // Flags related to performance metrics
+  case metrics_disable
+
+
   enum Category: String, CaseIterable, CustomStringConvertible {
     case feature = "enable_"
     case model = "model_"
     case view = "views_"
     case indexer = "indexer_"
+    case metrics = "metrics_"
     case test = "testing_"
     case unknown = "_"
-    
+
     var description: String {
       switch self {
-      case .feature: "Feature Flag"
-      case .model: "Debug Models"
-      case .indexer: "Debug Indexer"
-      case .view: "Debug Views"
-      case .test: "Testing"
-      case .unknown: "Unknown"
+        case .feature: "Feature Flag"
+        case .model: "Debug Models"
+        case .indexer: "Debug Indexer"
+        case .view: "Debug Views"
+        case .metrics: "Metrics"
+        case .test: "Testing"
+        case .unknown: "Unknown"
       }
     }
-    
+
     var presentationOrder: Int {
-      let ordering: [Category] = [.feature, .model, .view, .indexer, .test, .unknown]
-      
+      let ordering: [Category] = [.feature, .model, .view, .indexer, .metrics, .test, .unknown]
+
       return ordering.firstIndex(of: self) ?? ordering.count
     }
   }
-  
+
   var category: DevFlags.Category {
     Category.allCases.first { self.rawValue.hasPrefix($0.rawValue) } ?? .unknown
   }
-  
-  
+
+
   /**
    * Used as label text in UI
    */
   var description: String {
     switch self {
-    case .enable_dominantColor:
-      "Enable Dominant Color Background"
-    case .enable_obscureContent:
-      "Obscure image thumbnails"
-    case .enable_panAndZoom:
-      "Enable Pan and Zoom Image Controls"
-    case .enable_cgImageThumbnail:
-      "Enable CGImage Thumbnailing"
-    case .indexer_debugParameters:
-      "Debug Query Parameters"
-    case .indexer_debugSqlResponses:
-      "Inspect SQL Responses"
-    case .indexer_debugSqlStatements:
-      "Inspect SQL Statements"
-    case .indexer_enableSqlProfiling:
-      "Enable SQL Profiling"
-    case .indexer_enableSqlTrace:
-      "Enable SQL Tracing"
-    case .model_logActionDescription:
-      "Log Model Action Descriptions"
-    case .testing_verboselogs:
-      "(test only) Verbose Logging"
-    case .views_debug:
-      "Debug View"
-    case .views_debugColorScheme:
-      "Show Color Scheme Debug"
-    case .views_debugDominantColor:
-      "Show Image Color Analysis"
-    case .views_debugSearch:
-      "Show Search Debug"
-    case .views_debugToolbar:
-      "Show Toolbar Debug"
-    case .views_showTestBorders:
-      "Show Test Borders"
+      case .enable_dominantColor:
+        "Enable Dominant Color Background"
+      case .enable_obscureContent:
+        "Obscure image thumbnails"
+      case .enable_panAndZoom:
+        "Enable Pan and Zoom Image Controls"
+      case .enable_cgImageThumbnail:
+        "Enable CGImage Thumbnailing"
+      case .indexer_debugParameters:
+        "Debug Query Parameters"
+      case .indexer_debugSqlResponses:
+        "Inspect SQL Responses"
+      case .indexer_debugSqlStatements:
+        "Inspect SQL Statements"
+      case .indexer_enableSqlProfiling:
+        "Enable SQL Profiling"
+      case .indexer_enableSqlTrace:
+        "Enable SQL Tracing"
+      case .model_logActionDescription:
+        "Log Model Action Descriptions"
+      case .metrics_disable:
+        "Disable Performance Metrics"
+      case .testing_verboselogs:
+        "(test only) Verbose Logging"
+      case .views_debug:
+        "Debug View"
+      case .views_debugColorScheme:
+        "Show Color Scheme Debug"
+      case .views_debugDominantColor:
+        "Show Image Color Analysis"
+      case .views_debugSearch:
+        "Show Search Debug"
+      case .views_debugToolbar:
+        "Show Toolbar Debug"
+      case .views_showTestBorders:
+        "Show Test Borders"
     }
   }
-  
+
   /**
    * Used as help text in UI
    */
   var debugDescription: String {
     switch self {
-    case .enable_cgImageThumbnail:
-      "Generate thumbnails from image file data instead of QuickLook"
-    case .indexer_debugParameters:
-      "Logs current query params to console; shows query hash value in UI"
-    case .indexer_enableSqlTrace:
-      "Enable GRDB SQL tracing"
-    case .indexer_enableSqlProfiling:
-      "Emit query execution statistics to console"
-    case .indexer_debugSqlStatements:
-      "Prints formatted SQL statements to console"
-    case .indexer_debugSqlResponses:
-      "Dumps objects returned from SQL statements to console"
-    default:
-      "(\(self.rawValue))"
+      case .enable_cgImageThumbnail:
+        "Generate thumbnails from image file data instead of QuickLook"
+      case .indexer_debugParameters:
+        "Logs current query params to console; shows query hash value in UI"
+      case .indexer_enableSqlTrace:
+        "Enable GRDB SQL tracing"
+      case .indexer_enableSqlProfiling:
+        "Emit query execution statistics to console"
+      case .indexer_debugSqlStatements:
+        "Prints formatted SQL statements to console"
+      case .indexer_debugSqlResponses:
+        "Dumps objects returned from SQL statements to console"
+      case .metrics_disable:
+        "Stops recording to metrics.sqlite and SQL profiling. Takes effect at next launch"
+      default:
+        "(\(self.rawValue))"
     }
   }
-  
+
   @available(*, deprecated, message: "Unused as of 2025-11-09")
   var command: some Commands {
     CommandGroup(replacing: .appInfo) {
@@ -140,18 +148,18 @@ enum DevFlags: String, Defaults.Serializable, CaseIterable {
       .keyboardShortcut("D", modifiers: [.command, .option])
     }
   }
-  
+
   static func list(for stage: AppStage) -> [DevFlags] {
     switch stage {
-    case .debug, ._preview:
-      Self.allCases.sorted(by: \.category.presentationOrder)
-    default:
-      Self.allCases
-        .filter { $0.category != .test }
-        .sorted(by: \.category.presentationOrder)
+      case .debug, ._preview:
+        Self.allCases.sorted(by: \.category.presentationOrder)
+      default:
+        Self.allCases
+          .filter { $0.category != .test }
+          .sorted(by: \.category.presentationOrder)
     }
   }
-  
+
   static let appDefaults: Set<DevFlags> = [.enable_dominantColor, .enable_panAndZoom]
 }
 
@@ -163,25 +171,27 @@ extension DevFlags: PreferenceTip {
 }
 
 
-enum QueryableDevFlags: String, Defaults.Serializable, CaseIterable, CustomStringConvertible, CustomDebugStringConvertible {
-  
+enum QueryableDevFlags: String, Defaults.Serializable, CaseIterable, CustomStringConvertible,
+  CustomDebugStringConvertible
+{
+
   case ListIndexInfoRequest
   case ListIndexesRequest
   case ListIndexLocationsRequest
   case GetIndexInfoRequest
   case CountIndexesRequest
-  
+
   case ListIndexTagsRequest
   case ListCountedTagsRequest
-  
+
   case ListQueuesRequest
   case ListQueueIndexesRequest
-  
+
   case ListBookmarksRequest
-  
+
   case GRDBIndexes
 
-  
+
   init?(rawValue: String) {
     if let match = Self.allCases.first(where: { $0.rawValue == rawValue }) {
       self = match
@@ -189,16 +199,16 @@ enum QueryableDevFlags: String, Defaults.Serializable, CaseIterable, CustomStrin
       return nil
     }
   }
-  
+
   var debugDescription: String {
     "Enable debug feature for query \(self.rawValue)"
   }
-  
+
   var description: String {
     self.rawValue
       .map({ $0.isUppercase ? " \($0)" : "\($0)" })
       .joined()
-      
+
   }
 }
 

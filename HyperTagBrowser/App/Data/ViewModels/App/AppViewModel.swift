@@ -6,7 +6,6 @@ import GRDB
 import SwiftUI
 import System
 
-
 @MainActor
 @Observable
 final class AppViewModel {
@@ -25,7 +24,7 @@ final class AppViewModel {
 
   @ObservationIgnored
   @Injected(\IndexerContainer.indexService) var indexer
-  
+
   @ObservationIgnored
   @Injected(\Container.messagesModel) var messages
 
@@ -136,7 +135,7 @@ final class AppViewModel {
   var currentRoute: Route {
     navigationPath.last ?? Route.main
   }
-  
+
   var currentPage: Route.Page {
     navigationPath.last?.page ?? .main
   }
@@ -148,23 +147,23 @@ final class AppViewModel {
       case .main: PreferencesContainer.shared.startingLocation().fileURL
     }
   }
-  
+
   var currentPath: FilePath {
     switch currentRoute {
-    case .folder(let path): path
-    case .content(let pointer): pointer.contentPath
-    case .main: PreferencesContainer.shared.startingLocation()
+      case .folder(let path): path
+      case .content(let pointer): pointer.contentPath
+      case .main: PreferencesContainer.shared.startingLocation()
     }
   }
-  
+
   var currentFolderName: String {
     currentPath.baseName
   }
 
   var detailItemPointer: ContentPointer? {
     switch currentRoute {
-    case .content(let pointer): pointer
-    default: nil
+      case .content(let pointer): pointer
+      default: nil
     }
   }
 
@@ -172,7 +171,7 @@ final class AppViewModel {
   //
   // MARK: - Initializers
   //
-  
+
   var folderObserver: FolderObserver?
   var reloadDebouncer: OperationDebouncer?
   var observerTask: Task<Void, Never>?
@@ -187,26 +186,29 @@ final class AppViewModel {
     }
 
     #if DEBUG
-    if let queryId = UserDefaults.standard.string(forKey: UITestLaunchHandler.uitestLoadSavedQueryKey) {
-      Task { @MainActor [self] in
-        self.doApplySavedQuery(id: queryId)
-        UserDefaults.standard.removeObject(forKey: UITestLaunchHandler.uitestLoadSavedQueryKey)
+      if let queryId = UserDefaults.standard.string(
+        forKey: UITestLaunchHandler.uitestLoadSavedQueryKey)
+      {
+        Task { @MainActor [self] in
+          self.doApplySavedQuery(id: queryId)
+          UserDefaults.standard.removeObject(forKey: UITestLaunchHandler.uitestLoadSavedQueryKey)
+        }
       }
-    }
 
-    // Check both UserDefaults and process args for initial panels to open.
-    // We use process args as a fallback because UserDefaults may not be synchronised
-    // before init() reads them in some launch sequences.
-    let panelListUD = UserDefaults.standard.string(forKey: UITestLaunchHandler.uitestOpenPanelsKey)
-    let panelListArg = ProcessInfo.processInfo.arguments
-      .first(where: { $0.hasPrefix("--OpenPanels=") })
-      .flatMap { $0.split(separator: "=").last.map(String.init) }
+      // Check both UserDefaults and process args for initial panels to open.
+      // We use process args as a fallback because UserDefaults may not be synchronised
+      // before init() reads them in some launch sequences.
+      let panelListUD = UserDefaults.standard.string(
+        forKey: UITestLaunchHandler.uitestOpenPanelsKey)
+      let panelListArg = ProcessInfo.processInfo.arguments
+        .first(where: { $0.hasPrefix("--OpenPanels=") })
+        .flatMap { $0.split(separator: "=").last.map(String.init) }
 
-    if let panelList = panelListUD ?? panelListArg {
-      let panels = panelList.split(separator: ",").compactMap { AppPanels(rawValue: String($0)) }
-      activeAppPanels = Set(panels)
-      UserDefaults.standard.removeObject(forKey: UITestLaunchHandler.uitestOpenPanelsKey)
-    }
+      if let panelList = panelListUD ?? panelListArg {
+        let panels = panelList.split(separator: ",").compactMap { AppPanels(rawValue: String($0)) }
+        activeAppPanels = Set(panels)
+        UserDefaults.standard.removeObject(forKey: UITestLaunchHandler.uitestOpenPanelsKey)
+      }
     #endif
 
     let cont = Continuator()
@@ -227,16 +229,15 @@ final class AppViewModel {
       }
     }
   }
-  
-  
+
+
   // TODO: Finish moving expensive work to background
   private func _onQueryChange(_ filters: BrowseFilters) {
     queryChangeTask?.cancel()
 
-    let timer = metrics.startTimer(
-      named: "appvm.updateContentItems.time", attributes: query.metricValues)
-
     queryChangeTask = Task {
+      let start = ContinuousClock.now
+
       self.contentItems = await Task.detached(priority: .userInitiated) {
         do {
           let _indexer = IndexerContainer.shared.indexService()
@@ -246,12 +247,13 @@ final class AppViewModel {
           return []
         }
       }.value
+
+      self.metrics.timing(
+        "appvm.updateContentItems", ms: start.elapsedMs, tags: filters.metricTags)
     }
 
-    timer.stop()
-
     queryChangeTask = nil
-    
+
     self.logger.emit(.info, "ContentItems refreshed")
   }
 
@@ -265,7 +267,7 @@ final class AppViewModel {
 
   func restart(afterDelay seconds: TimeInterval = 0.5) -> Never {
     logger.emit(.info, "Restarting app")
-    
+
     let task = Process()
     task.launchPath = "/bin/sh"
     task.arguments = ["-c", "sleep \(seconds); open \"\(Bundle.main.bundlePath)\""]
